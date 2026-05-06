@@ -228,11 +228,11 @@ function AtsCvPreview({ kit, design, className }: Props) {
 }
 
 export function CvPreview({ kit, design, className }: Props) {
+  const { t, locale } = useSiteLocale()
+
   if (design.templateSlug === 'ats') {
     return <AtsCvPreview kit={kit} design={design} className={className} />
   }
-
-  const { t, locale } = useSiteLocale()
   const tpl = getCvTemplate(design.templateSlug)
   const accent = design.accentHex
   const fontClass =
@@ -267,7 +267,9 @@ export function CvPreview({ kit, design, className }: Props) {
   const em = kit.profile.contact?.email?.trim()
   const ph = kit.profile.contact?.phone?.trim()
   const li = kit.profile.contact?.linkedin?.trim()
-  const interestsLines = kit.profile.interests?.trim()
+  const interestsLines = Array.isArray(kit.profile.interests)
+  ? kit.profile.interests.join(', ')
+  : kit.profile.interests?.trim()
 
   return (
     <div

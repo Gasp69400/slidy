@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { useSiteLocale } from '@/lib/site-locale'
 import type { SiteStrKey } from '@/lib/site-messages'
 
-type PlanTier = 'starter' | 'pro' | 'team'
+type PlanTier = 'starter' | 'pro' | 'ultimate'
 
 type SubscriptionStatus =
   | 'TRIAL'
@@ -25,13 +25,13 @@ type FontTier = {
 const PLAN_ORDER: Record<PlanTier, number> = {
   starter: 1,
   pro: 2,
-  team: 3,
+  ultimate: 3,
 }
 
 const mapSubscriptionToPlan = (
   status: SubscriptionStatus | undefined,
 ): PlanTier => {
-  if (status === 'ACTIVE') return 'team'
+  if (status === 'ACTIVE') return 'ultimate'
   if (status === 'TRIAL') return 'pro'
   return 'starter'
 }
@@ -84,21 +84,21 @@ export const FONT_PAIRS: FontTier[] = [
     heading: 'Cormorant Garamond',
     body: 'Source Sans Pro',
     labelKey: 'create.font.luxury',
-    minPlan: 'team',
+    minPlan: 'ultimate',
   },
   {
     id: 'tech',
     heading: 'Space Grotesk',
     body: 'Inter',
     labelKey: 'create.font.tech',
-    minPlan: 'team',
+    minPlan: 'ultimate',
   },
   {
     id: 'playful',
     heading: 'Baloo 2',
     body: 'Inter',
     labelKey: 'create.font.playful',
-    minPlan: 'team',
+    minPlan: 'ultimate',
   },
 ]
 
@@ -140,10 +140,10 @@ const FontSelector: FC<FontSelectorProps> = ({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-slate-700">
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
           {t('create.font_style')}
         </span>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-slate-400 dark:text-slate-500">
           {t('create.font_export_hint')}
         </span>
       </div>
@@ -154,16 +154,16 @@ const FontSelector: FC<FontSelectorProps> = ({
             type="button"
             onClick={() => onSelect(font.id)}
             className={cn(
-              'p-3 rounded-xl border text-left transition-all',
+              'rounded-xl border p-3 text-left transition-all',
               selected === font.id
-                ? 'border-indigo-300 bg-indigo-50'
-                : 'border-slate-100 hover:border-slate-200',
+                ? 'border-indigo-300 bg-indigo-50 dark:border-indigo-600 dark:bg-indigo-950/40'
+                : 'border-slate-100 hover:border-slate-200 dark:border-slate-700 dark:hover:border-slate-600',
             )}
           >
-            <div className="text-sm font-semibold text-slate-900">
+            <div className="text-sm font-semibold text-slate-900 dark:text-white">
               {font.heading}
             </div>
-            <div className="text-[11px] text-slate-500 mt-0.5">
+            <div className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
               {t(font.labelKey)}
             </div>
           </button>

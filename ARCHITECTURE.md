@@ -90,12 +90,7 @@ immobilier-saas/
 │   └── types/                  # 📝 Types TypeScript
 │       └── 📄 index.ts         # Types globaux
 │
-└── scrapers/                   # 🕷️ Scraping
-    ├── 📄 index.ts             # Exports
-    ├── 📄 leboncoin.ts         # Scraper Leboncoin
-    ├── 📄 seloger.ts           # Scraper SeLoger
-    ├── 📄 pap.ts               # Scraper PAP
-    ├── 📄 paruvendu.ts         # Scraper ParuVendu
+
     ├── 📄 matching.ts          # 🤖 Algorithme IA
     ├── 📄 alerts.ts            # 📧 Système d'alertes
     ├── 📄 start-scrapers.ts    # 🚀 Script de démarrage
@@ -132,16 +127,6 @@ Validation → Update Criteria → Trigger Matching
     ↓
 Return Updated Criteria
 ```
-
-### **4. Scraping & Matching**
-```
-Cron Job → Scrapers (Leboncoin/SeLoger/PAP/ParuVendu)
-    ↓
-Raw Data → Normalization → DB Storage
-    ↓
-For Each Client → Matching Algorithm
-    ↓
-Create Matches + Alerts → Email Notifications
 ```
 
 ### **5. Consultation Matches**

@@ -28,7 +28,7 @@ type ExpRow = { role: string; company: string; period: string; bullets: string }
 export default function CvStudioPage() {
   const { t, locale } = useSiteLocale()
   const router = useRouter()
-  const [inputMode, setInputMode] = useState<'prompt' | 'manual'>('prompt')
+  const [inputMode, setInputMode] = useState<'prompt' | 'manual'>('manual')
   const [userPrompt, setUserPrompt] = useState('')
   const [fullName, setFullName] = useState('')
   const [headline, setHeadline] = useState('')
@@ -222,11 +222,11 @@ export default function CvStudioPage() {
             onValueChange={(v) => setInputMode(v as 'prompt' | 'manual')}
           >
             <TabsList className="grid w-full max-w-md grid-cols-2 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
-              <TabsTrigger value="prompt" className="rounded-lg text-sm">
-                {t('cv.tab_prompt')}
-              </TabsTrigger>
               <TabsTrigger value="manual" className="rounded-lg text-sm">
                 {t('cv.tab_manual')}
+              </TabsTrigger>
+              <TabsTrigger value="prompt" className="rounded-lg text-sm">
+                {t('cv.tab_prompt')}
               </TabsTrigger>
             </TabsList>
 
@@ -284,35 +284,6 @@ export default function CvStudioPage() {
                 ) : null}
               </div>
             </div>
-
-            <TabsContent value="prompt" className="mt-5 space-y-4">
-              <div>
-                <Label>{t('cv.job_description')}</Label>
-                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
-                  {t('cv.job_description_ph')}
-                </p>
-                <Textarea
-                  className="mt-1 min-h-[72px] rounded-xl border-slate-200 dark:border-slate-700"
-                  value={jobDescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
-                  placeholder={t('cv.job_description_ph')}
-                />
-              </div>
-              <div>
-                <Label>{t('cv.prompt_label')}</Label>
-                <Textarea
-                  className="mt-1 min-h-[120px] rounded-xl border-slate-200"
-                  placeholder={t('cv.prompt_ph')}
-                  value={userPrompt}
-                  onChange={(e) => setUserPrompt(e.target.value)}
-                />
-              </div>
-              <p className="text-xs text-slate-500">
-                {locale === 'fr'
-                  ? 'Astuce : vous pouvez aussi remplir le formulaire pour enrichir l’invite (mode hybride).'
-                  : 'Tip: add details in the Form tab to enrich the prompt (hybrid mode).'}
-              </p>
-            </TabsContent>
 
             <TabsContent value="manual" className="mt-5 space-y-4">
               <div>
@@ -472,6 +443,35 @@ export default function CvStudioPage() {
                   onChange={(e) => setYear(e.target.value)}
                 />
               </div>
+            </TabsContent>
+
+            <TabsContent value="prompt" className="mt-5 space-y-4">
+              <div>
+                <Label>{t('cv.job_description')}</Label>
+                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                  {t('cv.job_description_ph')}
+                </p>
+                <Textarea
+                  className="mt-1 min-h-[72px] rounded-xl border-slate-200 dark:border-slate-700"
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  placeholder={t('cv.job_description_ph')}
+                />
+              </div>
+              <div>
+                <Label>{t('cv.prompt_label')}</Label>
+                <Textarea
+                  className="mt-1 min-h-[120px] rounded-xl border-slate-200"
+                  placeholder={t('cv.prompt_ph')}
+                  value={userPrompt}
+                  onChange={(e) => setUserPrompt(e.target.value)}
+                />
+              </div>
+              <p className="text-xs text-slate-500">
+                {locale === 'fr'
+                  ? 'Astuce : vous pouvez aussi remplir le formulaire (onglet à gauche) pour enrichir l’invite (mode hybride).'
+                  : 'Tip: add details in the Form tab (left) to enrich the prompt (hybrid mode).'}
+              </p>
             </TabsContent>
           </Tabs>
 

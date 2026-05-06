@@ -1,6 +1,10 @@
 export type PresentationStatus = 'generating' | 'completed' | 'failed'
 
-export type PresentationAudience = 'students' | 'professionals' | 'executives'
+export type PresentationAudience =
+  | 'students'
+  | 'professors'
+  | 'professionals'
+  | 'executives'
 
 export type PresentationType = 'educational' | 'persuasive' | 'informative'
 
@@ -10,8 +14,10 @@ export type TemplateCategory =
   | 'creative'
   | 'tech'
   | 'marketing'
+  | 'nature'
+  | 'luxury'
 
-export type TemplatePlanTier = 'starter' | 'pro' | 'team'
+  export type TemplatePlanTier = 'starter' | 'pro' | 'ultimate'
 
 export interface Template {
   id: string
@@ -36,11 +42,12 @@ export interface Presentation {
   title: string
   topic: string
   audience: PresentationAudience
-  presentation_type: PresentationType
-  template: string
-  slide_count: number
-  slides_json: string
-  file_url?: string
+  presentationType: PresentationType
+  templateSlug: string
+  slideCount: number
+  slidesJson: string
+  fileUrl?: string
+  isPublic: boolean
   status: PresentationStatus
   options?: string
 }

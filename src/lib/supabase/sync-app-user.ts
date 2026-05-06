@@ -56,10 +56,6 @@ async function migrateLegacyUserToSupabaseAuth(
       },
     })
 
-    await tx.client.updateMany({
-      where: { userId: legacy.id },
-      data: { userId: newId },
-    })
     await tx.account.updateMany({
       where: { userId: legacy.id },
       data: { userId: newId },

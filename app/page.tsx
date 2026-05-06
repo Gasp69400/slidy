@@ -10,6 +10,7 @@ import {
   FileDown,
 } from 'lucide-react'
 
+import { SlidyLogoMark } from '@/components/brand/SlidyLogoMark'
 import { LandingHeader } from '@/components/landing/LandingHeader'
 import { Button } from '@/components/ui/button'
 import { useSiteLocale } from '@/lib/site-locale'
@@ -111,9 +112,7 @@ function HeroSection() {
               <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/50 p-4">
                 <div className="mb-3 flex items-center justify-between text-[10px] text-slate-400">
                   <span>{t('home.preview.structure')}</span>
-                  <span className="rounded-full bg-violet-500/20 px-2 py-0.5 text-violet-200">
-                    AI
-                  </span>
+                  <SlidyLogoMark size="xs" className="shadow-md shadow-violet-900/40" />
                 </div>
                 <div className="space-y-2">
                   {[1, 2, 3, 4].map((i) => (
@@ -271,9 +270,7 @@ function SiteFooter() {
     <footer className="border-t border-slate-200 bg-white py-10 dark:border-slate-800 dark:bg-slate-900">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-slate-500 dark:text-slate-400 sm:flex-row sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-500 text-xs font-bold text-white">
-            AI
-          </span>
+          <SlidyLogoMark size="sm" />
           <span className="font-semibold text-slate-800 dark:text-slate-100">Slidy</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-6">
@@ -294,6 +291,12 @@ function SiteFooter() {
             className="hover:text-slate-800 dark:hover:text-slate-100"
           >
             {t('nav.templates')}
+          </Link>
+          <Link
+            href="/legal/cgu"
+            className="hover:text-slate-800 dark:hover:text-slate-100"
+          >
+            {t('home.footer.terms')}
           </Link>
           <Link
             href="/auth/login"

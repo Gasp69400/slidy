@@ -59,7 +59,7 @@ const bodySchema = z
         Boolean(m?.contact?.phone?.trim()) ||
         Boolean(m?.contact?.location?.trim()) ||
         Boolean(m?.photoUrl?.trim()) ||
-        Boolean(m?.interests?.trim()) ||
+        Boolean((m?.interests?.length ?? 0) > 0) ||
         Boolean(data.jobDescription?.trim())
       if (!ok) {
         ctx.addIssue({
@@ -86,9 +86,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
-
     const input = parsed.data
-
     const designOptions = cvDesignOptionsSchema.parse({
       templateSlug: input.templateSlug,
       fontFamily: input.fontFamily,

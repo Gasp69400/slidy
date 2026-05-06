@@ -5,13 +5,13 @@ export type { PlanTier }
 export const PLAN_ORDER: Record<PlanTier, number> = {
   STARTER: 1,
   PRO: 2,
-  TEAM: 3,
+  ULTIMATE: 3,
 }
 
 export function planFromSubscription(
   subscriptionStatus: SubscriptionStatus,
 ): PlanTier {
-  if (subscriptionStatus === 'ACTIVE') return 'TEAM'
+  if (subscriptionStatus === 'ACTIVE') return 'ULTIMATE'
   if (subscriptionStatus === 'TRIAL') return 'PRO'
   return 'STARTER'
 }
@@ -33,7 +33,7 @@ export type PlanCapabilities = {
 }
 
 export function getCapabilities(plan: PlanTier): PlanCapabilities {
-  if (plan === 'TEAM') {
+  if (plan === 'ULTIMATE') {
     return {
       plan,
       maxDocumentsPerDay: 200,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import {
+  deleteCvDocument,
   getCvDocumentById,
   mapCvRowToApiDocument,
   supabaseConfigErrorMessage,
@@ -91,4 +92,34 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     success: true,
     data: mapCvRowToApiDocument(data),
   })
+}
+
+export async function DELETE(_request: NextRequest, { params }: Params) {
+  const session = await requireSupabaseSession()
+  if (!session.ok) return session.response
+
+  const { data: existing, error: getErr } = await getCvDocumentById(
+    session.supabase,
+    session.userId,
+    params.id,
+  )
+  if (getErr) {
+    const cfg = supabaseConfigErrorMessage(getErr)
+    return NextResponse.json(cfg.body, { status: cfg.status })
+  }
+  if (!existing) {
+    return NextResponse.json({ error: 'Document non trouvé' }, { status: 404 })
+  }
+
+  const { error: delErr } = await deleteCvDocument(
+    session.supabase,
+    session.userId,
+    params.id,
+  )
+  if (delErr) {
+    const cfg = supabaseConfigErrorMessage(delErr)
+    return NextResponse.json(cfg.body, { status: cfg.status })
+  }
+
+  return NextResponse.json({ success: true })
 }

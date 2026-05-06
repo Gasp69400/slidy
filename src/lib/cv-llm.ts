@@ -15,7 +15,7 @@ Optimisation ATS (parsing par les logiciels de recrutement) :
 - Intitulés de postes (experience.role) : standards et reconnaissables (comme sur l’offre si pertinent). Entreprise réelle ou cohérente. Dates (period) au format mois/année en toutes lettres ou abrégées cohérentes, ex. « janv. 2022 – déc. 2024 » ou « January 2022 – December 2024 ».
 - Puces : commencer par un verbe d’action fort ; inclure des résultats chiffrés quand c’est crédible (%, montants, volumes, délais). Pas de puces vagues.
 - skills : exactement 2 groupes dont les noms EN ANGLAIS (pour compatibilité ATS) : premier groupe nommé exactement « Hard Skills », second exactement « Soft Skills ». Les items restent dans la langue du CV (fr ou en selon locale).
-- Lettre (coverLetter) : ton naturel et professionnel ; réutiliser quelques mots-clés pertinents de l’offre si fournie ; une idée par paragraphe ; aucune tournure type « En tant qu’IA » ou liste de qualificatifs vides.`
+- Lettre (coverLetter) : ton naturel et professionnel ; réutiliser quelques mots-clés pertinents de l’offre si fournie ; une idée par paragraphe ; ponctuation soignée (virgules, points) ; phrases complètes, pas de pavé sans pause. Structure obligatoire : séparer chaque paragraphe par UNE ligne vide (double saut de ligne \\n\\n dans la chaîne). Ne pas conclure par une formule de politesse ni signer : pas de « Cordialement », pas de nom en bas (ajoutés automatiquement après coup).`
 
 const ATS_CONTENT_RULES_EN = `
 ATS optimization:
@@ -23,7 +23,7 @@ ATS optimization:
 - Job titles (experience.role): standard, recognizable titles (align with the posting when appropriate). Dates (period) in Month Year – Month Year form, e.g. January 2022 – December 2024.
 - Bullets: lead with strong action verbs; include metrics where credible (%, revenue, volume, time saved). No vague bullets.
 - skills: exactly 2 groups with names exactly « Hard Skills » and « Soft Skills » (these exact English labels). Items in English for English locale.
-- Cover letter: natural professional tone; mirror key terminology from the job posting when provided; one idea per paragraph; no generic AI filler or buzzword stacking.`
+- Cover letter: natural professional tone; mirror job-posting keywords when provided; one idea per paragraph; careful punctuation (commas, periods); complete sentences — no wall of text. REQUIRED layout: separate paragraphs with ONE blank line (double newline \\n\\n in the string). Do NOT add a closing formula or your name at the end (no « Sincerely », no signature block — added automatically).`
 
 export async function generateCvWithGroq(args: {
   mode: 'prompt' | 'manual'
@@ -51,7 +51,7 @@ Structure JSON obligatoire :
 - experience: tableau de { role, company, period, bullets: string[] } — au moins 1 entrée crédible si le contexte le permet
 - education: tableau de { degree, school, year? }
 - skills: tableau d’EXACTEMENT 2 objets { name, items: string[] } avec name égal à « Hard Skills » puis « Soft Skills » (libellés en anglais, items en français)
-- coverLetter: string — lettre en français, 3 à 5 paragraphes
+- coverLetter: string — lettre en français, 3 à 5 paragraphes (sans formule finale ni signature ; paragraphes séparés par une ligne vide)
 
 ${ATS_CONTENT_RULES_FR}
 
@@ -64,7 +64,7 @@ Required JSON shape:
 - experience: array of { role, company, period, bullets: string[] }
 - education: array of { degree, school, year? }
 - skills: array of EXACTLY TWO { name, items: string[] } with name exactly « Hard Skills » then « Soft Skills »
-- coverLetter: string — 3–5 paragraphs, professional English
+- coverLetter: string — 3–5 paragraphs in professional English (no closing line or signature; blank line between paragraphs)
 
 ${ATS_CONTENT_RULES_EN}
 
@@ -102,9 +102,11 @@ When a job posting is provided: extract relevant requirements and keywords; weav
   }
 
   const safe = llmCvResponseSchema.safeParse(parsed)
-  if (!safe.success) {
-    throw new Error('Schéma CV LLM invalide')
-  }
+if (!safe.success) {
+  console.error('CV schema errors:', JSON.stringify(safe.error.issues, null, 2))
+  console.error('CV parsed data:', JSON.stringify(parsed, null, 2))
+  throw new Error('Schéma CV LLM invalide')
+}
   return safe.data
 }
 

@@ -100,15 +100,95 @@ function normalizeSkills(
   ]
 }
 
-export function defaultCoverLetter(kit: CvKit, locale: 'fr' | 'en'): string {
+function normalizeCoverLetterEnding(
+  text: string,
+  fullName: string,
+  locale: 'fr' | 'en',
+): string {
+  const name =
+    fullName.trim() ||
+    (locale === 'fr' ? 'Prénom Nom' : 'First Last Name')
+  const closingPhrase =
+    locale === 'fr'
+      ? /^(cordialement|sincères salutations|bien à vous|je vous prie)/i
+      : /^(sincerely|kind regards|best regards|yours faithfully|yours sincerely)/i
+
+  const parts = text
+    .trim()
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+
+  while (parts.length > 0) {
+    const last = parts[parts.length - 1]!
+    const firstLine = (last.split('\n')[0] ?? '').trim()
+    if (!firstLine) {
+      parts.pop()
+      continue
+    }
+    if (firstLine.replace(/[.,]/g, '').trim().toLowerCase() === name.toLowerCase()) {
+      parts.pop()
+      continue
+    }
+    if (closingPhrase.test(firstLine)) {
+      parts.pop()
+      continue
+    }
+    break
+  }
+
+  const body = parts.join('\n\n').trim()
+  const closing = locale === 'fr' ? 'Cordialement,' : 'Sincerely,'
+  if (!body) {
+    return `${closing}\n\n${name}`
+  }
+  return `${body}\n\n${closing}\n\n${name}`
+}
+
+function defaultCoverLetterBodyOnly(kit: CvKit, locale: 'fr' | 'en'): string {
   const { profile, experience } = kit
   const company =
     experience[0]?.company ??
     (locale === 'fr' ? 'votre structure' : 'your organization')
+
+  const summaryRaw = profile.summary.trim()
+  const summaryShort =
+    summaryRaw.length > 420 ? `${summaryRaw.slice(0, 420).trim()}…` : summaryRaw
+
   if (locale === 'fr') {
-    return `Madame, Monsieur,\n\nJe vous adresse ma candidature pour un poste en lien avec "${profile.headline}" au sein de ${company}. Mon parcours m'a permis de développer des compétences opérationnelles directement mobilisables.\n\n${profile.summary.slice(0, 420)}${profile.summary.length > 420 ? '…' : ''}\n\nRigoureux(se), impliqué(e) et orienté(e) résultats, je souhaite mettre mes compétences au service de vos objectifs et contribuer concrètement à la réussite de vos projets.\n\nJe vous remercie de l'attention portée à ma candidature et me tiens à votre disposition pour un entretien.\n\nJe vous prie d’agréer, Madame, Monsieur, mes salutations distinguées.\n${profile.fullName}`
+    return [
+      'Madame, Monsieur,',
+      '',
+      `Je vous adresse ma candidature pour un poste en lien avec « ${profile.headline} », au sein de ${company}. Mon parcours m’a permis de développer des compétences opérationnelles, mobilisables dès la prise de poste.`,
+      '',
+      summaryShort ||
+        'Je suis convaincu·e que mon profil correspond aux attentes de votre organisation.',
+      '',
+      'Rigoureux·se, impliqué·e et orienté·e résultats, je souhaite mettre mes compétences au service de vos objectifs. Je serais ravi·e d’échanger sur la manière dont je peux contribuer à vos projets.',
+      '',
+      'Je vous remercie pour l’attention portée à ma candidature, et je reste à votre disposition pour un entretien.',
+    ].join('\n')
   }
-  return `Dear Hiring Manager,\n\nI am writing to apply for a role aligned with "${profile.headline}" at ${company}. My background has prepared me to contribute quickly with a strong sense of ownership and execution.\n\n${profile.summary.slice(0, 420)}${profile.summary.length > 420 ? '…' : ''}\n\nI am confident my profile can bring immediate value to your team and support your operational and strategic priorities.\n\nThank you for your time and consideration. I would welcome the opportunity to discuss my application further.\n\nSincerely,\n${profile.fullName}`
+  return [
+    'Dear Hiring Manager,',
+    '',
+    `I am writing to apply for a role aligned with "${profile.headline}" at ${company}. My background has prepared me to contribute with a strong sense of ownership, clarity, and execution.`,
+    '',
+    summaryShort ||
+      'I am confident that my skills and attitude are a good match for your team.',
+    '',
+    'I would welcome the opportunity to discuss how my experience can support your priorities and help deliver tangible results.',
+    '',
+    'Thank you for your time and consideration; I remain available for an interview at your convenience.',
+  ].join('\n')
+}
+
+export function defaultCoverLetter(kit: CvKit, locale: 'fr' | 'en'): string {
+  return normalizeCoverLetterEnding(
+    defaultCoverLetterBodyOnly(kit, locale),
+    kit.profile.fullName,
+    locale,
+  )
 }
 
 export function mergeToCvMetadata(args: {
@@ -145,9 +225,10 @@ export function mergeToCvMetadata(args: {
       manual?.searchPeriod?.trim() ||
       partial.profile?.searchPeriod?.trim() ||
       undefined,
-    interests:
-      manual?.interests?.trim() ||
-      partial.profile?.interests?.trim() ||
+    
+      interests:
+      manual?.interests ||
+      partial.profile?.interests ||
       undefined,
     contact: {
       ...partial.profile?.contact,
@@ -164,10 +245,16 @@ export function mergeToCvMetadata(args: {
     skills: normalizeSkills(manual, partial, args.skillsText, args.locale),
   })
 
-  const coverLetter =
+  const rawCover =
     (typeof partial.coverLetter === 'string' && partial.coverLetter.trim()
       ? partial.coverLetter.trim()
-      : null) ?? defaultCoverLetter(cvKit, args.locale)
+      : null) ?? defaultCoverLetterBodyOnly(cvKit, args.locale)
+
+  const coverLetter = normalizeCoverLetterEnding(
+    rawCover,
+    profile.fullName,
+    args.locale,
+  )
 
   return {
     version: 1,

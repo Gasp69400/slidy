@@ -81,18 +81,18 @@ export default function AccountPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <LandingHeader />
       <main className="mx-auto max-w-lg px-4 py-10 sm:px-6 lg:px-8">
-        <Card className="border-slate-200 bg-white shadow-lg dark:border-slate-200">
+        <Card className="border-slate-200 bg-white text-slate-900 shadow-lg dark:border-slate-200 dark:bg-white dark:text-slate-900">
           <CardHeader>
-            <CardTitle className="text-slate-900 dark:text-slate-50">
+            <CardTitle className="text-slate-900">
               {t('account.title')}
             </CardTitle>
-            <CardDescription className="dark:text-slate-400">
+            <CardDescription className="text-slate-600 dark:text-slate-600">
               {t('account.subtitle')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {unauthorized && (
-              <div className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
+              <div className="space-y-3 text-sm text-slate-600 dark:text-slate-600">
                 <p>{t('account.login_hint')}</p>
                 <Button asChild className="rounded-full">
                   <Link href="/auth/login">{t('account.login_cta')}</Link>
@@ -100,26 +100,26 @@ export default function AccountPage() {
               </div>
             )}
             {!unauthorized && loading && (
-              <p className="text-sm text-slate-500 dark:text-slate-400">{t('editor.loading_short')}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-600">{t('editor.loading_short')}</p>
             )}
             {!unauthorized && !loading && error && (
-              <p className="text-sm text-red-600">{t('account.err_load')}</p>
+              <p className="text-sm text-red-600 dark:text-red-700">{t('account.err_load')}</p>
             )}
             {!unauthorized && !loading && data && (
               <dl className="space-y-3 text-sm">
                 <div>
-                  <dt className="font-medium text-slate-500 dark:text-slate-400">
+                  <dt className="font-medium text-slate-500 dark:text-slate-600">
                     {t('account.email')}
                   </dt>
-                  <dd className="text-slate-900 dark:text-slate-100">
+                  <dd className="text-slate-900 dark:text-slate-900">
                     {data.email ?? '—'}
                   </dd>
                 </div>
                 <div>
-                  <dt className="font-medium text-slate-500 dark:text-slate-400">
+                  <dt className="font-medium text-slate-500 dark:text-slate-600">
                     {t('account.status_label')}
                   </dt>
-                  <dd className="text-slate-900 dark:text-slate-100">
+                  <dd className="text-slate-900 dark:text-slate-900">
                     {t(statusKey(data.subscriptionStatus))}
                   </dd>
                 </div>

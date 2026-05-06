@@ -237,7 +237,7 @@ export default function CreatePresentationPage() {
 
   const audiences = useMemo(
     () =>
-      (['students', 'professionals', 'executives'] as const).map(
+      (['students', 'professors', 'professionals', 'executives'] as const).map(
         (value) => ({
           value,
           label: t(`create.audience.${value}`),
@@ -575,17 +575,17 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
   return (
     <div className="p-6 lg:p-10 max-w-5xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
           {t('create.title')}
         </h1>
-        <p className="text-slate-500 mt-1">
+        <p className="mt-1 text-slate-500 dark:text-slate-400">
           {t('create.subtitle')}
         </p>
       </div>
 
       <div className="space-y-8">
         <div className="space-y-2">
-          <Label className="text-sm font-semibold text-slate-700">
+          <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('create.topic')}
           </Label>
           <Textarea
@@ -594,16 +594,16 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               set('topic', e.target.value)
             }
-            className="h-24 resize-none rounded-xl border-slate-200"
+            className="h-24 resize-none rounded-xl border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-50 dark:placeholder:text-slate-500"
           />
         </div>
 
         <div className="space-y-2">
-          <Label className="text-sm font-semibold text-slate-700">
+          <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('create.photos')}
           </Label>
-          <p className="text-xs text-slate-500">{t('create.photos_hint')}</p>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">{t('create.photos_hint')}</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500">
             {t('create.photos_limit', { max: MAX_ATTACHED_PHOTOS })}
           </p>
           <input
@@ -617,7 +617,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
           <Button
             type="button"
             variant="outline"
-            className="rounded-xl border-slate-200 gap-2"
+            className="gap-2 rounded-xl border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
             onClick={() => photoInputRef.current?.click()}
             disabled={attachedPhotos.length >= MAX_ATTACHED_PHOTOS}
           >
@@ -629,7 +629,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
               {attachedPhotos.map((p) => (
                 <div
                   key={p.id}
-                  className="relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-50"
+                  className="relative h-20 w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-800"
                 >
                   {p.url && !p.uploading ? (
                     <img
@@ -638,7 +638,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[10px] text-slate-500 p-1 text-center">
+                    <div className="flex h-full w-full items-center justify-center p-1 text-center text-[10px] text-slate-500 dark:text-slate-400">
                       {p.uploading ?
                         t('create.photos_uploading')
                       : p.error ?? '—'}
@@ -660,14 +660,14 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
 
         <div className="grid sm:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-slate-700">
+            <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
               {t('create.audience')}
             </Label>
             <Select
               value={form.audience}
               onValueChange={(v) => set('audience', v as PresentationAudience)}
             >
-              <SelectTrigger className="rounded-xl border-slate-200">
+              <SelectTrigger className="rounded-xl border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -680,14 +680,14 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
             </Select>
           </div>
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-slate-700">
+            <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
               {t('create.tone')}
             </Label>
             <Select
               value={form.tone}
               onValueChange={(v) => set('tone', v)}
             >
-              <SelectTrigger className="rounded-xl border-slate-200">
+              <SelectTrigger className="rounded-xl border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -702,7 +702,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
         </div>
 
         <div className="space-y-2">
-          <Label className="text-sm font-semibold text-slate-700">
+          <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('create.detail')}
           </Label>
           <div className="grid grid-cols-3 gap-3">
@@ -711,10 +711,10 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
                 key={d.value}
                 type="button"
                 onClick={() => set('detail', d.value)}
-                className={`p-3.5 rounded-xl border text-left transition-all ${
+                className={`rounded-xl border p-3.5 text-left transition-all ${
                   form.detail === d.value
-                    ? 'border-indigo-300 bg-indigo-50 text-indigo-700'
-                    : 'border-slate-100 hover:border-slate-200 text-slate-600'
+                    ? 'border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-200'
+                    : 'border-slate-100 text-slate-600 hover:border-slate-200 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600'
                 }`}
               >
                 <div className="text-sm font-semibold capitalize">
@@ -730,10 +730,10 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
 
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="text-sm font-semibold text-slate-700">
+            <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
               {t('create.slides')}
             </Label>
-            <span className="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">
+            <span className="rounded-lg bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300">
               {form.slideCount}
             </span>
           </div>
@@ -745,24 +745,24 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
             step={1}
             className="w-full"
           />
-          <div className="flex justify-between text-xs text-slate-400">
+          <div className="flex justify-between text-xs text-slate-400 dark:text-slate-500">
             <span>{t('create.slides_min')}</span>
             <span>{t('create.slides_max')}</span>
           </div>
         </div>
 
         <div className="space-y-3">
-          <Label className="text-sm font-semibold text-slate-700">
+          <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('create.enhance')}
           </Label>
           <div className="grid grid-cols-2 gap-3">
             {optionItems.map((opt) => (
               <label
                 key={opt.key}
-                className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
+                className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3.5 transition-all ${
                   form.options[opt.key as keyof typeof form.options]
-                    ? 'border-indigo-200 bg-indigo-50/50'
-                    : 'border-slate-100 hover:border-slate-200'
+                    ? 'border-indigo-200 bg-indigo-50/50 dark:border-indigo-800 dark:bg-indigo-950/30'
+                    : 'border-slate-100 hover:border-slate-200 dark:border-slate-700 dark:hover:border-slate-600'
                 }`}
               >
                 <Checkbox
@@ -771,7 +771,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
                   }
                   onCheckedChange={() => toggleOption(opt.key)}
                 />
-                <span className="text-sm text-slate-700">
+                <span className="text-sm text-slate-700 dark:text-slate-200">
                   {opt.label}
                 </span>
               </label>
@@ -786,10 +786,10 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
 
         <div className="space-y-3">
           <div>
-            <Label className="text-sm font-semibold text-slate-700">
+            <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
               {t('create.template')}
             </Label>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
               {t('create.template_preview_hint')}
             </p>
           </div>
@@ -803,30 +803,30 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
           type="button"
           onClick={() => void handleGenerate()}
           disabled={!form.topic.trim() || generating}
-          className="w-full h-14 text-base bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 gap-2"
+          className="h-14 w-full gap-2 rounded-xl bg-indigo-600 text-base shadow-lg shadow-indigo-200 dark:shadow-indigo-950/40 hover:bg-indigo-700"
         >
           <Sparkles className="w-5 h-5" />
           {t('create.generate')}
         </Button>
         {!form.topic.trim() ? (
-          <p className="text-center text-xs text-amber-700/90 -mt-2">
+          <p className="-mt-2 text-center text-xs text-amber-800 dark:text-amber-200">
             {t('create.disabled_need_topic')}
           </p>
         ) : null}
         {photosStillUploading ? (
-          <p className="text-center text-xs text-slate-500 -mt-2">
+          <p className="-mt-2 text-center text-xs text-slate-500 dark:text-slate-400">
             {t('create.photos_uploading_hint')}
           </p>
         ) : null}
         {generateError ? (
           <p
             role="alert"
-            className="text-center text-sm text-red-600 -mt-2 px-1"
+            className="-mt-2 px-1 text-center text-sm text-red-600 dark:text-red-400"
           >
             {generateError}
           </p>
         ) : null}
-        <p className="text-center text-xs text-slate-400 -mt-4">
+        <p className="-mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
           {t('create.generate_note')}
         </p>
       </div>

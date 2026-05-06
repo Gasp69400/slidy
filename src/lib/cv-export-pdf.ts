@@ -72,7 +72,7 @@ function formatCoverLetterSections(args: {
     .filter(Boolean)
 
   const fallbackGreeting = args.locale === 'fr' ? 'Madame, Monsieur,' : 'Dear Hiring Manager,'
-  const fallbackClosing = args.locale === 'fr' ? 'Je vous prie d’agréer, Madame, Monsieur, mes salutations distinguées.' : 'Sincerely,'
+  const fallbackClosing = args.locale === 'fr' ? 'Cordialement,' : 'Sincerely,'
   const signature = args.fullName.trim() || (args.locale === 'fr' ? 'Prénom Nom' : 'First Last Name')
 
   if (!paragraphs.length) {
@@ -619,7 +619,9 @@ export async function exportCvCoverToPdf(input: {
     }
   }
 
-  const interestsRaw = kit.profile.interests?.trim()
+  const interestsRaw = Array.isArray(kit.profile.interests)
+  ? kit.profile.interests.join(', ')
+  : kit.profile.interests?.trim()
   if (interestsRaw) {
     yL -= 6
     drawL(L.interests, 9, true, rgb(accent.r, accent.g, accent.b))
@@ -719,7 +721,7 @@ export async function exportCvCoverToPdf(input: {
   }
   y -= lineGap * 0.2
   drawLines(wrapParagraphs(letter.closing, wrapW, fontRegular, 10), 10)
-  y -= lineGap * 0.5
+  y -= lineGap * 1.15
   draw(letter.signature, 10, true)
 
   return Buffer.from(await pdf.save())

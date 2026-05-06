@@ -130,7 +130,7 @@ export default function StudioEditorPage() {
       return res.json() as Promise<{
         success: boolean
         data: {
-          plan: 'STARTER' | 'PRO' | 'TEAM'
+          plan: 'STARTER' | 'PRO' | 'ULTIMATE'
           maxBlocksPerDocument: number
           exportFormats: Array<'pdf' | 'pptx' | 'json'>
         }

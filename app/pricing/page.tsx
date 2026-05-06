@@ -50,16 +50,16 @@ export default function PricingPage() {
         highlighted: true,
       },
       {
-        name: t('pricing.tier.team.name'),
+        name: t('pricing.tier.ultimate.name'),
         price: '49,99',
-        period: t('pricing.tier.team.period'),
-        description: t('pricing.tier.team.desc'),
+        period: t('pricing.tier.ultimate.period'),
+        description: t('pricing.tier.ultimate.desc'),
         features: [
-          t('pricing.tier.team.f1'),
-          t('pricing.tier.team.f2'),
-          t('pricing.tier.team.f3'),
+          t('pricing.tier.ultimate.f1'),
+          t('pricing.tier.ultimate.f2'),
+          t('pricing.tier.ultimate.f3'),
         ],
-        cta: t('pricing.tier.team.cta'),
+        cta: t('pricing.tier.ultimate.cta'),
         href: '/auth/login',
         highlighted: false,
       },
@@ -86,8 +86,8 @@ export default function PricingPage() {
               key={tier.name}
               className={
                 tier.highlighted
-                  ? 'relative border-violet-200 bg-white shadow-lg shadow-violet-500/10 ring-2 ring-violet-500/20 dark:border-violet-300 dark:bg-white dark:shadow-violet-900/25 dark:ring-violet-400/40'
-                  : 'border-slate-200/80 bg-white shadow-sm dark:border-slate-200 dark:bg-white'
+                  ? 'relative border-violet-200 bg-white text-slate-900 shadow-lg shadow-violet-500/10 ring-2 ring-violet-500/20 dark:border-violet-300 dark:bg-white dark:text-slate-900 dark:shadow-violet-900/25 dark:ring-violet-400/40'
+                  : 'border-slate-200/80 bg-white text-slate-900 shadow-sm dark:border-slate-200 dark:bg-white dark:text-slate-900'
               }
             >
               {tier.highlighted && (
@@ -99,17 +99,19 @@ export default function PricingPage() {
                 <CardTitle className="text-lg text-slate-900 dark:text-slate-900">
                   {tier.name}
                 </CardTitle>
-                <CardDescription className="dark:text-slate-400">{tier.description}</CardDescription>
+                <CardDescription className="text-slate-600 dark:text-slate-900">
+                  {tier.description}
+                </CardDescription>
                 <div className="mt-4 flex items-baseline gap-1">
                   <span className="text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-900">
                     {tier.price}
                   </span>
-                  <span className="text-sm font-medium text-slate-500 dark:text-slate-400">€</span>
-                  <span className="text-sm text-slate-500 dark:text-slate-400">{tier.period}</span>
+                  <span className="text-sm font-medium text-slate-500 dark:text-slate-700">€</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-700">{tier.period}</span>
                 </div>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-900">
                   {tier.features.map((f) => (
                     <li key={f} className="flex gap-2">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-violet-600 dark:text-violet-400" />
@@ -132,6 +134,13 @@ export default function PricingPage() {
         </div>
 
         <p className="mt-12 text-center text-sm text-slate-500 dark:text-slate-400">
+          <Link
+            href="/legal/cgu"
+            className="font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+          >
+            {t('home.footer.terms')}
+          </Link>
+          <span className="mx-2 text-slate-300 dark:text-slate-600">·</span>
           <Link
             href="/"
             className="font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"

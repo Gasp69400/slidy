@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Menu, Sparkles } from 'lucide-react'
 
+import { SlidyLogoMark } from '@/components/brand/SlidyLogoMark'
 import { LanguageToggle } from '@/components/LanguageToggle'
 import { Button } from '@/components/ui/button'
 import {
@@ -35,9 +36,7 @@ export function LandingHeader() {
           href="/"
           className="flex min-w-0 shrink items-center gap-2 rounded-lg outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-violet-500"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-sm">
-            AI
-          </span>
+          <SlidyLogoMark size="md" />
           <span className="truncate text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-50">
             Slidy
           </span>
@@ -83,6 +82,9 @@ export function LandingHeader() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/account">{t('landing.menu_account')}</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/legal/cgu">{t('home.footer.terms')}</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">

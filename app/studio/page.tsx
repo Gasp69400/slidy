@@ -35,6 +35,7 @@ type Doc = {
   status: 'DRAFT' | 'GENERATING' | 'READY' | 'FAILED'
   _count?: { blocks: number }
   createdAt: string
+  deleteVia: 'cv' | 'documents'
 }
 
 export default function StudioPage() {
@@ -82,8 +83,16 @@ export default function StudioPage() {
       const cvJson = cvRes.ok
         ? ((await cvRes.json()) as { success: boolean; data: Doc[] })
         : { success: true, data: [] as Doc[] }
-      const prismaDocs = prismaJson.data ?? []
-      const cvDocs = cvJson.data ?? []
+      const prismaDocsRaw = prismaJson.data ?? []
+      const cvDocsRaw = cvJson.data ?? []
+      const cvDocs: Doc[] = cvDocsRaw.map((d) => ({
+        ...d,
+        deleteVia: 'cv' as const,
+      }))
+      const prismaDocs: Doc[] = prismaDocsRaw.map((d) => ({
+        ...d,
+        deleteVia: 'documents' as const,
+      }))
       const merged: Doc[] = [...cvDocs, ...prismaDocs].sort((a, b) => {
         const ta = new Date(a.createdAt).getTime()
         const tb = new Date(b.createdAt).getTime()
@@ -118,7 +127,7 @@ export default function StudioPage() {
       return res.json() as Promise<{
         success: boolean
         data: {
-          plan: 'STARTER' | 'PRO' | 'TEAM'
+          plan: 'STARTER' | 'PRO' | 'ULTIMATE'
           maxDocumentsPerDay: number
           allowedDocumentTypes: DocType[]
           exportFormats: Array<'pdf' | 'pptx' | 'json'>
@@ -156,6 +165,38 @@ export default function StudioPage() {
       )
     },
   })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (input: {
+      id: string
+      deleteVia: 'cv' | 'documents'
+    }) => {
+      const url =
+        input.deleteVia === 'cv'
+          ? `/api/cv/${input.id}`
+          : `/api/documents/${input.id}`
+      const res = await fetch(url, { method: 'DELETE', credentials: 'include' })
+      const json = (await res.json()) as { success?: boolean; error?: string }
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? 'delete failed')
+      }
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['studio-documents-list'] })
+    },
+  })
+
+  const confirmAndDelete = (doc: Doc) => {
+    if (!window.confirm(t('studio.doc_delete_confirm'))) return
+    deleteMutation.mutate(
+      { id: doc.id, deleteVia: doc.deleteVia },
+      {
+        onError: () => {
+          window.alert(t('studio.doc_delete_error'))
+        },
+      },
+    )
+  }
 
   const docs = docsData?.data ?? []
   const caps = capsData?.data
@@ -338,31 +379,48 @@ export default function StudioPage() {
           ) : (
             <div className="space-y-2">
               {docs.map((doc) => (
-                <button
+                <div
                   key={doc.id}
-                  type="button"
-                  className="flex w-full items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 text-left transition hover:border-slate-200 hover:bg-white"
-                  onClick={() =>
-                    router.push(
-                      doc.type === 'CV_COVER'
-                        ? `/studio/cv/${doc.id}`
-                        : `/studio/${doc.id}`,
-                    )
-                  }
+                  className="flex items-stretch gap-2 rounded-2xl border border-slate-100 bg-slate-50 transition hover:border-slate-200 hover:bg-white"
                 >
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">
-                      {doc.title}
-                    </p>
-                    <p className="text-xs text-slate-500">
-                      {typeLabels[doc.type]} · {doc._count?.blocks ?? 0}{' '}
-                      {t('studio.blocks')}
-                    </p>
+                  <button
+                    type="button"
+                    className="flex min-w-0 flex-1 items-center justify-between px-4 py-3 text-left"
+                    onClick={() =>
+                      router.push(
+                        doc.type === 'CV_COVER'
+                          ? `/studio/cv/${doc.id}`
+                          : `/studio/${doc.id}`,
+                      )
+                    }
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-slate-900">
+                        {doc.title}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {typeLabels[doc.type]} · {doc._count?.blocks ?? 0}{' '}
+                        {t('studio.blocks')}
+                      </p>
+                    </div>
+                    <span className="inline-flex shrink-0 items-center gap-1 pl-2 text-xs text-slate-500">
+                      {t('studio.open')}{' '}
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </button>
+                  <div className="flex shrink-0 items-center border-l border-slate-100 pr-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8 rounded-xl border-red-200 text-xs text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/60 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-300"
+                      disabled={deleteMutation.isPending}
+                      onClick={() => confirmAndDelete(doc)}
+                    >
+                      {t('studio.doc_delete')}
+                    </Button>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-xs text-slate-500">
-                    {t('studio.open')} <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                </button>
+                </div>
               ))}
             </div>
           )}

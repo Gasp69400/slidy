@@ -9,6 +9,16 @@ export const SITE_STRINGS = {
   'nav.studio': { fr: 'Studio', en: 'Studio' },
   'nav.cv': { fr: 'CV & lettre', en: 'CV & cover letter' },
   'nav.presentations': { fr: 'Mes présentations', en: 'My presentations' },
+  'presentations.view': { fr: 'Voir', en: 'View' },
+  'presentations.delete': { fr: 'Supprimer', en: 'Delete' },
+  'presentations.delete_confirm': {
+    fr: 'Supprimer cette présentation ?',
+    en: 'Delete this presentation?',
+  },
+  'presentations.delete_error': {
+    fr: 'Impossible de supprimer la présentation.',
+    en: 'Could not delete the presentation.',
+  },
   'nav.templates': { fr: 'Templates', en: 'Templates' },
   'templates.page_title': {
     fr: 'Modèles de présentation',
@@ -188,7 +198,21 @@ export const SITE_STRINGS = {
   'home.footer.pricing': { fr: 'Tarifs', en: 'Pricing' },
   'home.footer.studio': { fr: 'Studio', en: 'Studio' },
   'home.footer.login': { fr: 'Connexion', en: 'Log in' },
+  'home.footer.terms': {
+    fr: 'Conditions d’utilisation',
+    en: 'Terms of use',
+  },
   'home.footer.copy': { fr: 'Tous droits réservés', en: 'All rights reserved' },
+
+  'legal.cgu.title': {
+    fr: 'Conditions générales d’utilisation',
+    en: 'Terms of use',
+  },
+  'legal.cgu.back_home': { fr: '← Accueil', en: '← Home' },
+  'legal.cgu.updated': {
+    fr: 'Document d’information — Slidy. Consultez cette page régulièrement : elle peut être mise à jour.',
+    en: 'Information document — Slidy. Check this page periodically; it may be updated.',
+  },
 
   'pricing.kicker': { fr: 'Tarifs', en: 'Pricing' },
   'pricing.title': {
@@ -233,22 +257,22 @@ export const SITE_STRINGS = {
   },
   'pricing.tier.pro.cta': { fr: 'Commencer gratuitement', en: 'Start for free' },
   'pricing.tier.pro.period': { fr: '/ mois', en: '/ month' },
-  'pricing.tier.team.name': { fr: 'Team', en: 'Team' },
-  'pricing.tier.team.desc': {
+  'pricing.tier.ultimate.name': { fr: 'Ultimate', en: 'Ultimate' },
+  'pricing.tier.ultimate.desc': {
     fr: 'Collaborez et gardez une identité visuelle cohérente.',
     en: 'Collaborate and keep brand consistency.',
   },
-  'pricing.tier.team.f1': { fr: 'Tout le Pro', en: 'Everything in Pro' },
-  'pricing.tier.team.f2': {
+  'pricing.tier.ultimate.f1': { fr: 'Tout le Pro', en: 'Everything in Pro' },
+  'pricing.tier.ultimate.f2': {
     fr: 'Espace de travail partagé',
     en: 'Shared workspace',
   },
-  'pricing.tier.team.f3': {
+  'pricing.tier.ultimate.f3': {
     fr: 'Admin & facturation',
     en: 'Admin & billing',
   },
-  'pricing.tier.team.cta': { fr: 'Contacter les ventes', en: 'Contact sales' },
-  'pricing.tier.team.period': { fr: '/ mois', en: '/ month' },
+  'pricing.tier.ultimate.cta': { fr: 'Contacter les ventes', en: 'Contact sales' },
+  'pricing.tier.ultimate.period': { fr: '/ mois', en: '/ month' },
 
   'studio.badge': { fr: 'Studio IA', en: 'AI Studio' },
   'studio.new_title': { fr: 'Nouveau document', en: 'New document' },
@@ -313,6 +337,15 @@ export const SITE_STRINGS = {
   },
   'studio.open': { fr: 'Ouvrir', en: 'Open' },
   'studio.blocks': { fr: 'blocs', en: 'blocks' },
+  'studio.doc_delete': { fr: 'Supprimer', en: 'Delete' },
+  'studio.doc_delete_confirm': {
+    fr: 'Supprimer ce document ?',
+    en: 'Delete this document?',
+  },
+  'studio.doc_delete_error': {
+    fr: 'Impossible de supprimer le document.',
+    en: 'Could not delete the document.',
+  },
   'studio.err_generic': {
     fr: 'Une erreur est survenue',
     en: 'Something went wrong',
@@ -404,8 +437,8 @@ export const SITE_STRINGS = {
   'editor.auto_layout': { fr: 'Mise en page auto', en: 'Auto-layout' },
   'editor.plan_starter': { fr: 'Plan Starter', en: 'Starter plan' },
   'editor.plan_starter_desc': {
-    fr: 'Débloque les exports PPTX, plus de blocs par document et plus de types de documents avec le plan Pro/Team.',
-    en: 'Unlock PPTX exports, more blocks per document, and more document types with Pro/Team.',
+    fr: 'Débloque les exports PPTX, plus de blocs par document et plus de types de documents avec le plan Pro/Ultimate.',
+    en: 'Unlock PPTX exports, more blocks per document, and more document types with Pro/Ultimate.',
   },
   'editor.upgrade': { fr: 'Passer au supérieur', en: 'Upgrade now' },
   'editor.err_limit': {
@@ -557,6 +590,7 @@ export const SITE_STRINGS = {
   },
 
   'create.audience.students': { fr: 'Étudiants', en: 'Students' },
+  'create.audience.professors': { fr: 'Professeurs', en: 'Professors' },
   'create.audience.professionals': { fr: 'Professionnels', en: 'Professionals' },
   'create.audience.executives': { fr: 'Dirigeants', en: 'Executives' },
 
@@ -628,43 +662,95 @@ export const SITE_STRINGS = {
     fr: 'Prévisualisez le style des slides avant de lancer la génération.',
     en: 'Preview slide styling before you generate.',
   },
-  'create.tpl.modern.name': { fr: 'Moderne', en: 'Modern' },
+  'create.tpl.modern.name': { fr: 'Indigo Horizon', en: 'Indigo Horizon' },
   'create.tpl.modern.desc': {
-    fr: 'Dégradés indigo, blanc dominant, hiérarchie claire.',
-    en: 'Indigo gradients, crisp white canvas, clear hierarchy.',
+    fr: 'Dégradés bleu indigo, blanc lumineux — idéal pitch & produit.',
+    en: 'Indigo blues on a bright canvas — perfect for product and pitch decks.',
   },
-  'create.tpl.minimalist.name': { fr: 'Minimaliste', en: 'Minimalist' },
+  'create.tpl.minimalist.name': { fr: 'Quiet Studio', en: 'Quiet Studio' },
   'create.tpl.minimalist.desc': {
-    fr: 'Traits fins, beaucoup d’air, palette pierre et gris.',
-    en: 'Fine lines, generous whitespace, stone and soft gray.',
+    fr: 'Beaucoup d’espace, traits fins et tons pierre — élégance silencieuse.',
+    en: 'Lots of space, fine lines, soft stone tones — quiet sophistication.',
   },
-  'create.tpl.corporate.name': { fr: 'Corporate', en: 'Corporate' },
-  'create.tpl.corporate.desc': {
-    fr: 'En-tête sombre, serif sobre, ton boardroom.',
-    en: 'Dark header band, restrained serif, boardroom-ready.',
-  },
-  'create.tpl.creative.name': { fr: 'Créatif', en: 'Creative' },
+  'create.tpl.creative.name': { fr: 'Creative Pop', en: 'Creative Pop' },
   'create.tpl.creative.desc': {
-    fr: 'Dégradés violet / fuchsia, formes douces, impact visuel.',
-    en: 'Violet–fuchsia gradients, soft shapes, expressive energy.',
+    fr: 'Violet et fuchsia, formes organiques — énergie sans agressivité.',
+    en: 'Violet and fuchsia, organic shapes — bold but friendly energy.',
   },
-  'create.tpl.colorful.name': { fr: 'Coloré', en: 'Colorful' },
+  'create.tpl.colorful.name': { fr: 'Sunny Spectrum', en: 'Sunny Spectrum' },
   'create.tpl.colorful.desc': {
-    fr: 'Ambre, orange et teal pour un rendu dynamique et chaleureux.',
-    en: 'Amber, orange, and teal for a warm, energetic deck.',
+    fr: 'Ambre, corail et teal — rendu chaleureux et mémorable.',
+    en: 'Amber, coral, and teal — warm, memorable, and upbeat.',
+  },
+  'create.tpl.sunset.name': { fr: 'Golden Hour', en: 'Golden Hour' },
+  'create.tpl.sunset.desc': {
+    fr: 'Dégradés crépuscule corail-mauve — storytelling émotionnel.',
+    en: 'Coral-to-mauve sunset fades — great for storytelling.',
+  },
+  'create.tpl.corporate.name': { fr: 'Boardroom Elite', en: 'Boardroom Elite' },
+  'create.tpl.corporate.desc': {
+    fr: 'Bandeau sombre, typo sobre — présentations direction & finance.',
+    en: 'Dark band, restrained type — leadership and finance ready.',
+  },
+  'create.tpl.neon.name': { fr: 'Neon Pulse', en: 'Neon Pulse' },
+  'create.tpl.neon.desc': {
+    fr: 'Fond sombre, accents fluo — keynote tech & événements.',
+    en: 'Dark base, neon accents — tech keynotes and launch vibes.',
+  },
+  'create.tpl.elegant.name': { fr: 'Gilded Editorial', en: 'Gilded Editorial' },
+  'create.tpl.elegant.desc': {
+    fr: 'Noir profond et filets dorés — luxe accessible.',
+    en: 'Deep black with gold rules — accessible luxury.',
+  },
+  'create.tpl.ocean.name': { fr: 'Coastal Calm', en: 'Coastal Calm' },
+  'create.tpl.ocean.desc': {
+    fr: 'Bleus profonds et menthe — santé, bien-être, RSE.',
+    en: 'Deep blues with mint — wellness, CSR, and calm brands.',
+  },
+  'create.tpl.forest.name': { fr: 'Evergreen Story', en: 'Evergreen Story' },
+  'create.tpl.forest.desc': {
+    fr: 'Verts feuille, tons terre — marques nature & outdoor.',
+    en: 'Leaf greens and earth tones — nature and outdoor brands.',
+  },
+  'create.tpl.luxury.name': { fr: 'Velvet Soirée', en: 'Velvet Soirée' },
+  'create.tpl.luxury.desc': {
+    fr: 'Platine et bordeaux profond — rendu gala & premium.',
+    en: 'Platinum and deep bordeaux — gala-level premium feel.',
+  },
+  'create.tpl.aurora.name': { fr: 'Boreal Glow', en: 'Boreal Glow' },
+  'create.tpl.aurora.desc': {
+    fr: 'Violets et cyan d’aurore — créatif & inspiration.',
+    en: 'Violet and cyan aurora glow — creative and inspiring.',
+  },
+  'create.tpl.midnight.name': { fr: 'Moonlight Pro', en: 'Moonlight Pro' },
+  'create.tpl.midnight.desc': {
+    fr: 'Bleu nuit et contrastes nets — SaaS & consulting.',
+    en: 'Night blue with sharp contrast — SaaS and consulting.',
+  },
+  'create.tpl.rose-gold.name': { fr: 'Blush Copper', en: 'Blush Copper' },
+  'create.tpl.rose-gold.desc': {
+    fr: 'Rose cuivré et gris perle — lifestyle & beauté.',
+    en: 'Copper rose and pearl gray — lifestyle and beauty.',
+  },
+  'create.tpl.editorial.name': { fr: 'Cover Line', en: 'Cover Line' },
+  'create.tpl.editorial.desc': {
+    fr: 'Grilles magazine, typo forte — mode & média.',
+    en: 'Magazine grids, strong type — fashion and media.',
   },
   'create.tpl.category.business': { fr: 'Business', en: 'Business' },
   'create.tpl.category.creative': { fr: 'Créatif', en: 'Creative' },
   'create.tpl.category.marketing': { fr: 'Marketing', en: 'Marketing' },
+  'create.tpl.category.nature': { fr: 'Nature', en: 'Nature' },
+  'create.tpl.category.luxury': { fr: 'Luxe', en: 'Luxury' },
   'create.tpl.plan_line': { fr: 'Plan {plan}', en: '{plan} plan' },
   'create.plan.starter': { fr: 'Starter', en: 'Starter' },
   'create.plan.pro': { fr: 'Pro', en: 'Pro' },
-  'create.plan.team': { fr: 'Team', en: 'Team' },
+  'create.plan.ultimate': { fr: 'Ultimate', en: 'Ultimate' },
 
   'cv.page_title': { fr: 'CV & lettre IA', en: 'AI CV & letter' },
   'cv.page_sub': {
-    fr: 'Saisissez vos infos ou une invite — choisissez un modèle, puis affinez et exportez en PDF.',
-    en: 'Enter your details or a prompt — pick a template, refine, and export to PDF.',
+    fr: 'Remplissez le formulaire ou utilisez une invite — choisissez un modèle, puis affinez et exportez en PDF.',
+    en: 'Fill in the form or use a prompt — pick a template, refine, and export to PDF.',
   },
   'cv.tab_prompt': { fr: 'Invite', en: 'Prompt' },
   'cv.tab_manual': { fr: 'Formulaire', en: 'Form' },
@@ -720,8 +806,8 @@ export const SITE_STRINGS = {
   'cv.generate': { fr: 'Générer', en: 'Generate' },
   'cv.generating': { fr: 'Génération…', en: 'Generating…' },
   'cv.upgrade': {
-    fr: 'Cette fonctionnalité est réservée aux plans Pro et Team.',
-    en: 'This feature is available on Pro and Team plans.',
+    fr: 'Cette fonctionnalité est réservée aux plans Pro et Ultimate.',
+    en: 'This feature is available on Pro and Ultimate plans.',
   },
   'cv.pricing': { fr: 'Voir les tarifs', en: 'View pricing' },
   'cv.tpl.modern': { fr: 'Moderne', en: 'Modern' },
