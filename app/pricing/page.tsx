@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 
@@ -18,6 +18,28 @@ import { useSiteLocale } from '@/lib/site-locale'
 
 export default function PricingPage() {
   const { t } = useSiteLocale()
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+
+  const handleSubscribe = async (priceId: string, planId: string, trialDays: number) => {
+    setLoadingPlan(planId)
+    try {
+      const res = await fetch('/api/stripe/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId, trialDays }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        console.error('Pas de lien Stripe reçu', data)
+      }
+    } catch (err) {
+      console.error('Erreur abonnement', err)
+    } finally {
+      setLoadingPlan(null)
+    }
+  }
 
   const tiers = useMemo(
     () => [
@@ -34,6 +56,9 @@ export default function PricingPage() {
         cta: t('pricing.tier.starter.cta'),
         href: '/studio',
         highlighted: false,
+        priceId: null,
+        planId: 'starter',
+        trialDays: 0,
       },
       {
         name: t('pricing.tier.pro.name'),
@@ -46,8 +71,11 @@ export default function PricingPage() {
           t('pricing.tier.pro.f3'),
         ],
         cta: t('pricing.tier.pro.cta'),
-        href: '/studio',
+        href: null,
         highlighted: true,
+        priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID ?? '',
+        planId: 'pro',
+        trialDays: 0,
       },
       {
         name: t('pricing.tier.ultimate.name'),
@@ -60,8 +88,11 @@ export default function PricingPage() {
           t('pricing.tier.ultimate.f3'),
         ],
         cta: t('pricing.tier.ultimate.cta'),
-        href: '/auth/login',
+        href: null,
         highlighted: false,
+        priceId: process.env.NEXT_PUBLIC_STRIPE_ULTIMATE_PRICE_ID ?? '',
+        planId: 'ultimate',
+        trialDays: 2,
       },
     ],
     [t],
@@ -121,13 +152,24 @@ export default function PricingPage() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button
-                  className="w-full rounded-full"
-                  variant={tier.highlighted ? 'default' : 'outline'}
-                  asChild
-                >
-                  <Link href={tier.href}>{tier.cta}</Link>
-                </Button>
+                {tier.priceId ? (
+                  <Button
+                    className="w-full rounded-full"
+                    variant={tier.highlighted ? 'default' : 'outline'}
+                    disabled={loadingPlan === tier.planId}
+                    onClick={() => handleSubscribe(tier.priceId!, tier.planId, tier.trialDays)}
+                  >
+                    {loadingPlan === tier.planId ? 'Chargement...' : tier.cta}
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full rounded-full"
+                    variant={tier.highlighted ? 'default' : 'outline'}
+                    asChild
+                  >
+                    <Link href={tier.href ?? '/studio'}>{tier.cta}</Link>
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}

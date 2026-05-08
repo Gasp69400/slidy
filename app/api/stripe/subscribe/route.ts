@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-import { requireSessionUser } from '@/lib/api-auth'
-import { prisma } from '@/lib/prisma'
-import { createSubscription } from '@/lib/stripe'
+import { requireSupabaseSession } from '@/lib/supabase/require-supabase-session'
+import { createCheckoutSession, SUBSCRIPTION_PLANS } from '@/lib/stripe'
 import { z } from 'zod'
 
 const subscribeSchema = z.object({
@@ -12,35 +10,20 @@ const subscribeSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requireSessionUser()
-    if (!auth.ok) return auth.response
+    const session = await requireSupabaseSession()
+    if (!session.ok) return session.response
 
+    const { userId } = session
     const body = await request.json()
     const { priceId, trialDays } = subscribeSchema.parse(body)
-
-    const user = await prisma.user.findUnique({
-      where: { id: auth.userId },
-    })
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Utilisateur non trouvé' },
-        { status: 404 }
-      )
-    }
-
-    const subscription = await createSubscription({
-      userId: user.id,
+    const checkoutSession = await createCheckoutSession({
+      userId,
+      userEmail: session.email!,
       priceId,
       trialDays,
     })
 
-    return NextResponse.json({
-      success: true,
-      data: subscription,
-      message: 'Abonnement créé avec succès'
-    })
-
+    return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -48,8 +31,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-
-    console.error('Create subscription error:', error)
+    console.error('Subscribe error:', error)
     return NextResponse.json(
       { error: 'Erreur interne du serveur' },
       { status: 500 }

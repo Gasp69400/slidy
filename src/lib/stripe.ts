@@ -21,36 +21,62 @@ export function getStripe(): Stripe {
 
 // Configuration des plans d'abonnement
 export const SUBSCRIPTION_PLANS = {
-  STANDARD: {
-    id: 'standard',
-    name: 'Standard',
-    price: 1900, // 19.00€
-    priceId: process.env.STRIPE_STANDARD_PRICE_ID || 'price_standard',
-    features: [
-      'Jusqu\'à 50 clients',
-      'Scraping illimité',
-      'Alertes email',
-      'Support par email',
-      'Dashboard analytique'
-    ]
-  },
   PRO: {
     id: 'pro',
     name: 'Pro',
-    price: 4900, // 49.00€
+    price: 1900,
     priceId: process.env.STRIPE_PRO_PRICE_ID || 'price_pro',
     features: [
-      'Clients illimités',
-      'Scraping haute priorité',
-      'Alertes SMS + email',
+      '60 documents par jour',
+      'Templates Pro débloqués',
+      'Export PDF + PPTX',
+      'Support email',
+    ],
+  },
+  ULTIMATE: {
+    id: 'ultimate',
+    name: 'Ultimate',
+    price: 4900,
+    priceId: process.env.STRIPE_ULTIMATE_PRICE_ID || 'price_ultimate',
+    features: [
+      '200 documents par jour',
+      'Tous les templates débloqués',
+      'Export PDF + PPTX + JSON',
       'Support prioritaire',
-      'API personnalisée',
-      'Rapports avancés'
-    ]
-  }
+      'API access',
+    ],
+  },
 }
 
 export const TRIAL_DAYS = 14
+
+/**
+ * Crée une Checkout Session Stripe (redirection vers page de paiement)
+ */
+export async function createCheckoutSession({
+  userId,
+  userEmail,
+  priceId,
+  trialDays = TRIAL_DAYS,
+}: {
+  userId: string
+  userEmail: string
+  priceId: string
+  trialDays?: number
+}) {
+  const session = await getStripe().checkout.sessions.create({
+    mode: 'subscription',
+    customer_email: userEmail,
+    line_items: [{ price: priceId, quantity: 1 }],
+    subscription_data: {
+      ...(trialDays > 0 ? { trial_period_days: trialDays } : {}),
+      metadata: { userId },
+    },
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?success=true`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+  })
+  return session
+}
 
 /**
  * Crée un abonnement Stripe pour un utilisateur
@@ -65,16 +91,14 @@ export async function createSubscription({
   trialDays?: number
 }) {
   try {
-    // Récupérer l'utilisateur
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     if (!user) {
       throw new Error('Utilisateur non trouvé')
     }
 
-    // Créer ou récupérer le client Stripe
     let customer
     if (user.stripeCustomerId) {
       customer = await getStripe().customers.retrieve(user.stripeCustomerId)
@@ -82,38 +106,30 @@ export async function createSubscription({
       customer = await getStripe().customers.create({
         email: user.email,
         name: user.name,
-        metadata: {
-          userId: user.id,
-        },
+        metadata: { userId: user.id },
       })
 
-      // Mettre à jour l'utilisateur avec l'ID client Stripe
       await prisma.user.update({
         where: { id: userId },
-        data: { stripeCustomerId: customer.id }
+        data: { stripeCustomerId: customer.id },
       })
     }
 
-    // Créer l'abonnement avec période d'essai
     const subscription = await getStripe().subscriptions.create({
       customer: customer.id,
-      items: [{
-        price: priceId,
-      }],
+      items: [{ price: priceId }],
       trial_period_days: trialDays,
-      metadata: {
-        userId: user.id,
-      },
+      metadata: { userId: user.id },
       payment_behavior: 'default_incomplete',
       expand: ['latest_invoice.payment_intent'],
     })
 
-    // Mettre à jour le statut d'abonnement
     await prisma.user.update({
       where: { id: userId },
       data: {
-        subscriptionStatus: trialDays > 0 ? SubscriptionStatus.TRIAL : SubscriptionStatus.ACTIVE
-      }
+        subscriptionStatus:
+          trialDays > 0 ? SubscriptionStatus.TRIAL : SubscriptionStatus.ACTIVE,
+      },
     })
 
     return {
@@ -122,10 +138,9 @@ export async function createSubscription({
       status: subscription.status,
       trialEnd: subscription.trial_end,
     }
-
   } catch (error) {
     console.error('Error creating subscription:', error)
-    throw new Error('Erreur lors de la création de l\'abonnement')
+    throw new Error("Erreur lors de la création de l'abonnement")
   }
 }
 
@@ -135,14 +150,13 @@ export async function createSubscription({
 export async function cancelSubscription(userId: string) {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     if (!user?.stripeCustomerId) {
       throw new Error('Utilisateur ou client Stripe non trouvé')
     }
 
-    // Récupérer les abonnements actifs
     const subscriptions = await getStripe().subscriptions.list({
       customer: user.stripeCustomerId,
       status: 'active',
@@ -152,23 +166,20 @@ export async function cancelSubscription(userId: string) {
       throw new Error('Aucun abonnement actif trouvé')
     }
 
-    // Annuler le premier abonnement actif
     const subscription = subscriptions.data[0]
     await getStripe().subscriptions.update(subscription.id, {
       cancel_at_period_end: true,
     })
 
-    // Mettre à jour le statut
     await prisma.user.update({
       where: { id: userId },
-      data: { subscriptionStatus: SubscriptionStatus.CANCELED }
+      data: { subscriptionStatus: SubscriptionStatus.CANCELED },
     })
 
     return { success: true }
-
   } catch (error) {
     console.error('Error canceling subscription:', error)
-    throw new Error('Erreur lors de l\'annulation de l\'abonnement')
+    throw new Error("Erreur lors de l'annulation de l'abonnement")
   }
 }
 
@@ -178,7 +189,7 @@ export async function cancelSubscription(userId: string) {
 export async function updateSubscription(userId: string, newPriceId: string) {
   try {
     const user = await prisma.user.findUnique({
-      where: { id: userId }
+      where: { id: userId },
     })
 
     if (!user?.stripeCustomerId) {
@@ -196,7 +207,6 @@ export async function updateSubscription(userId: string, newPriceId: string) {
 
     const subscription = subscriptions.data[0]
 
-    // Mettre à jour l'item d'abonnement
     await getStripe().subscriptions.update(subscription.id, {
       items: [{
         id: subscription.items.data[0].id,
@@ -206,10 +216,9 @@ export async function updateSubscription(userId: string, newPriceId: string) {
     })
 
     return { success: true }
-
   } catch (error) {
     console.error('Error updating subscription:', error)
-    throw new Error('Erreur lors de la mise à jour de l\'abonnement')
+    throw new Error("Erreur lors de la mise à jour de l'abonnement")
   }
 }
 
@@ -226,7 +235,6 @@ export async function handleWebhook(event: any) {
 
         if (!userId) break
 
-        // Déterminer le statut d'abonnement
         let status: SubscriptionStatus
         switch (subscription.status) {
           case 'active':
@@ -245,7 +253,7 @@ export async function handleWebhook(event: any) {
 
         await prisma.user.update({
           where: { id: userId },
-          data: { subscriptionStatus: status }
+          data: { subscriptionStatus: status },
         })
 
         break
@@ -255,15 +263,14 @@ export async function handleWebhook(event: any) {
         const invoice = event.data.object
         const customerId = invoice.customer
 
-        // Trouver l'utilisateur par customer ID
         const user = await prisma.user.findFirst({
-          where: { stripeCustomerId: customerId as string }
+          where: { stripeCustomerId: customerId as string },
         })
 
         if (user) {
           await prisma.user.update({
             where: { id: user.id },
-            data: { subscriptionStatus: SubscriptionStatus.ACTIVE }
+            data: { subscriptionStatus: SubscriptionStatus.ACTIVE },
           })
         }
 
@@ -275,13 +282,13 @@ export async function handleWebhook(event: any) {
         const customerId = invoice.customer
 
         const user = await prisma.user.findFirst({
-          where: { stripeCustomerId: customerId as string }
+          where: { stripeCustomerId: customerId as string },
         })
 
         if (user) {
           await prisma.user.update({
             where: { id: user.id },
-            data: { subscriptionStatus: SubscriptionStatus.UNPAID }
+            data: { subscriptionStatus: SubscriptionStatus.UNPAID },
           })
         }
 
@@ -291,7 +298,6 @@ export async function handleWebhook(event: any) {
       default:
         console.log(`Unhandled event type: ${event.type}`)
     }
-
   } catch (error) {
     console.error('Error handling webhook:', error)
     throw error
@@ -305,12 +311,13 @@ export async function hasActiveSubscription(userId: string): Promise<boolean> {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { subscriptionStatus: true }
+      select: { subscriptionStatus: true },
     })
 
-    return user?.subscriptionStatus === SubscriptionStatus.ACTIVE ||
-           user?.subscriptionStatus === SubscriptionStatus.TRIAL
-
+    return (
+      user?.subscriptionStatus === SubscriptionStatus.ACTIVE ||
+      user?.subscriptionStatus === SubscriptionStatus.TRIAL
+    )
   } catch (error) {
     console.error('Error checking subscription:', error)
     return false
@@ -327,13 +334,11 @@ export async function getSubscriptionInfo(userId: string) {
       select: {
         subscriptionStatus: true,
         stripeCustomerId: true,
-        createdAt: true
-      }
+        createdAt: true,
+      },
     })
 
-    if (!user?.stripeCustomerId) {
-      return null
-    }
+    if (!user?.stripeCustomerId) return null
 
     const subscriptions = await getStripe().subscriptions.list({
       customer: user.stripeCustomerId,
@@ -341,9 +346,7 @@ export async function getSubscriptionInfo(userId: string) {
       limit: 1,
     })
 
-    if (subscriptions.data.length === 0) {
-      return null
-    }
+    if (subscriptions.data.length === 0) return null
 
     const subscription = subscriptions.data[0]
 
@@ -354,7 +357,6 @@ export async function getSubscriptionInfo(userId: string) {
       cancelAtPeriodEnd: subscription.cancel_at_period_end,
       trialEnd: subscription.trial_end,
     }
-
   } catch (error) {
     console.error('Error getting subscription info:', error)
     return null

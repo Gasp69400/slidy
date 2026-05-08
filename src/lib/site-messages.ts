@@ -255,7 +255,7 @@ export const SITE_STRINGS = {
     fr: 'Génération prioritaire',
     en: 'Priority generation',
   },
-  'pricing.tier.pro.cta': { fr: 'Commencer gratuitement', en: 'Start for free' },
+  'pricing.tier.pro.cta': { fr: 'Souscrire au plan Pro', en: 'Subscribe to Pro' },
   'pricing.tier.pro.period': { fr: '/ mois', en: '/ month' },
   'pricing.tier.ultimate.name': { fr: 'Ultimate', en: 'Ultimate' },
   'pricing.tier.ultimate.desc': {
@@ -271,7 +271,7 @@ export const SITE_STRINGS = {
     fr: 'Admin & facturation',
     en: 'Admin & billing',
   },
-  'pricing.tier.ultimate.cta': { fr: 'Contacter les ventes', en: 'Contact sales' },
+  'pricing.tier.ultimate.cta': { fr: 'Souscrire au plan Ultimate', en: 'Subscribe to Ultimate' },
   'pricing.tier.ultimate.period': { fr: '/ mois', en: '/ month' },
 
   'studio.badge': { fr: 'Studio IA', en: 'AI Studio' },
