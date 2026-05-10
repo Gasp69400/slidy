@@ -16,6 +16,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { SlidyLogoMark } from '@/components/brand/SlidyLogoMark'
 import { LanguageToggle } from '@/components/LanguageToggle'
+import { SiteHeaderMenu } from '@/components/layout/SiteHeaderMenu'
 import { APP_HEADER_NAV } from '@/lib/app-nav'
 import { useSiteLocale } from '@/lib/site-locale'
 import { cn } from '@/lib/utils'
@@ -71,8 +72,12 @@ export function Navigation() {
               <SlidyLogoMark size="sm" className="shadow-md shadow-violet-500/20" />
               Slidy
             </Link>
-            <div className="sm:hidden">
+            <div className="flex shrink-0 items-center gap-2 sm:hidden">
               <LanguageToggle className="h-8 px-2 text-xs" />
+              <SiteHeaderMenu
+                align="end"
+                triggerClassName="h-8 w-8 rounded-full"
+              />
             </div>
           </div>
 
@@ -151,6 +156,11 @@ export function Navigation() {
                 )}
               </div>
             )}
+
+            <SiteHeaderMenu
+              align="end"
+              triggerClassName="h-8 w-8 rounded-full"
+            />
           </div>
         </div>
       </div>
