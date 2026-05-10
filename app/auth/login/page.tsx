@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -41,7 +41,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/studio'
   const infoMessage = searchParams.get('message')
@@ -63,8 +62,7 @@ export default function LoginPage() {
         return
       }
 
-      router.refresh()
-      router.push(redirectTo)
+      window.location.href = redirectTo
     } catch {
       setError(t('auth.login.err_unexpected'))
     } finally {
