@@ -1,6 +1,7 @@
 'use client'
 
 import { FC } from 'react'
+import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { Lock } from 'lucide-react'
 import { Card } from '@/components/ui/card'
@@ -39,6 +40,7 @@ function getUserPlanTier(plan: string): string {
 
 const TemplateSelector: FC<TemplateSelectorProps> = ({ selected, onSelect }) => {
   const { t } = useSiteLocale()
+  const router = useRouter()
   const { data: capData } = useQuery({
     queryKey: ['me-capabilities'],
     queryFn: async () => {
@@ -107,11 +109,16 @@ const TemplateSelector: FC<TemplateSelectorProps> = ({ selected, onSelect }) => 
                   <button
                     key={slug}
                     type="button"
-                    onClick={() => !isLocked && onSelect(slug)}
-                    disabled={isLocked}
+                    onClick={() => {
+                      if (isLocked) {
+                        router.push('/pricing')
+                      } else {
+                        onSelect(slug)
+                      }
+                    }}
                     className={cn(
                       'text-left w-full',
-                      isLocked && 'cursor-not-allowed opacity-60',
+                      isLocked ? 'cursor-pointer opacity-60' : 'cursor-pointer',
                     )}
                   >
                     <Card
