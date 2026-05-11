@@ -58,7 +58,7 @@ export const SITE_STRINGS = {
     en: 'Create clear presentations, fast.',
   },
 
-  'landing.pricing': { fr: 'Tarifs', en: 'Pricing' },
+  'landing.pricing': { fr: 'Plans', en: 'Plans' },
   'landing.login': { fr: 'Connexion / Inscription', en: 'Log in / Sign up' },
   'landing.start': { fr: 'Commencer gratuitement', en: 'Start for free' },
   'landing.menu_open': { fr: 'Ouvrir le menu', en: 'Open menu' },
@@ -195,7 +195,7 @@ export const SITE_STRINGS = {
   },
   'home.footer.cta_primary': { fr: 'Commencer gratuitement', en: 'Start for free' },
   'home.footer.cta_secondary': { fr: 'Connexion / Inscription', en: 'Log in / Sign up' },
-  'home.footer.pricing': { fr: 'Tarifs', en: 'Pricing' },
+  'home.footer.pricing': { fr: 'Plans', en: 'Plans' },
   'home.footer.studio': { fr: 'Studio', en: 'Studio' },
   'home.footer.login': { fr: 'Connexion', en: 'Log in' },
   'home.footer.terms': {
