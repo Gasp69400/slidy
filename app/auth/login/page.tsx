@@ -40,6 +40,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [resetSent, setResetSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
 
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/studio'
@@ -70,6 +72,26 @@ export default function LoginPage() {
     }
   }
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setError('Entrez votre email pour réinitialiser le mot de passe.')
+      return
+    }
+    setResetLoading(true)
+    setError('')
+    try {
+      const supabase = createSupabaseBrowserClient()
+      await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      })
+      setResetSent(true)
+    } catch {
+      setError('Erreur lors de l\'envoi de l\'email.')
+    } finally {
+      setResetLoading(false)
+    }
+  }
+
   return (
     <div className={authPageShellClass}>
       <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
@@ -88,6 +110,13 @@ export default function LoginPage() {
               <Alert className={authAlertInfoClass}>
                 <AlertDescription className="text-gray-900">
                   {decodeURIComponent(infoMessage)}
+                </AlertDescription>
+              </Alert>
+            )}
+            {resetSent && (
+              <Alert className={authAlertInfoClass}>
+                <AlertDescription className="text-gray-900">
+                  Un email de réinitialisation a été envoyé à {email} !
                 </AlertDescription>
               </Alert>
             )}
@@ -113,9 +142,19 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className={authLabelClass}>
-                {t('auth.login.password')}
-              </Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password" className={authLabelClass}>
+                  {t('auth.login.password')}
+                </Label>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={resetLoading}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 transition-colors"
+                >
+                  {resetLoading ? 'Envoi...' : 'Mot de passe oublié ?'}
+                </button>
+              </div>
               <Input
                 id="password"
                 type="password"
