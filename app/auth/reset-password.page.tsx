@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Card,
@@ -14,12 +13,13 @@ import {
 } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
+
+import { AuthPasswordInput } from '@/components/auth/AuthPasswordInput'
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser-client'
 import {
   authCardClass,
   authCardDescriptionClass,
   authCardTitleClass,
-  authInputClass,
   authLabelClass,
   authPageShellClass,
   authSubmitButtonClass,
@@ -94,14 +94,13 @@ export default function ResetPasswordPage() {
               <Label htmlFor="password" className={authLabelClass}>
                 Nouveau mot de passe
               </Label>
-              <Input
+              <AuthPasswordInput
                 id="password"
-                type="password"
                 placeholder="••••••••"
-                className={authInputClass}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
             </div>
 
@@ -109,14 +108,13 @@ export default function ResetPasswordPage() {
               <Label htmlFor="confirm" className={authLabelClass}>
                 Confirmer le mot de passe
               </Label>
-              <Input
+              <AuthPasswordInput
                 id="confirm"
-                type="password"
                 placeholder="••••••••"
-                className={authInputClass}
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 required
+                autoComplete="new-password"
               />
             </div>
 

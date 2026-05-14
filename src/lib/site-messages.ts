@@ -464,6 +464,14 @@ export const SITE_STRINGS = {
     fr: 'Votre mot de passe',
     en: 'Your password',
   },
+  'auth.password.show': {
+    fr: 'Afficher le mot de passe',
+    en: 'Show password',
+  },
+  'auth.password.hide': {
+    fr: 'Masquer le mot de passe',
+    en: 'Hide password',
+  },
   'auth.login.submit': { fr: 'Se connecter', en: 'Sign in' },
   'auth.login.no_account': { fr: 'Pas encore de compte ?', en: 'No account yet?' },
   'auth.login.register': { fr: 'S’inscrire', en: 'Sign up' },

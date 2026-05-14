@@ -16,6 +16,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
 
+import { AuthPasswordInput } from '@/components/auth/AuthPasswordInput'
 import { LanguageToggle } from '@/components/LanguageToggle'
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser-client'
 import { mapSupabaseAuthError } from '@/lib/supabase/map-auth-error'
@@ -196,14 +197,13 @@ export default function RegisterPage() {
               <Label htmlFor="password" className={authLabelClass}>
                 {t('auth.register.password')}
               </Label>
-              <Input
+              <AuthPasswordInput
                 id="password"
-                type="password"
                 placeholder={t('auth.register.ph_password')}
-                className={authInputClass}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
             </div>
 
@@ -211,14 +211,13 @@ export default function RegisterPage() {
               <Label htmlFor="confirmPassword" className={authLabelClass}>
                 {t('auth.register.confirm')}
               </Label>
-              <Input
+              <AuthPasswordInput
                 id="confirmPassword"
-                type="password"
                 placeholder={t('auth.register.ph_confirm')}
-                className={authInputClass}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
+                autoComplete="new-password"
               />
             </div>
 

@@ -16,6 +16,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2 } from 'lucide-react'
 
+import { AuthPasswordInput } from '@/components/auth/AuthPasswordInput'
 import { LanguageToggle } from '@/components/LanguageToggle'
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser-client'
 import { mapSupabaseAuthError } from '@/lib/supabase/map-auth-error'
@@ -155,14 +156,13 @@ export default function LoginPage() {
                   {resetLoading ? 'Envoi...' : 'Mot de passe oublié ?'}
                 </button>
               </div>
-              <Input
+              <AuthPasswordInput
                 id="password"
-                type="password"
                 placeholder={t('auth.login.ph_password')}
-                className={authInputClass}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
             </div>
 
