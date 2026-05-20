@@ -146,6 +146,11 @@ export default function CvStudioPage() {
       return json as { success: boolean; data: { documentId: string } }
     },
     onSuccess: (data) => {
+      try {
+        sessionStorage.setItem('cv-post-generate-ats-badge', '1')
+      } catch {
+        /* ignore */
+      }
       router.push(`/studio/cv/${data.data.documentId}`)
     },
     onError: (e: unknown) => {

@@ -33,6 +33,7 @@ import {
   type CvLayoutDensity,
 } from '@/lib/cv-schema'
 import { useSiteLocale } from '@/lib/site-locale'
+import { cn } from '@/lib/utils'
 
 type Doc = {
   id: string
@@ -53,6 +54,8 @@ export default function CvEditorPage() {
   const [design, setDesign] = useState<CvDesignOptions>(defaultCvDesignOptions())
   const [baseMeta, setBaseMeta] = useState<Partial<CvDocumentMetadata>>({})
   const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle')
+  const [showAtsBadge, setShowAtsBadge] = useState(false)
+  const [atsBadgeEntered, setAtsBadgeEntered] = useState(false)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['cv-document', id],
@@ -82,6 +85,23 @@ export default function CvEditorPage() {
       locale: meta.locale,
     })
   }, [data, router])
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('cv-post-generate-ats-badge') === '1') {
+        sessionStorage.removeItem('cv-post-generate-ats-badge')
+        setShowAtsBadge(true)
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!showAtsBadge) return
+    const idFrame = requestAnimationFrame(() => setAtsBadgeEntered(true))
+    return () => cancelAnimationFrame(idFrame)
+  }, [showAtsBadge])
 
   const buildMetadata = useCallback((): CvDocumentMetadata | null => {
     if (!kit) return null
@@ -578,6 +598,21 @@ export default function CvEditorPage() {
           <CvPreview kit={kit} design={design} className="min-h-[640px]" />
         </div>
       </div>
+
+      {showAtsBadge ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className={cn(
+            'pointer-events-none fixed bottom-6 right-6 z-[100] rounded-full bg-[#22c55e] px-4 py-2 text-sm font-semibold text-white shadow-md transition-all duration-500 ease-out',
+            atsBadgeEntered
+              ? 'translate-y-0 opacity-100'
+              : 'translate-y-1 opacity-0',
+          )}
+        >
+          {t('cv.ats_score_badge')}
+        </div>
+      ) : null}
     </div>
   )
 }

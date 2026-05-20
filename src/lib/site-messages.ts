@@ -821,6 +821,10 @@ export const SITE_STRINGS = {
     fr: 'Indicateur visuel pendant la création du CV (valeur illustrative, pas un diagnostic réel).',
     en: 'Visual indicator while your CV is created (illustrative only — not a real audit).',
   },
+  'cv.ats_score_badge': {
+    fr: '✅ ATS Score : 87%',
+    en: '✅ ATS Score: 87%',
+  },
   'cv.upgrade': {
     fr: 'Cette fonctionnalité est réservée aux plans Pro et Ultimate.',
     en: 'This feature is available on Pro and Ultimate plans.',
