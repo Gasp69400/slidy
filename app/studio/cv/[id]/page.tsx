@@ -604,13 +604,29 @@ export default function CvEditorPage() {
           role="status"
           aria-live="polite"
           className={cn(
-            'pointer-events-none fixed bottom-6 right-6 z-[100] rounded-full bg-[#22c55e] px-4 py-2 text-sm font-semibold text-white shadow-md transition-all duration-500 ease-out',
+            'pointer-events-none fixed bottom-6 right-6 z-[100] inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-[#22c55e] px-4 py-2 shadow-md ring-1 ring-black/10 transition-all duration-500 ease-out',
             atsBadgeEntered
               ? 'translate-y-0 opacity-100'
               : 'translate-y-1 opacity-0',
           )}
         >
-          {t('cv.ats_score_badge')}
+          <span
+            className="select-none text-[1.05rem] leading-none [filter:drop-shadow(0_1px_1px_rgba(0,0,0,0.12))]"
+            aria-hidden
+          >
+            ✅
+          </span>
+          <span className="flex items-baseline gap-2 leading-none">
+            <span className="text-[12px] font-semibold tracking-tight text-white/95 antialiased sm:text-[13px]">
+              {t('cv.ats_score_badge_title')}
+            </span>
+            <span
+              className="text-[15px] font-bold tabular-nums tracking-[-0.025em] text-white antialiased sm:text-base"
+              translate="no"
+            >
+              {t('cv.ats_score_badge_pct')}
+            </span>
+          </span>
         </div>
       ) : null}
     </div>
