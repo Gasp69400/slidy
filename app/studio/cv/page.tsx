@@ -21,6 +21,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import type { CvFontFamily, CvLayoutDensity, CvTemplateSlug } from '@/lib/cv-schema'
+import {
+  randomAtsBadgePercent,
+  writeCvPostGenerateAtsBadge,
+} from '@/lib/cv-post-generate-ats-badge'
 import { useSiteLocale } from '@/lib/site-locale'
 
 type ExpRow = { role: string; company: string; period: string; bullets: string }
@@ -147,7 +151,7 @@ export default function CvStudioPage() {
     },
     onSuccess: (data) => {
       try {
-        sessionStorage.setItem('cv-post-generate-ats-badge', '1')
+        writeCvPostGenerateAtsBadge(randomAtsBadgePercent())
       } catch {
         /* ignore */
       }

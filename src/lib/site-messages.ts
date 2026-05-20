@@ -825,9 +825,9 @@ export const SITE_STRINGS = {
     fr: 'ATS Score',
     en: 'ATS Score',
   },
-  'cv.ats_score_badge_pct': {
-    fr: '87 %',
-    en: '87%',
+  'cv.ats_score_badge_pct_fmt': {
+    fr: '{pct} %',
+    en: '{pct}%',
   },
   'cv.upgrade': {
     fr: 'Cette fonctionnalité est réservée aux plans Pro et Ultimate.',

@@ -32,6 +32,7 @@ import {
   type CvKit,
   type CvLayoutDensity,
 } from '@/lib/cv-schema'
+import { readAndClearCvPostGenerateAtsBadge } from '@/lib/cv-post-generate-ats-badge'
 import { useSiteLocale } from '@/lib/site-locale'
 import { cn } from '@/lib/utils'
 
@@ -54,7 +55,7 @@ export default function CvEditorPage() {
   const [design, setDesign] = useState<CvDesignOptions>(defaultCvDesignOptions())
   const [baseMeta, setBaseMeta] = useState<Partial<CvDocumentMetadata>>({})
   const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle')
-  const [showAtsBadge, setShowAtsBadge] = useState(false)
+  const [atsBadgePct, setAtsBadgePct] = useState<number | null>(null)
   const [atsBadgeEntered, setAtsBadgeEntered] = useState(false)
 
   const { data, isLoading, error } = useQuery({
@@ -88,20 +89,18 @@ export default function CvEditorPage() {
 
   useEffect(() => {
     try {
-      if (sessionStorage.getItem('cv-post-generate-ats-badge') === '1') {
-        sessionStorage.removeItem('cv-post-generate-ats-badge')
-        setShowAtsBadge(true)
-      }
+      const pct = readAndClearCvPostGenerateAtsBadge()
+      if (pct !== null) setAtsBadgePct(pct)
     } catch {
       /* ignore */
     }
   }, [])
 
   useEffect(() => {
-    if (!showAtsBadge) return
+    if (atsBadgePct === null) return
     const idFrame = requestAnimationFrame(() => setAtsBadgeEntered(true))
     return () => cancelAnimationFrame(idFrame)
-  }, [showAtsBadge])
+  }, [atsBadgePct])
 
   const buildMetadata = useCallback((): CvDocumentMetadata | null => {
     if (!kit) return null
@@ -599,7 +598,7 @@ export default function CvEditorPage() {
         </div>
       </div>
 
-      {showAtsBadge ? (
+      {atsBadgePct !== null ? (
         <div
           role="status"
           aria-live="polite"
@@ -624,7 +623,7 @@ export default function CvEditorPage() {
               className="text-[15px] font-bold tabular-nums tracking-[-0.025em] text-white antialiased sm:text-base"
               translate="no"
             >
-              {t('cv.ats_score_badge_pct')}
+              {t('cv.ats_score_badge_pct_fmt', { pct: atsBadgePct })}
             </span>
           </span>
         </div>
