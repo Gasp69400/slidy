@@ -813,6 +813,14 @@ export const SITE_STRINGS = {
   'cv.accent': { fr: 'Couleur d’accent', en: 'Accent color' },
   'cv.generate': { fr: 'Générer', en: 'Generate' },
   'cv.generating': { fr: 'Génération…', en: 'Generating…' },
+  'cv.ats_meter_title': {
+    fr: 'Optimisation ATS · compatibilité lecteur',
+    en: 'ATS optimization · reader parsing',
+  },
+  'cv.ats_meter_sub': {
+    fr: 'Indicateur visuel pendant la création du CV (valeur illustrative, pas un diagnostic réel).',
+    en: 'Visual indicator while your CV is created (illustrative only — not a real audit).',
+  },
   'cv.upgrade': {
     fr: 'Cette fonctionnalité est réservée aux plans Pro et Ultimate.',
     en: 'This feature is available on Pro and Ultimate plans.',

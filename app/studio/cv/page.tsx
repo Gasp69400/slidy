@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -24,6 +24,9 @@ import type { CvFontFamily, CvLayoutDensity, CvTemplateSlug } from '@/lib/cv-sch
 import { useSiteLocale } from '@/lib/site-locale'
 
 type ExpRow = { role: string; company: string; period: string; bullets: string }
+
+/** Pourcentages décoratifs pendant la génération (pas un score ATS mesuré). */
+const ATS_FAKE_STEPS = [52, 61, 70, 76, 80, 86, 91, 94] as const
 
 export default function CvStudioPage() {
   const { t, locale } = useSiteLocale()
@@ -54,6 +57,8 @@ export default function CvStudioPage() {
   )
   const [jobDescription, setJobDescription] = useState('')
   const [error, setError] = useState('')
+  const [fakeAtsPercent, setFakeAtsPercent] = useState(0)
+  const atsTickRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const { data: capsData } = useQuery({
     queryKey: ['cv-capabilities'],
@@ -147,6 +152,38 @@ export default function CvStudioPage() {
       setError(e instanceof Error ? e.message : 'Error')
     },
   })
+
+  useEffect(() => {
+    if (!generateMutation.isPending) {
+      setFakeAtsPercent(0)
+      if (atsTickRef.current) {
+        clearInterval(atsTickRef.current)
+        atsTickRef.current = null
+      }
+      return
+    }
+
+    let step = 0
+    setFakeAtsPercent(ATS_FAKE_STEPS[0])
+    atsTickRef.current = setInterval(() => {
+      step += 1
+      if (step >= ATS_FAKE_STEPS.length) {
+        if (atsTickRef.current) {
+          clearInterval(atsTickRef.current)
+          atsTickRef.current = null
+        }
+        return
+      }
+      setFakeAtsPercent(ATS_FAKE_STEPS[step])
+    }, 480)
+
+    return () => {
+      if (atsTickRef.current) {
+        clearInterval(atsTickRef.current)
+        atsTickRef.current = null
+      }
+    }
+  }, [generateMutation.isPending])
 
   const canSubmit = useMemo(() => {
     if (inputMode === 'prompt') return userPrompt.trim().length >= 12
@@ -540,6 +577,31 @@ export default function CvStudioPage() {
           </div>
 
           {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+
+          {generateMutation.isPending && (
+            <div
+              className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/95 p-4 shadow-sm dark:border-emerald-800/60 dark:bg-emerald-950/50"
+              role="status"
+              aria-live="polite"
+            >
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800 dark:text-emerald-300">
+                {t('cv.ats_meter_title')}
+              </p>
+              <p className="mt-2 text-4xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                {fakeAtsPercent}
+                <span className="text-2xl font-semibold">%</span>
+              </p>
+              <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-emerald-100 dark:bg-emerald-900/70">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-green-400 transition-[width] duration-500 ease-out dark:from-emerald-400 dark:to-emerald-500"
+                  style={{ width: `${Math.min(fakeAtsPercent, 100)}%` }}
+                />
+              </div>
+              <p className="mt-2 text-[11px] leading-snug text-emerald-800/85 dark:text-emerald-200/75">
+                {t('cv.ats_meter_sub')}
+              </p>
+            </div>
+          )}
 
           <Button
             className="mt-6 w-full rounded-xl bg-indigo-600 hover:bg-indigo-700"
