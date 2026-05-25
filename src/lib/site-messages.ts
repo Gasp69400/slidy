@@ -95,8 +95,8 @@ export const SITE_STRINGS = {
   'account.back_home': { fr: 'Retour à l’accueil', en: 'Back to home' },
 
   'home.hero.badge': {
-    fr: 'Présentations IA · prêtes en quelques secondes',
-    en: 'AI presentations · ready in seconds',
+    fr: 'Slides & CV IA · même studio Slidy',
+    en: 'AI slides & resumes · same Slidy studio',
   },
   'home.hero.title1': {
     fr: 'Transformez votre idée en',
@@ -108,14 +108,54 @@ export const SITE_STRINGS = {
     en: '— without the grind.',
   },
   'home.hero.subtitle': {
-    fr: 'Décrivez votre sujet une fois. Notre IA structure le récit, les slides et le visuel pour que vous présentiez sereinement — sans passer des heures dans un logiciel.',
-    en: 'Describe your topic once. Our AI builds structure, slides, and visuals so you can present with confidence — not spend hours in a slide editor.',
+    fr: 'Slides : décrivez votre sujet une fois — l’IA structure le récit et le détail visuel pour que vous présentiez sans y passer la nuit. CV : même principe, avec des modèles adaptés aux logiciels RH (ATS) pour vos candidatures.',
+    en: 'For decks: describe your topic once — AI shapes the storyline and visuals so you’re presentation-ready fast. For job search: structured résumés and cover letters tuned for ATS parsing — Slidy handles both flows.',
   },
   'home.hero.cta_primary': { fr: 'Commencer gratuitement', en: 'Start for free' },
   'home.hero.cta_secondary': { fr: 'Connexion / Inscription', en: 'Log in / Sign up' },
   'home.hero.note': {
     fr: 'Sans carte bancaire pour essayer · Annulation à tout moment',
     en: 'No credit card required to try · Cancel anytime',
+  },
+  'home.hero.cta_cv': {
+    fr: 'Créer un CV avec l’IA',
+    en: 'Generate a résumé with AI',
+  },
+  'home.stats.docs_label': {
+    fr: 'Documents déjà créés sur Slidy',
+    en: 'Documents created with Slidy',
+  },
+  'home.stats.docs_value': {
+    fr: '+ de 18 000',
+    en: '18,000+',
+  },
+  'home.stats.docs_hint': {
+    fr: 'Présentations, CV et lettres exportés par la communauté.',
+    en: 'Decks, résumés, and letters exported by our users.',
+  },
+  'home.stats.ats_label': {
+    fr: 'Indicateur ATS moyen (à la génération)',
+    en: 'Avg. ATS readiness (post-generation cue)',
+  },
+  'home.stats.ats_value': {
+    fr: '89 %',
+    en: '89%',
+  },
+  'home.stats.ats_hint': {
+    fr: '* Score indicatif communiqué après génération d’un CV, pas une mesure garantie contre un ATS réel.',
+    en: '* Illustrative figure shown after generating a résumé — not a vendor-certified ATS benchmark.',
+  },
+  'home.stats.formats_label': {
+    fr: 'Deux studios, un même compte',
+    en: 'Two studios, one account',
+  },
+  'home.stats.formats_value': {
+    fr: 'Présentations + CV',
+    en: 'Slides + résumés',
+  },
+  'home.stats.formats_sub': {
+    fr: 'Decks pour convaincre en réunion · CV & lettres pour les recruteurs.',
+    en: 'Decks for the room · résumés and letters for recruiters.',
   },
   'home.preview.status': {
     fr: 'Studio · aperçu en direct',
@@ -135,8 +175,8 @@ export const SITE_STRINGS = {
   },
   'home.how.title': { fr: 'Comment ça marche', en: 'How it works' },
   'home.how.subtitle': {
-    fr: 'Trois étapes entre la page blanche et une présentation convaincante.',
-    en: 'Three steps from blank page to standing ovation.',
+    fr: 'Même mécanisme pour vos slides ou votre CV — du brief à la version prête à partager.',
+    en: 'Same flow for decks or résumés — from brief to something you’ll actually ship.',
   },
   'home.how.1.title': { fr: 'Décrivez votre exposé', en: 'Describe your talk' },
   'home.how.1.body': {
@@ -158,8 +198,8 @@ export const SITE_STRINGS = {
     en: 'Everything you need, nothing you don’t',
   },
   'home.features.subtitle': {
-    fr: 'Un outil focalisé pour ceux qui veulent clarté et vitesse.',
-    en: 'A focused toolkit for people who care about clarity and speed.',
+    fr: 'Présenter en réunion et postuler avec un CV lisible pour les ATS — tout est dans Slidy.',
+    en: 'Win the room with decks and recruiters with ATS-friendly résumés — Slidy bundles both.',
   },
   'home.features.1.title': {
     fr: 'Génération ultra rapide',
@@ -184,6 +224,14 @@ export const SITE_STRINGS = {
   'home.features.3.desc': {
     fr: 'Exports, limites et offres alignés sur la façon dont les équipes livrent vraiment.',
     en: 'Exports, limits, and plans that match how teams actually ship decks.',
+  },
+  'home.features.4.title': {
+    fr: 'CV & lettre de motivation IA',
+    en: 'Résumés & cover letters powered by AI',
+  },
+  'home.features.4.desc': {
+    fr: 'Contenu assisté par l’invite, mise en page pro, optimisation affichée à la création pour rassurer sur la compatibilité lecteur.',
+    en: 'Prompt-driven drafts, polished layout, plus a reassuring ATS-style readiness cue when you generate — without promising a flawless scan.',
   },
   'home.footer.title': {
     fr: 'Prêt pour votre prochain deck ?',

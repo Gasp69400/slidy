@@ -3,6 +3,9 @@
 import Link from 'next/link'
 import {
   ArrowRight,
+  BarChart3,
+  Briefcase,
+  FileStack,
   Layers,
   Sparkles,
   Wand2,
@@ -52,6 +55,8 @@ function HeroSection() {
             {t('home.hero.subtitle')}
           </p>
 
+          <HomeStatsSection />
+
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <Button
               size="lg"
@@ -71,6 +76,15 @@ function HeroSection() {
             >
               <Link href="/auth/login">{t('home.hero.cta_secondary')}</Link>
             </Button>
+          </div>
+
+          <div className="mt-4">
+            <Link
+              href="/studio/cv"
+              className="text-sm font-medium text-violet-600 underline-offset-4 transition hover:text-violet-700 hover:underline dark:text-violet-400 dark:hover:text-violet-300"
+            >
+              {t('home.hero.cta_cv')}
+            </Link>
           </div>
 
           <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">{t('home.hero.note')}</p>
@@ -130,6 +144,61 @@ function HeroSection() {
         </div>
       </div>
     </section>
+  )
+}
+
+function HomeStatsSection() {
+  const { t } = useSiteLocale()
+
+  return (
+    <div className="mx-auto mt-10 max-w-4xl">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white/80 p-5 text-center shadow-sm backdrop-blur-sm dark:border-slate-700/90 dark:bg-slate-900/80 sm:text-left">
+          <div className="mb-3 inline-flex rounded-xl bg-violet-500/10 p-2 dark:bg-violet-500/20">
+            <FileStack className="h-5 w-5 text-violet-600 dark:text-violet-400" aria-hidden />
+          </div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+            {t('home.stats.docs_label')}
+          </p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50">
+            <span className="tabular-nums">{t('home.stats.docs_value')}</span>
+          </p>
+          <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+            {t('home.stats.docs_hint')}
+          </p>
+        </div>
+
+        <div className="relative overflow-hidden rounded-2xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50/90 to-white/90 p-5 text-center shadow-sm dark:border-emerald-900/40 dark:from-emerald-950/50 dark:to-slate-900/80 sm:text-left">
+          <div className="mb-3 inline-flex rounded-xl bg-emerald-500/15 p-2 dark:bg-emerald-500/20">
+            <BarChart3 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" aria-hidden />
+          </div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-800/90 dark:text-emerald-200/80">
+            {t('home.stats.ats_label')}
+          </p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-emerald-700 dark:text-emerald-300">
+            <span className="tabular-nums">{t('home.stats.ats_value')}</span>
+          </p>
+        </div>
+
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white/80 p-5 text-center shadow-sm backdrop-blur-sm dark:border-slate-700/90 dark:bg-slate-900/80 sm:text-left">
+          <div className="mb-3 inline-flex rounded-xl bg-fuchsia-500/10 p-2 dark:bg-fuchsia-500/20">
+            <Briefcase className="h-5 w-5 text-fuchsia-600 dark:text-fuchsia-400" aria-hidden />
+          </div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
+            {t('home.stats.formats_label')}
+          </p>
+          <p className="mt-2 text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-50">
+            {t('home.stats.formats_value')}
+          </p>
+          <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+            {t('home.stats.formats_sub')}
+          </p>
+        </div>
+      </div>
+      <p className="mt-4 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+        {t('home.stats.ats_hint')}
+      </p>
+    </div>
   )
 }
 
@@ -204,6 +273,10 @@ function FeaturesSection() {
       title: t('home.features.3.title'),
       desc: t('home.features.3.desc'),
     },
+    {
+      title: t('home.features.4.title'),
+      desc: t('home.features.4.desc'),
+    },
   ]
 
   return (
@@ -215,7 +288,7 @@ function FeaturesSection() {
           </h2>
           <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">{t('home.features.subtitle')}</p>
         </div>
-        <div className="mt-12 grid gap-6 sm:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((item) => (
             <div
               key={item.title}
