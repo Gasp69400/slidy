@@ -233,6 +233,34 @@ export const SITE_STRINGS = {
     fr: 'Contenu assisté par l’invite, mise en page pro, optimisation affichée à la création pour rassurer sur la compatibilité lecteur.',
     en: 'Prompt-driven drafts, polished layout, plus a reassuring ATS-style readiness cue when you generate — without promising a flawless scan.',
   },
+  'home.pricing.kicker': {
+    fr: 'Tarifs transparents',
+    en: 'Transparent pricing',
+  },
+  'home.pricing.title': {
+    fr: 'Choisissez l’offre qui vous ressemble',
+    en: 'Pick the plan that matches your tempo',
+  },
+  'home.pricing.subtitle': {
+    fr: 'Résumé de chaque plan : quotas, fonctionnalités clés pour les présentations et les CV avec optimisations visuelles ATS. Upgrade en un clic quand vous êtes prêt.',
+    en: 'Each card spells out limits and what’s included for decks and résumés — including ATS-style cues. Upgrade in one click when you’re ready.',
+  },
+  'home.pricing.includes': {
+    fr: 'Ce que comprend l’offre',
+    en: 'What’s included',
+  },
+  'home.pricing.footnote': {
+    fr: 'Sans engagement sur Starter · Période d’essai disponible selon les offres payantes configurées.',
+    en: 'No commitment on Starter · Trial eligibility depends on configured paid plans.',
+  },
+  'home.pricing.link_full': {
+    fr: 'Page tarifs détaillée et conditions →',
+    en: 'Full pricing page & details →',
+  },
+  'home.pricing.cta_loading': {
+    fr: 'Redirection…',
+    en: 'Redirecting…',
+  },
   'home.footer.title': {
     fr: 'Prêt pour votre prochain deck ?',
     en: 'Ready to ship your next deck?',
