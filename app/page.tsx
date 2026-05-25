@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
   ArrowRight,
   BarChart3,
@@ -30,6 +31,39 @@ import { useSiteLocale } from '@/lib/site-locale'
 
 function HeroSection() {
   const { t } = useSiteLocale()
+
+  /** Ne pas réutiliser la clé studio `capabilities` (queryFn différente). */
+  const { data: capsData, isPending } = useQuery({
+    queryKey: ['me-capabilities-home-cv-cta'],
+    queryFn: async () => {
+      const res = await fetch('/api/me/capabilities', {
+        credentials: 'include',
+      })
+      if (!res.ok) {
+        return { ok: false as const }
+      }
+      return {
+        ok: true as const,
+        json: (await res.json()) as {
+          success: boolean
+          data: { allowedDocumentTypes: string[] }
+        },
+      }
+    },
+    staleTime: 60_000,
+  })
+
+  const canUseCvStudio =
+    capsData?.ok === true &&
+    capsData.json.success === true &&
+    capsData.json.data.allowedDocumentTypes.includes('CV_COVER')
+
+  /** Tant que la requête n’a pas répondu, on évite d’envoyer vers le studio CV sans savoir si l’abo le permet */
+  const cvCtaHref = isPending
+    ? '/pricing'
+    : canUseCvStudio
+      ? '/studio/cv'
+      : '/pricing'
 
   const tags = [
     t('home.preview.tag_outline'),
@@ -89,12 +123,21 @@ function HeroSection() {
           </div>
 
           <div className="mt-4">
-            <Link
-              href="/studio/cv"
-              className="text-sm font-medium text-violet-600 underline-offset-4 transition hover:text-violet-700 hover:underline dark:text-violet-400 dark:hover:text-violet-300"
-            >
-              {t('home.hero.cta_cv')}
-            </Link>
+            {isPending ? (
+              <span
+                className="inline-block cursor-wait rounded-md px-2 py-1 text-sm text-violet-500/80 opacity-75 dark:text-violet-400/80"
+                aria-busy="true"
+              >
+                {t('home.hero.cta_cv')}
+              </span>
+            ) : (
+              <Link
+                href={cvCtaHref}
+                className="text-sm font-medium text-violet-600 underline-offset-4 transition hover:text-violet-700 hover:underline dark:text-violet-400 dark:hover:text-violet-300"
+              >
+                {t('home.hero.cta_cv')}
+              </Link>
+            )}
           </div>
 
           <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">{t('home.hero.note')}</p>
