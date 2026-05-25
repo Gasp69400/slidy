@@ -226,53 +226,53 @@ export const SITE_STRINGS = {
   'pricing.popular': { fr: 'Populaire', en: 'Popular' },
   'pricing.back': { fr: '← Retour à l’accueil', en: '← Back to home' },
   'pricing.tier.starter.name': { fr: 'Starter', en: 'Starter' },
-  'pricing.tier.starter.desc': {
-    fr: 'Essayez la génération IA et les exports essentiels.',
-    en: 'Try AI generation and core exports.',
-  },
-  'pricing.tier.starter.f1': {
-    fr: 'Deck IA à partir d’une invite',
-    en: 'AI deck from prompt',
-  },
-  'pricing.tier.starter.f2': { fr: 'Exports limités', en: 'Limited exports' },
-  'pricing.tier.starter.f3': {
-    fr: 'Support communautaire',
-    en: 'Community support',
-  },
-  'pricing.tier.starter.cta': { fr: 'Commencer gratuitement', en: 'Start for free' },
-  'pricing.tier.starter.period': { fr: 'pour toujours', en: 'forever' },
-  'pricing.tier.pro.name': { fr: 'Pro', en: 'Pro' },
-  'pricing.tier.pro.desc': {
-    fr: 'Pour les créateurs qui livrent des decks chaque semaine.',
-    en: 'For creators who ship decks every week.',
-  },
-  'pricing.tier.pro.f1': {
-    fr: 'Limites de génération plus élevées',
-    en: 'Higher generation limits',
-  },
-  'pricing.tier.pro.f2': { fr: 'Export PDF & PPTX', en: 'PDF & PPTX export' },
-  'pricing.tier.pro.f3': {
-    fr: 'Génération prioritaire',
-    en: 'Priority generation',
-  },
-  'pricing.tier.pro.cta': { fr: 'Souscrire au plan Pro', en: 'Subscribe to Pro' },
-  'pricing.tier.pro.period': { fr: '/ mois', en: '/ month' },
-  'pricing.tier.ultimate.name': { fr: 'Ultimate', en: 'Ultimate' },
-  'pricing.tier.ultimate.desc': {
-    fr: 'Collaborez et gardez une identité visuelle cohérente.',
-    en: 'Collaborate and keep brand consistency.',
-  },
-  'pricing.tier.ultimate.f1': { fr: 'Tout le Pro', en: 'Everything in Pro' },
-  'pricing.tier.ultimate.f2': {
-    fr: 'Espace de travail partagé',
-    en: 'Shared workspace',
-  },
-  'pricing.tier.ultimate.f3': {
-    fr: 'Admin & facturation',
-    en: 'Admin & billing',
-  },
-  'pricing.tier.ultimate.cta': { fr: 'Souscrire au plan Ultimate', en: 'Subscribe to Ultimate' },
-  'pricing.tier.ultimate.period': { fr: '/ mois', en: '/ month' },
+'pricing.tier.starter.desc': {
+  fr: 'Essayez Slidy gratuitement pour vos premières créations.',
+  en: 'Try Slidy for free for your first creations.',
+},
+'pricing.tier.starter.f1': {
+  fr: '5 créations / mois',
+  en: '5 creations / month',
+},
+'pricing.tier.starter.f2': { fr: 'Templates de base', en: 'Basic templates' },
+'pricing.tier.starter.f3': {
+  fr: 'Export PDF',
+  en: 'PDF export',
+},
+'pricing.tier.starter.cta': { fr: 'Commencer gratuitement', en: 'Start for free' },
+'pricing.tier.starter.period': { fr: 'pour toujours', en: 'forever' },
+'pricing.tier.pro.name': { fr: 'Pro', en: 'Pro' },
+'pricing.tier.pro.desc': {
+  fr: 'Pour les étudiants et jeunes pros qui veulent se démarquer.',
+  en: 'For students and young pros who want to stand out.',
+},
+'pricing.tier.pro.f1': {
+  fr: '60 créations / jour',
+  en: '60 creations / day',
+},
+'pricing.tier.pro.f2': { fr: 'CV optimisé ATS + lettre de motivation', en: 'ATS CV + cover letter' },
+'pricing.tier.pro.f3': {
+  fr: 'Export PDF & PPTX • Templates Pro',
+  en: 'PDF & PPTX export • Pro templates',
+},
+'pricing.tier.pro.cta': { fr: 'Souscrire au plan Pro', en: 'Subscribe to Pro' },
+'pricing.tier.pro.period': { fr: '/ mois', en: '/ month' },
+'pricing.tier.ultimate.name': { fr: 'Ultimate', en: 'Ultimate' },
+'pricing.tier.ultimate.desc': {
+  fr: 'La solution complète pour maximiser vos chances.',
+  en: 'The complete solution to maximize your chances.',
+},
+'pricing.tier.ultimate.f1': { fr: '200 créations / jour', en: '200 creations / day' },
+'pricing.tier.ultimate.f2': {
+  fr: 'Tout le Pro + tous les templates débloqués',
+  en: 'Everything in Pro + all templates unlocked',
+},
+'pricing.tier.ultimate.f3': {
+  fr: 'Export PDF, PPTX & JSON • Support prioritaire',
+  en: 'PDF, PPTX & JSON export • Priority support',
+},
+'pricing.tier.ultimate.cta': { fr: 'Souscrire au plan Ultimate', en: 'Subscribe to Ultimate' },
+'pricing.tier.ultimate.period': { fr: '/ mois', en: '/ month' },
 
   'studio.badge': { fr: 'Studio IA', en: 'AI Studio' },
   'studio.new_title': { fr: 'Nouveau document', en: 'New document' },
