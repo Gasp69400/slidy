@@ -115,10 +115,11 @@ export default function PricingPage() {
           {tiers.map((tier) => (
             <Card
               key={tier.name}
+              id={`plan-${tier.planId}`}
               className={
                 tier.highlighted
-                  ? 'relative border-violet-200 bg-white text-slate-900 shadow-lg shadow-violet-500/10 ring-2 ring-violet-500/20 dark:border-violet-300 dark:bg-white dark:text-slate-900 dark:shadow-violet-900/25 dark:ring-violet-400/40'
-                  : 'border-slate-200/80 bg-white text-slate-900 shadow-sm dark:border-slate-200 dark:bg-white dark:text-slate-900'
+                  ? 'relative scroll-mt-24 border-violet-200 bg-white text-slate-900 shadow-lg shadow-violet-500/10 ring-2 ring-violet-500/20 dark:border-violet-300 dark:bg-white dark:text-slate-900 dark:shadow-violet-900/25 dark:ring-violet-400/40'
+                  : 'scroll-mt-24 border-slate-200/80 bg-white text-slate-900 shadow-sm dark:border-slate-200 dark:bg-white dark:text-slate-900'
               }
             >
               {tier.highlighted && (

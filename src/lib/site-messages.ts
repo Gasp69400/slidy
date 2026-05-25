@@ -257,9 +257,9 @@ export const SITE_STRINGS = {
     fr: 'Page tarifs détaillée et conditions →',
     en: 'Full pricing page & details →',
   },
-  'home.pricing.cta_loading': {
-    fr: 'Redirection…',
-    en: 'Redirecting…',
+  'home.pricing.card_cta': {
+    fr: 'Voir cette offre',
+    en: 'View this plan',
   },
   'home.footer.title': {
     fr: 'Prêt pour votre prochain deck ?',

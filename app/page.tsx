@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import {
   ArrowRight,
   BarChart3,
@@ -316,30 +316,6 @@ function FeaturesSection() {
 
 function HomePricingSection() {
   const { t } = useSiteLocale()
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-
-  const handleSubscribe = async (
-    priceId: string,
-    planId: string,
-    trialDays: number,
-  ) => {
-    setLoadingPlan(planId)
-    try {
-      const res = await fetch('/api/stripe/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, trialDays }),
-      })
-      const data = await res.json()
-      if (data.url) {
-        window.location.href = data.url
-      }
-    } catch {
-      /* ignore */
-    } finally {
-      setLoadingPlan(null)
-    }
-  }
 
   const tiers = useMemo(
     () =>
@@ -354,12 +330,8 @@ function HomePricingSection() {
             t('pricing.tier.starter.f2'),
             t('pricing.tier.starter.f3'),
           ],
-          cta: t('pricing.tier.starter.cta'),
-          href: '/studio',
           highlighted: false,
-          priceId: null as string | null,
           planId: 'starter',
-          trialDays: 0,
         },
         {
           name: t('pricing.tier.pro.name'),
@@ -371,12 +343,8 @@ function HomePricingSection() {
             t('pricing.tier.pro.f2'),
             t('pricing.tier.pro.f3'),
           ],
-          cta: t('pricing.tier.pro.cta'),
-          href: null as string | null,
           highlighted: true,
-          priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID ?? '',
           planId: 'pro',
-          trialDays: 0,
         },
         {
           name: t('pricing.tier.ultimate.name'),
@@ -388,12 +356,8 @@ function HomePricingSection() {
             t('pricing.tier.ultimate.f2'),
             t('pricing.tier.ultimate.f3'),
           ],
-          cta: t('pricing.tier.ultimate.cta'),
-          href: null as string | null,
           highlighted: false,
-          priceId: process.env.NEXT_PUBLIC_STRIPE_ULTIMATE_PRICE_ID ?? '',
           planId: 'ultimate',
-          trialDays: 2,
         },
       ] as const,
     [t],
@@ -465,36 +429,16 @@ function HomePricingSection() {
                 </ul>
               </CardContent>
               <CardFooter className="mt-auto p-4 pt-2">
-                {tier.priceId ? (
-                  <Button
-                    size="sm"
-                    className="h-9 w-full rounded-full text-xs"
-                    variant={tier.highlighted ? 'default' : 'outline'}
-                    disabled={
-                      loadingPlan === tier.planId || !tier.priceId.length
-                    }
-                    onClick={() =>
-                      void handleSubscribe(
-                        tier.priceId!,
-                        tier.planId,
-                        tier.trialDays,
-                      )
-                    }
-                  >
-                    {loadingPlan === tier.planId
-                      ? t('home.pricing.cta_loading')
-                      : tier.cta}
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    className="h-9 w-full rounded-full text-xs"
-                    variant={tier.highlighted ? 'default' : 'outline'}
-                    asChild
-                  >
-                    <Link href={tier.href ?? '/studio'}>{tier.cta}</Link>
-                  </Button>
-                )}
+                <Button
+                  size="sm"
+                  className="h-9 w-full rounded-full text-xs"
+                  variant={tier.highlighted ? 'default' : 'outline'}
+                  asChild
+                >
+                  <Link href={`/pricing#plan-${tier.planId}`}>
+                    {t('home.pricing.card_cta')}
+                  </Link>
+                </Button>
               </CardFooter>
             </Card>
           ))}
