@@ -67,13 +67,12 @@ export function getCapabilities(plan: PlanTier): PlanCapabilities {
     }
   }
 
-  // STARTER : CV_COVER inclus temporairement pour démo / tests (retirer quand la monétisation est figée).
+  // STARTER
   return {
     plan,
-    maxDocumentsPerDay: 15,
-    maxBlocksPerDocument: 60,
-    allowedDocumentTypes: ['PRESENTATION', 'NOTES', 'CV_COVER'],
-    exportFormats: ['pdf', 'json'],
+    maxDocumentsPerDay: 1,
+    maxBlocksPerDocument: 30,
+    allowedDocumentTypes: ['PRESENTATION', 'NOTES'],
+    exportFormats: ['pdf'],
   }
 }
-
