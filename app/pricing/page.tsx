@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 
@@ -15,10 +15,28 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useSiteLocale } from '@/lib/site-locale'
+import { cn } from '@/lib/utils'
 
 export default function PricingPage() {
   const { t } = useSiteLocale()
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+  const [highlightedPlan, setHighlightedPlan] = useState<string | null>(null)
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '')
+    if (hash.startsWith('plan-')) {
+      const planId = hash.replace('plan-', '')
+      setHighlightedPlan(planId)
+      setTimeout(() => {
+        const el = cardRefs.current[planId]
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 100)
+      setTimeout(() => setHighlightedPlan(null), 2500)
+    }
+  }, [])
 
   const handleSubscribe = async (priceId: string, planId: string, trialDays: number) => {
     setLoadingPlan(planId)
@@ -113,66 +131,73 @@ export default function PricingPage() {
 
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
           {tiers.map((tier) => (
-            <Card
+            <div
               key={tier.name}
-              id={`plan-${tier.planId}`}
-              className={
-                tier.highlighted
-                  ? 'relative scroll-mt-24 border-violet-200 bg-white text-slate-900 shadow-lg shadow-violet-500/10 ring-2 ring-violet-500/20 dark:border-violet-300 dark:bg-white dark:text-slate-900 dark:shadow-violet-900/25 dark:ring-violet-400/40'
-                  : 'scroll-mt-24 border-slate-200/80 bg-white text-slate-900 shadow-sm dark:border-slate-200 dark:bg-white dark:text-slate-900'
-              }
+              ref={(el) => { cardRefs.current[tier.planId] = el }}
             >
-              {tier.highlighted && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-violet-600 px-3 py-0.5 text-xs font-semibold text-white">
-                  {t('pricing.popular')}
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle className="text-lg text-slate-900 dark:text-slate-900">
-                  {tier.name}
-                </CardTitle>
-                <CardDescription className="text-slate-600 dark:text-slate-900">
-                  {tier.description}
-                </CardDescription>
-                <div className="mt-4 flex items-baseline gap-1">
-                  <span className="text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-900">
-                    {tier.price}
-                  </span>
-                  <span className="text-sm font-medium text-slate-500 dark:text-slate-700">€</span>
-                  <span className="text-sm text-slate-500 dark:text-slate-700">{tier.period}</span>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-900">
-                  {tier.features.map((f) => (
-                    <li key={f} className="flex gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-violet-600 dark:text-violet-400" />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter>
-                {tier.priceId ? (
-                  <Button
-                    className="w-full rounded-full"
-                    variant={tier.highlighted ? 'default' : 'outline'}
-                    disabled={loadingPlan === tier.planId}
-                    onClick={() => handleSubscribe(tier.priceId!, tier.planId, tier.trialDays)}
-                  >
-                    {loadingPlan === tier.planId ? 'Chargement...' : tier.cta}
-                  </Button>
-                ) : (
-                  <Button
-                    className="w-full rounded-full"
-                    variant={tier.highlighted ? 'default' : 'outline'}
-                    asChild
-                  >
-                    <Link href={tier.href ?? '/studio'}>{tier.cta}</Link>
-                  </Button>
+              <Card
+                id={`plan-${tier.planId}`}
+                className={cn(
+                  'scroll-mt-24 transition-all duration-500',
+                  tier.highlighted
+                    ? 'relative border-violet-200 bg-white text-slate-900 shadow-lg shadow-violet-500/10 ring-2 ring-violet-500/20 dark:border-violet-300 dark:bg-white dark:text-slate-900 dark:shadow-violet-900/25 dark:ring-violet-400/40'
+                    : 'border-slate-200/80 bg-white text-slate-900 shadow-sm dark:border-slate-200 dark:bg-white dark:text-slate-900',
+                  highlightedPlan === tier.planId &&
+                    'ring-4 ring-violet-500 shadow-xl shadow-violet-500/30 scale-[1.02]',
                 )}
-              </CardFooter>
-            </Card>
+              >
+                {tier.highlighted && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-violet-600 px-3 py-0.5 text-xs font-semibold text-white">
+                    {t('pricing.popular')}
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle className="text-lg text-slate-900 dark:text-slate-900">
+                    {tier.name}
+                  </CardTitle>
+                  <CardDescription className="text-slate-600 dark:text-slate-900">
+                    {tier.description}
+                  </CardDescription>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-900">
+                      {tier.price}
+                    </span>
+                    <span className="text-sm font-medium text-slate-500 dark:text-slate-700">€</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-700">{tier.period}</span>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-900">
+                    {tier.features.map((f) => (
+                      <li key={f} className="flex gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-violet-600 dark:text-violet-400" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  {tier.priceId ? (
+                    <Button
+                      className="w-full rounded-full"
+                      variant={tier.highlighted ? 'default' : 'outline'}
+                      disabled={loadingPlan === tier.planId}
+                      onClick={() => handleSubscribe(tier.priceId!, tier.planId, tier.trialDays)}
+                    >
+                      {loadingPlan === tier.planId ? 'Chargement...' : tier.cta}
+                    </Button>
+                  ) : (
+                    <Button
+                      className="w-full rounded-full"
+                      variant={tier.highlighted ? 'default' : 'outline'}
+                      asChild
+                    >
+                      <Link href={tier.href ?? '/studio'}>{tier.cta}</Link>
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
+            </div>
           ))}
         </div>
 
