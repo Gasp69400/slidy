@@ -301,6 +301,34 @@ export const SITE_STRINGS = {
   },
   'pricing.popular': { fr: 'Populaire', en: 'Popular' },
   'pricing.back': { fr: '← Retour à l’accueil', en: '← Back to home' },
+  'pricing.hero_badge': {
+    fr: 'Slides & CV · même studio',
+    en: 'Slides & résumés · one studio',
+  },
+  'pricing.title_lead': {
+    fr: 'Des offres simples.',
+    en: 'Simple plans.',
+  },
+  'pricing.title_accent': {
+    fr: 'Un rendu sérieux.',
+    en: 'Serious output.',
+  },
+  'pricing.trust_slides': {
+    fr: 'Présentations IA',
+    en: 'AI presentations',
+  },
+  'pricing.trust_cv': {
+    fr: 'CV & lettres ATS',
+    en: 'ATS résumés & letters',
+  },
+  'pricing.trust_export': {
+    fr: 'Export PDF & PPTX',
+    en: 'PDF & PPTX export',
+  },
+  'pricing.secure': {
+    fr: 'Paiement sécurisé via Stripe · Annulation à tout moment',
+    en: 'Secure checkout via Stripe · Cancel anytime',
+  },
   'pricing.tier.starter.name': { fr: 'Starter', en: 'Starter' },
 'pricing.tier.starter.desc': {
   fr: 'Essayez Slidy gratuitement pour vos premières créations.',

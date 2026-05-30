@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode, Ref } from 'react'
-import { Check, Sparkles } from 'lucide-react'
+import { Check, Crown, Sparkles, Zap, type LucideIcon } from 'lucide-react'
 
 import type { PricingPlanId } from '@/lib/pricing-tiers'
 import { cn } from '@/lib/utils'
@@ -25,6 +25,40 @@ type PricingTierCardProps = {
   flashHighlight?: boolean
   innerRef?: Ref<HTMLElement>
   className?: string
+  /** Icône, bandeau et orbe décoratifs (page /pricing). */
+  visual?: PricingPlanId
+}
+
+const PLAN_VISUAL: Record<
+  PricingPlanId,
+  {
+    Icon: LucideIcon
+    iconWrap: string
+    orb: string
+    stripe: string
+  }
+> = {
+  starter: {
+    Icon: Zap,
+    iconWrap:
+      'bg-gradient-to-br from-slate-100 to-violet-100 text-violet-600 ring-violet-200/60 dark:from-slate-800 dark:to-violet-950/80 dark:text-violet-300 dark:ring-violet-500/25',
+    orb: 'bg-violet-400/25 dark:bg-violet-500/20',
+    stripe: 'from-slate-400 via-violet-400 to-fuchsia-400/60',
+  },
+  pro: {
+    Icon: Sparkles,
+    iconWrap:
+      'bg-gradient-to-br from-violet-100 to-fuchsia-100 text-violet-700 ring-violet-300/50 dark:from-violet-950 dark:to-fuchsia-950/70 dark:text-violet-200 dark:ring-violet-400/30',
+    orb: 'bg-fuchsia-400/30 dark:bg-fuchsia-500/25',
+    stripe: 'from-violet-500 via-fuchsia-500 to-violet-400/50',
+  },
+  ultimate: {
+    Icon: Crown,
+    iconWrap:
+      'bg-gradient-to-br from-amber-50 to-violet-100 text-amber-700 ring-amber-200/60 dark:from-amber-950/80 dark:to-violet-950 dark:text-amber-200 dark:ring-amber-500/25',
+    orb: 'bg-amber-400/25 dark:bg-amber-500/15',
+    stripe: 'from-amber-400 via-violet-500 to-fuchsia-500/70',
+  },
 }
 
 export function pricingTierCtaClassName(highlighted: boolean) {
@@ -64,8 +98,11 @@ export function PricingTierCard({
   flashHighlight = false,
   innerRef,
   className,
+  visual,
 }: PricingTierCardProps) {
   const accent = tier.highlighted
+  const planVisual = visual ? PLAN_VISUAL[visual] : null
+  const PlanIcon = planVisual?.Icon
 
   return (
     <article
@@ -98,6 +135,26 @@ export function PricingTierCard({
           flashHighlight && 'shadow-xl shadow-violet-500/30',
         )}
       >
+        {planVisual ? (
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r',
+              planVisual.stripe,
+            )}
+          />
+        ) : null}
+
+        {planVisual ? (
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full blur-3xl',
+              planVisual.orb,
+            )}
+          />
+        ) : null}
+
         <div
           aria-hidden
           className={cn(
@@ -109,6 +166,17 @@ export function PricingTierCard({
         />
 
         <div className="relative flex flex-1 flex-col px-6 pb-6 pt-7 sm:px-7 sm:pb-7 sm:pt-8">
+          {PlanIcon && planVisual ? (
+            <div
+              className={cn(
+                'mb-5 inline-flex h-11 w-11 items-center justify-center rounded-2xl shadow-sm ring-1',
+                planVisual.iconWrap,
+              )}
+            >
+              <PlanIcon className="h-5 w-5" strokeWidth={2} aria-hidden />
+            </div>
+          ) : null}
+
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">
