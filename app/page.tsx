@@ -622,7 +622,7 @@ function FooterCTA() {
             className="h-12 min-w-[200px] rounded-full border-white/85 bg-transparent px-8 text-base font-semibold text-white shadow-inner backdrop-blur-sm hover:bg-white/15"
             asChild
           >
-            <Link href="/auth/login">{t('home.footer.cta_secondary')}</Link>
+            <Link href="/pricing">Voir les plans</Link>
           </Button>
         </div>
         <p className="mt-8">
