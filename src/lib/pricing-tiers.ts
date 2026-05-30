@@ -2,6 +2,8 @@ import type { SiteStrKey } from '@/lib/site-messages'
 
 export type PricingPlanId = 'starter' | 'pro' | 'ultimate'
 
+export const DEFAULT_SELECTED_PLAN: PricingPlanId = 'pro'
+
 export type PricingTierDefinition = {
   name: string
   price: string

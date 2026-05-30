@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   ArrowRight,
@@ -23,7 +23,7 @@ import {
   pricingTierCtaClassName,
 } from '@/components/pricing/PricingTierCard'
 import { Button } from '@/components/ui/button'
-import { buildPricingTiers } from '@/lib/pricing-tiers'
+import { buildPricingTiers, DEFAULT_SELECTED_PLAN, type PricingPlanId } from '@/lib/pricing-tiers'
 import { useSiteLocale } from '@/lib/site-locale'
 import { cn } from '@/lib/utils'
 
@@ -391,6 +391,8 @@ function FeaturesSection() {
 function HomePricingSection() {
   const { t } = useSiteLocale()
   const tiers = useMemo(() => buildPricingTiers(t), [t])
+  const [selectedPlanId, setSelectedPlanId] =
+    useState<PricingPlanId>(DEFAULT_SELECTED_PLAN)
 
   return (
     <section
@@ -419,22 +421,28 @@ function HomePricingSection() {
         </div>
 
         <PricingTierGrid className="mt-14">
-          {tiers.map((tier) => (
-            <PricingTierCard
-              key={tier.planId}
-              tier={tier}
-              popularLabel={t('pricing.popular')}
-              includesLabel={t('home.pricing.includes')}
-              footer={
-                <Link
-                  href={`/pricing#plan-${tier.planId}`}
-                  className={pricingTierCtaClassName(tier.highlighted)}
-                >
-                  {t('home.pricing.card_cta')}
-                </Link>
-              }
-            />
-          ))}
+          {tiers.map((tier) => {
+            const isSelected = selectedPlanId === tier.planId
+            return (
+              <PricingTierCard
+                key={tier.planId}
+                tier={tier}
+                selected={isSelected}
+                selectedLabel={t('pricing.selected')}
+                onSelect={() => setSelectedPlanId(tier.planId)}
+                popularLabel={t('pricing.popular')}
+                includesLabel={t('home.pricing.includes')}
+                footer={
+                  <Link
+                    href={`/pricing#plan-${tier.planId}`}
+                    className={pricingTierCtaClassName(isSelected)}
+                  >
+                    {t('home.pricing.card_cta')}
+                  </Link>
+                }
+              />
+            )
+          })}
         </PricingTierGrid>
 
         <p className="relative mt-10 text-center text-xs text-slate-600 dark:text-slate-500 sm:text-sm">

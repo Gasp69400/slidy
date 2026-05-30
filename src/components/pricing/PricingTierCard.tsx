@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode, Ref } from 'react'
+import type { KeyboardEvent, ReactNode, Ref } from 'react'
 import { Check, Crown, Sparkles, Zap, type LucideIcon } from 'lucide-react'
 
 import type { PricingPlanId } from '@/lib/pricing-tiers'
@@ -22,6 +22,10 @@ type PricingTierCardProps = {
   includesLabel: string
   footer: ReactNode
   id?: string
+  /** Surlignage actif (prioritaire sur tier.highlighted). */
+  selected?: boolean
+  selectedLabel?: string
+  onSelect?: () => void
   flashHighlight?: boolean
   innerRef?: Ref<HTMLElement>
   className?: string
@@ -95,21 +99,39 @@ export function PricingTierCard({
   includesLabel,
   footer,
   id,
+  selected,
+  selectedLabel,
+  onSelect,
   flashHighlight = false,
   innerRef,
   className,
   visual,
 }: PricingTierCardProps) {
-  const accent = tier.highlighted
+  const accent = selected ?? tier.highlighted
   const planVisual = visual ? PLAN_VISUAL[visual] : null
   const PlanIcon = planVisual?.Icon
+  const badgeLabel =
+    accent && tier.planId === 'pro' ? popularLabel : selectedLabel
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (!onSelect) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onSelect()
+    }
+  }
 
   return (
     <article
       ref={innerRef}
       id={id}
+      role={onSelect ? 'button' : undefined}
+      tabIndex={onSelect ? 0 : undefined}
+      onClick={onSelect}
+      onKeyDown={handleKeyDown}
       className={cn(
-        'group relative flex h-full scroll-mt-24 flex-col transition-all duration-500',
+        'group relative flex h-full scroll-mt-24 flex-col transition-all duration-500 ease-out',
+        onSelect && 'cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
         accent && 'sm:z-[2] sm:-translate-y-1.5 sm:scale-[1.03]',
         flashHighlight &&
           'z-[3] scale-[1.02] ring-4 ring-violet-500/80 ring-offset-2 ring-offset-transparent',
@@ -194,10 +216,10 @@ export function PricingTierCard({
                 </span>
               </div>
             </div>
-            {accent ? (
+            {accent && badgeLabel ? (
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-violet-200/60 bg-violet-500/[0.08] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-violet-700 shadow-sm shadow-violet-500/10 dark:border-violet-400/25 dark:bg-violet-400/15 dark:text-violet-100">
                 <Sparkles className="h-3 w-3" aria-hidden />
-                {popularLabel}
+                {badgeLabel}
               </span>
             ) : (
               <span
@@ -234,7 +256,9 @@ export function PricingTierCard({
             ))}
           </ul>
 
-          <div className="mt-8">{footer}</div>
+          <div className="mt-8" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+            {footer}
+          </div>
         </div>
       </div>
     </article>

@@ -300,6 +300,7 @@ export const SITE_STRINGS = {
     en: 'Start free, upgrade when you need more power, exports, and speed.',
   },
   'pricing.popular': { fr: 'Populaire', en: 'Popular' },
+  'pricing.selected': { fr: 'Sélectionné', en: 'Selected' },
   'pricing.back': { fr: '← Retour à l’accueil', en: '← Back to home' },
   'pricing.hero_badge': {
     fr: 'Slides & CV · même studio',

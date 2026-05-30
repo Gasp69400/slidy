@@ -17,13 +17,15 @@ import {
   pricingTierCtaClassName,
 } from '@/components/pricing/PricingTierCard'
 import { useSiteLocale } from '@/lib/site-locale'
-import { buildPricingTiers } from '@/lib/pricing-tiers'
+import { buildPricingTiers, DEFAULT_SELECTED_PLAN, type PricingPlanId } from '@/lib/pricing-tiers'
 import { cn } from '@/lib/utils'
 
 export default function PricingPage() {
   const { t } = useSiteLocale()
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const [highlightedPlan, setHighlightedPlan] = useState<string | null>(null)
+  const [selectedPlanId, setSelectedPlanId] =
+    useState<PricingPlanId>(DEFAULT_SELECTED_PLAN)
+  const [flashPlanId, setFlashPlanId] = useState<PricingPlanId | null>(null)
   const cardRefs = useRef<Record<string, HTMLElement | null>>({})
 
   const tiers = useMemo(() => buildPricingTiers(t), [t])
@@ -40,15 +42,18 @@ export default function PricingPage() {
   useEffect(() => {
     const hash = window.location.hash.replace('#', '')
     if (hash.startsWith('plan-')) {
-      const planId = hash.replace('plan-', '')
-      setHighlightedPlan(planId)
+      const planId = hash.replace('plan-', '') as PricingPlanId
+      if (planId === 'starter' || planId === 'pro' || planId === 'ultimate') {
+        setSelectedPlanId(planId)
+        setFlashPlanId(planId)
+      }
       setTimeout(() => {
         const el = cardRefs.current[planId]
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
       }, 100)
-      setTimeout(() => setHighlightedPlan(null), 2500)
+      setTimeout(() => setFlashPlanId(null), 2500)
     }
   }, [])
 
@@ -142,15 +147,20 @@ export default function PricingPage() {
               className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.55)_0%,transparent_42%,rgba(167,139,250,0.06)_100%)] dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.04)_0%,transparent_50%,rgba(139,92,246,0.08)_100%)]"
             />
             <PricingTierGrid className="relative max-w-none">
-              {tiers.map((tier) => (
+              {tiers.map((tier) => {
+                const isSelected = selectedPlanId === tier.planId
+                return (
                 <PricingTierCard
                   key={tier.planId}
                   id={`plan-${tier.planId}`}
                   tier={tier}
                   visual={tier.planId}
+                  selected={isSelected}
+                  selectedLabel={t('pricing.selected')}
+                  onSelect={() => setSelectedPlanId(tier.planId)}
                   popularLabel={t('pricing.popular')}
                   includesLabel={t('home.pricing.includes')}
-                  flashHighlight={highlightedPlan === tier.planId}
+                  flashHighlight={flashPlanId === tier.planId}
                   innerRef={(el) => {
                     cardRefs.current[tier.planId] = el
                   }}
@@ -159,7 +169,7 @@ export default function PricingPage() {
                       <button
                         type="button"
                         className={cn(
-                          pricingTierCtaClassName(tier.highlighted),
+                          pricingTierCtaClassName(isSelected),
                           'disabled:cursor-not-allowed disabled:opacity-60',
                         )}
                         disabled={
@@ -178,14 +188,14 @@ export default function PricingPage() {
                     ) : (
                       <Link
                         href={tier.href ?? '/studio'}
-                        className={pricingTierCtaClassName(tier.highlighted)}
+                        className={pricingTierCtaClassName(isSelected)}
                       >
                         {tier.cta}
                       </Link>
                     )
                   }
                 />
-              ))}
+              )})}
             </PricingTierGrid>
           </div>
         </div>
