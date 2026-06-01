@@ -25,6 +25,12 @@ import {
 } from '@/components/pricing/PricingTierCard'
 import { Button } from '@/components/ui/button'
 import { buildPricingTiers, DEFAULT_SELECTED_PLAN, type PricingPlanId } from '@/lib/pricing-tiers'
+import {
+  trackCvChipClick,
+  trackPricingPlanCtaClick,
+  trackPricingSectionView,
+} from '@/lib/analytics'
+import { useSectionViewOnce } from '@/hooks/use-section-view-once'
 import { useSiteLocale } from '@/lib/site-locale'
 import { cn } from '@/lib/utils'
 
@@ -134,6 +140,9 @@ function HeroSection() {
             ) : (
               <Link
                 href={cvCtaHref}
+                onClick={() =>
+                  trackCvChipClick(canUseCvStudio ? 'studio_cv' : 'pricing')
+                }
                 className="inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-gradient-to-r from-emerald-50 to-white px-4 py-2 text-sm font-semibold text-emerald-900 shadow-md shadow-emerald-600/[0.12] ring-1 ring-emerald-100 transition hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-600/15 dark:border-emerald-800/55 dark:from-emerald-950/50 dark:to-slate-900/80 dark:text-emerald-200 dark:ring-emerald-900/40"
               >
                 <Briefcase className="h-3.5 w-3.5" aria-hidden />
@@ -395,6 +404,8 @@ function HomePricingSection() {
   const [selectedPlanId, setSelectedPlanId] =
     useState<PricingPlanId>(DEFAULT_SELECTED_PLAN)
 
+  useSectionViewOnce('pricing', trackPricingSectionView)
+
   return (
     <section
       id="pricing"
@@ -437,6 +448,7 @@ function HomePricingSection() {
                   <Link
                     href={`/pricing#plan-${tier.planId}`}
                     className={pricingTierCtaClassName(isSelected)}
+                    onClick={() => trackPricingPlanCtaClick(tier.planId)}
                   >
                     {t('home.pricing.card_cta')}
                   </Link>

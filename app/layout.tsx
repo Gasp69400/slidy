@@ -8,7 +8,13 @@ import { ConditionalNavigation } from '@/components/layout/ConditionalNavigation
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Slidy — Présentations IA en quelques secondes',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') ?? 'https://www.slidyapp.com',
+  ),
+  title: {
+    default: 'Slidy — Présentations IA en quelques secondes',
+    template: '%s — Slidy',
+  },
   description:
     "Créez des slides pro avec l'IA. Décrivez votre idée, obtenez une présentation structurée en quelques secondes — exportez et partagez.",
   icons: {

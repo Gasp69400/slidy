@@ -18,6 +18,7 @@ import {
 } from '@/components/pricing/PricingTierCard'
 import { useSiteLocale } from '@/lib/site-locale'
 import { buildPricingTiers, DEFAULT_SELECTED_PLAN, type PricingPlanId } from '@/lib/pricing-tiers'
+import { trackBeginCheckout } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
 
 export default function PricingPage() {
@@ -71,6 +72,7 @@ export default function PricingPage() {
       })
       const data = await res.json()
       if (data.url) {
+        trackBeginCheckout(planId, trialDays)
         window.location.href = data.url
       } else {
         console.error('Pas de lien Stripe reçu', data)

@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
 
 import { LegalCguPage } from '@/components/legal/LegalCguPage'
+import { LEGAL_CGU_PAGE_METADATA } from '@/lib/site-metadata'
 
-export const metadata: Metadata = {
-  title: 'Conditions générales d’utilisation — Slidy',
-  description:
-    'CGU du service Slidy : service IA, absence de garantie, responsabilité de l’utilisateur, détection de contenus IA.',
-}
+export const metadata: Metadata = LEGAL_CGU_PAGE_METADATA
 
 export default function CguRoutePage() {
   return <LegalCguPage />
