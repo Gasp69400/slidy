@@ -13,6 +13,7 @@
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev",
+    "migrate:supabase": "node scripts/migrate-supabase.cjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"
