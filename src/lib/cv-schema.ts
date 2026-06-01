@@ -5,6 +5,7 @@ export const CV_TEMPLATE_SLUGS = [
   'minimalist',
   'creative',
   'professional',
+  'finance',
   'ats',
 ] as const
  

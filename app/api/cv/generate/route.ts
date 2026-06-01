@@ -32,6 +32,7 @@ const bodySchema = z
     layoutDensity: cvDesignOptionsSchema.shape.layoutDensity.optional(),
     accentHex: cvDesignOptionsSchema.shape.accentHex.optional(),
     locale: z.enum(['fr', 'en']).default('fr'),
+    sector: z.enum(['general', 'finance']).optional().default('general'),
     title: z.string().min(1).optional(),
   })
   .superRefine((data, ctx) => {
@@ -109,6 +110,7 @@ export async function POST(request: NextRequest) {
           manualContext,
           locale: input.locale,
           jobDescription: input.jobDescription?.trim(),
+          sector: input.sector,
         })
       } catch (e) {
         console.error('CV Groq error:', e)

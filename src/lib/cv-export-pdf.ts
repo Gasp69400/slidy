@@ -650,7 +650,7 @@ export async function exportCvCoverToPdf(input: {
 
   y = Math.min(yL, yR) - 14
 
-  if (slug === 'professional') {
+  if (slug === 'professional' || slug === 'finance') {
     page.drawLine({
       start: { x: margin, y: y + 4 },
       end: { x: pageW - margin, y: y + 4 },

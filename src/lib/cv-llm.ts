@@ -25,6 +25,28 @@ ATS optimization:
 - skills: exactly 2 groups with names exactly « Hard Skills » and « Soft Skills » (these exact English labels). Items in English for English locale.
 - Cover letter: natural professional tone; mirror job-posting keywords when provided; one idea per paragraph; careful punctuation (commas, periods); complete sentences — no wall of text. REQUIRED layout: separate paragraphs with ONE blank line (double newline \\n\\n in the string). Do NOT add a closing formula or your name at the end (no « Sincerely », no signature block — added automatically).`
 
+const FINANCE_CONTENT_RULES_FR = `
+Spécialisation CV finance / corporate (audit, M&A, private equity, banque, contrôle de gestion, trésorerie, FP&A) :
+- L’utilisateur fournit un profil structuré paragraphe par paragraphe (poste visé, formation, expériences, compétences) : respecter cette structure sobre, sans surcharger le design textuel.
+- headline : reprendre le poste visé tel quel ou l’affiner (intitulé précis du marché).
+- summary : 2–3 phrases maximum, factuelles, chiffres clés si présents dans le contexte ; pas de formules marketing.
+- experience : une entrée par bloc expérience fourni ; bullets courtes avec KPIs (deals, montants, EBITDA, délais, # transactions) ; outils cités si mentionnés.
+- skills Hard Skills : Finance & compta (IFRS, LBO, DCF…), Data & outils (Excel, Bloomberg, SQL…), selon le contexte.
+- skills Soft Skills : 3–4 items concrets (rigueur, confidentialité, gestion du stress en clôture…).
+- education : reprendre les diplômes fournis sans inventer de certifications.
+- coverLetter : ton cabinet / banque, concis, 3 paragraphes maximum.`
+
+const FINANCE_CONTENT_RULES_EN = `
+Finance / corporate CV specialization (audit, M&A, private equity, investment banking, FP&A, treasury):
+- The user provides a paragraph-by-paragraph profile (target role, education, experience, skills): keep the output sober and aligned with that structure.
+- headline: use or refine the target role (precise market title).
+- summary: 2–3 sentences max, fact-based, key figures from context only; no marketing fluff.
+- experience: one entry per experience block provided; short bullets with KPIs (deals, amounts, EBITDA, timelines); tools when mentioned.
+- skills Hard Skills: finance & accounting, data & tools from context.
+- skills Soft Skills: 3–4 specific items (rigor, confidentiality, close pressure…).
+- education: use provided degrees — do not invent certifications.
+- coverLetter: banking / advisory tone, concise, max 3 paragraphs.`
+
 export async function generateCvWithGroq(args: {
   mode: 'prompt' | 'manual'
   userPrompt?: string
@@ -32,6 +54,7 @@ export async function generateCvWithGroq(args: {
   locale: 'fr' | 'en'
   /** Texte de l’offre : extraction de mots-clés et alignement des intitulés */
   jobDescription?: string
+  sector?: 'general' | 'finance'
 }): Promise<LlmCvResponse> {
   const client = getGroqClient()
   const model = resolveGroqChatModel()
@@ -41,9 +64,16 @@ export async function generateCvWithGroq(args: {
       args.jobDescription.trim().slice(0, 24_000)
     : ''
 
+  const financeBlock =
+    args.sector === 'finance' ?
+      args.locale === 'fr' ?
+        FINANCE_CONTENT_RULES_FR
+      : FINANCE_CONTENT_RULES_EN
+    : ''
+
   const system =
     args.locale === 'fr' ?
-      `Tu es un consultant carrière senior spécialisé en CV et lettres compatibles ATS.
+      `Tu es un consultant carrière senior spécialisé en CV et lettres compatibles ATS${args.sector === 'finance' ? ', avec expertise finance / corporate' : ''}.
 Tu produis UN SEUL objet JSON valide (pas de markdown, pas de texte hors JSON).
 
 Structure JSON obligatoire :
@@ -54,9 +84,10 @@ Structure JSON obligatoire :
 - coverLetter: string — lettre en français, 3 à 5 paragraphes (sans formule finale ni signature ; paragraphes séparés par une ligne vide)
 
 ${ATS_CONTENT_RULES_FR}
+${financeBlock}
 
 Si une offre d’emploi est fournie : identifier les exigences et mots-clés importants ; les intégrer dans summary, bullets et skills sans sur-optimisation ni répétition lourde ; utiliser l’intitulé de poste de l’offre pour headline si cohérent avec le candidat.`
-    : `You are a senior career coach focused on ATS-friendly CVs and cover letters.
+    : `You are a senior career coach focused on ATS-friendly CVs and cover letters${args.sector === 'finance' ? ' with finance / corporate expertise' : ''}.
 Output exactly ONE valid JSON object (no markdown, no text outside JSON).
 
 Required JSON shape:
@@ -67,12 +98,15 @@ Required JSON shape:
 - coverLetter: string — 3–5 paragraphs in professional English (no closing line or signature; blank line between paragraphs)
 
 ${ATS_CONTENT_RULES_EN}
+${financeBlock}
 
 When a job posting is provided: extract relevant requirements and keywords; weave them into summary, bullets, and skills naturally; use the posting’s job title for headline when it fits the candidate’s level.`
 
   const userContent = [
     args.mode === 'prompt' ?
-      `Primary user request:\n${args.userPrompt ?? ''}`
+      args.sector === 'finance' ?
+        `Finance CV profile (paragraph-by-paragraph input):\n${args.userPrompt ?? ''}`
+      : `Primary user request:\n${args.userPrompt ?? ''}`
     : `Structured user profile (JSON or notes):\n${args.manualContext || '{}'}`,
     '',
     jobBlock ?

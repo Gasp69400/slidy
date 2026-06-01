@@ -261,6 +261,8 @@ export function CvPreview({ kit, design, className }: Props) {
       'border-slate-200 bg-slate-50 md:bg-gradient-to-b md:from-slate-50 md:to-slate-100/80 md:shadow-[inset_-1px_0_0_0_rgba(15,23,42,0.08)]',
     design.templateSlug === 'professional' &&
       'border-slate-300/70 bg-slate-200/40 md:bg-slate-100',
+    design.templateSlug === 'finance' &&
+      'border-slate-300/80 bg-slate-50 md:bg-gradient-to-b md:from-slate-100/90 md:to-white',
   )
 
   const loc = kit.profile.contact?.location?.trim()
@@ -281,9 +283,20 @@ export function CvPreview({ kit, design, className }: Props) {
       )}
     >
       <div className="relative">
-        {design.templateSlug === 'creative' && (
+        {(design.templateSlug === 'creative' || design.templateSlug === 'finance') && (
           <div
-            className="absolute bottom-0 left-0 top-0 w-1.5"
+            className={cn(
+              'absolute bottom-0 left-0 top-0',
+              design.templateSlug === 'creative' ? 'w-1.5' : 'w-1',
+            )}
+            style={{ backgroundColor: accent }}
+            aria-hidden
+          />
+        )}
+
+        {design.templateSlug === 'finance' && (
+          <div
+            className="h-1 w-full"
             style={{ backgroundColor: accent }}
             aria-hidden
           />

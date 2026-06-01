@@ -25,6 +25,11 @@ import {
   randomAtsBadgePercent,
   writeCvPostGenerateAtsBadge,
 } from '@/lib/cv-post-generate-ats-badge'
+import {
+  buildFinancePrompt,
+  hasMinFinanceInput,
+  type FinanceCvInput,
+} from '@/lib/cv-finance-input'
 import { useSiteLocale } from '@/lib/site-locale'
 
 type ExpRow = { role: string; company: string; period: string; bullets: string }
@@ -32,10 +37,12 @@ type ExpRow = { role: string; company: string; period: string; bullets: string }
 /** Pourcentages décoratifs pendant la génération (pas un score ATS mesuré). */
 const ATS_FAKE_STEPS = [52, 61, 70, 76, 80, 86, 91, 94] as const
 
+type InputMode = 'prompt' | 'manual' | 'finance'
+
 export default function CvStudioPage() {
   const { t, locale } = useSiteLocale()
   const router = useRouter()
-  const [inputMode, setInputMode] = useState<'prompt' | 'manual'>('manual')
+  const [inputMode, setInputMode] = useState<InputMode>('manual')
   const [userPrompt, setUserPrompt] = useState('')
   const [fullName, setFullName] = useState('')
   const [headline, setHeadline] = useState('')
@@ -60,6 +67,14 @@ export default function CvStudioPage() {
     locale === 'en' ? 'en' : 'fr',
   )
   const [jobDescription, setJobDescription] = useState('')
+  const [financeTargetRole, setFinanceTargetRole] = useState('')
+  const [financeFullName, setFinanceFullName] = useState('')
+  const [financeContactLine, setFinanceContactLine] = useState('')
+  const [financeEducation, setFinanceEducation] = useState('')
+  const [financeExperience, setFinanceExperience] = useState('')
+  const [financeSkills, setFinanceSkills] = useState('')
+  const [financeCertifications, setFinanceCertifications] = useState('')
+  const [financeOffer, setFinanceOffer] = useState('')
   const [error, setError] = useState('')
   const [fakeAtsPercent, setFakeAtsPercent] = useState(0)
   const atsTickRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -77,6 +92,32 @@ export default function CvStudioPage() {
   })
 
   const allowed = capsData?.data?.allowedDocumentTypes?.includes('CV_COVER')
+
+  const financeFields: FinanceCvInput = useMemo(
+    () => ({
+      targetRole: financeTargetRole,
+      fullName: financeFullName,
+      contactLine: financeContactLine,
+      education: financeEducation,
+      experience: financeExperience,
+      skills: financeSkills,
+      certifications: financeCertifications,
+    }),
+    [
+      financeCertifications,
+      financeContactLine,
+      financeEducation,
+      financeExperience,
+      financeFullName,
+      financeSkills,
+      financeTargetRole,
+    ],
+  )
+
+  const financePrompt = useMemo(
+    () => buildFinancePrompt(financeFields, contentLocale),
+    [contentLocale, financeFields],
+  )
 
   const generateMutation = useMutation({
     mutationFn: async () => {
@@ -110,11 +151,25 @@ export default function CvStudioPage() {
         Boolean(phone.trim()) ||
         Boolean(location.trim())
 
+      const isFinance = inputMode === 'finance'
+      const effectiveMode: 'prompt' | 'manual' = isFinance ? 'prompt' : inputMode
+      const promptText = isFinance ? financePrompt : userPrompt
+
       const body = {
-        mode: inputMode,
-        userPrompt: inputMode === 'prompt' ? userPrompt : undefined,
+        mode: effectiveMode,
+        sector: isFinance ? 'finance' : 'general',
+        userPrompt:
+          effectiveMode === 'prompt' && promptText.trim()
+            ? promptText
+            : undefined,
         manual:
-          inputMode === 'manual' || hasManualExtra
+          isFinance ?
+            {
+              fullName: financeFullName.trim() || undefined,
+              headline: financeTargetRole.trim() || undefined,
+              photoUrl: photoUrl.trim() || undefined,
+            }
+          : effectiveMode === 'manual' || hasManualExtra
             ? {
                 fullName: fullName || undefined,
                 headline: headline || undefined,
@@ -131,7 +186,8 @@ export default function CvStudioPage() {
               }
             : undefined,
         skillsText: skillsText || undefined,
-        jobDescription: jobDescription.trim() || undefined,
+        jobDescription:
+          (isFinance ? financeOffer : jobDescription).trim() || undefined,
         templateSlug,
         fontFamily,
         layoutDensity,
@@ -196,6 +252,7 @@ export default function CvStudioPage() {
 
   const canSubmit = useMemo(() => {
     if (inputMode === 'prompt') return userPrompt.trim().length >= 12
+    if (inputMode === 'finance') return hasMinFinanceInput(financeFields)
     return (
       Boolean(fullName.trim()) ||
       Boolean(headline.trim()) ||
@@ -224,6 +281,7 @@ export default function CvStudioPage() {
     skillsText,
     summary,
     userPrompt,
+    financeFields,
   ])
 
   const updateExp = (i: number, patch: Partial<ExpRow>) => {
@@ -265,14 +323,25 @@ export default function CvStudioPage() {
         <Card className="rounded-3xl border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <Tabs
             value={inputMode}
-            onValueChange={(v) => setInputMode(v as 'prompt' | 'manual')}
+            onValueChange={(v) => {
+              const mode = v as InputMode
+              setInputMode(mode)
+              if (mode === 'finance') {
+                setTemplateSlug('finance')
+                setAccentHex('#1e3a5f')
+                setFontFamily('georgia')
+              }
+            }}
           >
-            <TabsList className="grid w-full max-w-md grid-cols-2 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+            <TabsList className="grid w-full max-w-xl grid-cols-3 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
               <TabsTrigger value="manual" className="rounded-lg text-sm">
                 {t('cv.tab_manual')}
               </TabsTrigger>
               <TabsTrigger value="prompt" className="rounded-lg text-sm">
                 {t('cv.tab_prompt')}
+              </TabsTrigger>
+              <TabsTrigger value="finance" className="rounded-lg text-sm">
+                {t('cv.tab_finance')}
               </TabsTrigger>
             </TabsList>
 
@@ -518,6 +587,100 @@ export default function CvStudioPage() {
                   ? 'Astuce : vous pouvez aussi remplir le formulaire (onglet à gauche) pour enrichir l’invite (mode hybride).'
                   : 'Tip: add details in the Form tab (left) to enrich the prompt (hybrid mode).'}
               </p>
+            </TabsContent>
+
+            <TabsContent value="finance" className="mt-5 space-y-5">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {t('cv.finance_intro')}
+              </p>
+
+              <div>
+                <Label htmlFor="finance-role">{t('cv.finance.role')}</Label>
+                <Input
+                  id="finance-role"
+                  className="mt-1 rounded-xl"
+                  placeholder={t('cv.finance.role_ph')}
+                  value={financeTargetRole}
+                  onChange={(e) => setFinanceTargetRole(e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="finance-name">{t('cv.finance.name')}</Label>
+                  <Input
+                    id="finance-name"
+                    className="mt-1 rounded-xl"
+                    value={financeFullName}
+                    onChange={(e) => setFinanceFullName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="finance-contact">{t('cv.finance.contact')}</Label>
+                  <Input
+                    id="finance-contact"
+                    className="mt-1 rounded-xl"
+                    placeholder={t('cv.finance.contact_ph')}
+                    value={financeContactLine}
+                    onChange={(e) => setFinanceContactLine(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="finance-education">{t('cv.finance.education')}</Label>
+                <Textarea
+                  id="finance-education"
+                  className="mt-1 min-h-[72px] rounded-xl border-slate-200 text-sm leading-relaxed"
+                  placeholder={t('cv.finance.education_ph')}
+                  value={financeEducation}
+                  onChange={(e) => setFinanceEducation(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="finance-experience">{t('cv.finance.experience')}</Label>
+                <Textarea
+                  id="finance-experience"
+                  className="mt-1 min-h-[120px] rounded-xl border-slate-200 text-sm leading-relaxed"
+                  placeholder={t('cv.finance.experience_ph')}
+                  value={financeExperience}
+                  onChange={(e) => setFinanceExperience(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="finance-skills">{t('cv.finance.skills')}</Label>
+                <Textarea
+                  id="finance-skills"
+                  className="mt-1 min-h-[64px] rounded-xl border-slate-200 text-sm leading-relaxed"
+                  placeholder={t('cv.finance.skills_ph')}
+                  value={financeSkills}
+                  onChange={(e) => setFinanceSkills(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="finance-certs">{t('cv.finance.certifications')}</Label>
+                <Textarea
+                  id="finance-certs"
+                  className="mt-1 min-h-[56px] rounded-xl border-slate-200 text-sm leading-relaxed"
+                  placeholder={t('cv.finance.certifications_ph')}
+                  value={financeCertifications}
+                  onChange={(e) => setFinanceCertifications(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="finance-offer">{t('cv.finance.offer')}</Label>
+                <Textarea
+                  id="finance-offer"
+                  className="mt-1 min-h-[72px] rounded-xl border-slate-200 text-sm leading-relaxed dark:border-slate-700"
+                  placeholder={t('cv.finance.offer_ph')}
+                  value={financeOffer}
+                  onChange={(e) => setFinanceOffer(e.target.value)}
+                />
+              </div>
             </TabsContent>
           </Tabs>
 

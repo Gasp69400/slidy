@@ -51,6 +51,15 @@ export const CV_TEMPLATES: CvTemplateDef[] = [
     sidebarClass: 'space-y-4',
   },
   {
+    slug: 'finance',
+    labelKey: 'cv.tpl.finance',
+    descriptionKey: 'cv.tpl.finance.desc',
+    previewClass: 'bg-gradient-to-br from-slate-100 to-slate-200 border-b-4 border-slate-700',
+    shellClass: 'bg-white text-slate-900 border border-slate-300',
+    headerClass: 'bg-slate-50 border-b border-slate-200 pb-4 mb-4',
+    sidebarClass: 'space-y-4',
+  },
+  {
     slug: 'ats',
     labelKey: 'cv.tpl.ats',
     descriptionKey: 'cv.tpl.ats.desc',

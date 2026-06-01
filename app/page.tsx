@@ -13,6 +13,7 @@ import {
   Wand2,
   Zap,
   FileDown,
+  Quote,
 } from 'lucide-react'
 
 import { SlidyLogoMark } from '@/components/brand/SlidyLogoMark'
@@ -220,6 +221,64 @@ function HeroSection() {
   )
 }
 
+function HomeSocialProof() {
+  const { t } = useSiteLocale()
+
+  const useCases = [
+    t('home.stats.social_use_pitch'),
+    t('home.stats.social_use_jobs'),
+    t('home.stats.social_use_demo'),
+  ]
+
+  const testimonials = [
+    {
+      quote: t('home.stats.testimonial_1.quote'),
+      author: t('home.stats.testimonial_1.author'),
+    },
+    {
+      quote: t('home.stats.testimonial_2.quote'),
+      author: t('home.stats.testimonial_2.author'),
+    },
+  ]
+
+  return (
+    <div className="mt-6 rounded-[1.15rem] border border-slate-200/70 bg-slate-50/60 px-4 py-5 ring-1 ring-slate-200/40 backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-900/40 dark:ring-white/6 sm:px-6">
+      <p className="text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+        {t('home.stats.social_kicker')}
+      </p>
+      <ul className="mt-3 flex flex-wrap items-center justify-center gap-2">
+        {useCases.map((label) => (
+          <li
+            key={label}
+            className="rounded-full border border-brand-200/70 bg-white/90 px-3 py-1 text-[11px] font-semibold text-brand-800 shadow-sm dark:border-brand-500/25 dark:bg-slate-950/70 dark:text-brand-200"
+          >
+            {label}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {testimonials.map(({ quote, author }) => (
+          <figure
+            key={author}
+            className="rounded-xl border border-white/80 bg-white/85 p-4 text-left shadow-sm dark:border-white/8 dark:bg-slate-950/55"
+          >
+            <Quote
+              className="mb-2 h-4 w-4 text-brand-500/70 dark:text-brand-400/80"
+              aria-hidden
+            />
+            <blockquote className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+              {quote}
+            </blockquote>
+            <figcaption className="mt-3 text-xs font-medium text-slate-500 dark:text-slate-400">
+              {author}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function HomeStatsSection() {
   const { t } = useSiteLocale()
 
@@ -270,6 +329,7 @@ function HomeStatsSection() {
           </div>
         </div>
       </div>
+      <HomeSocialProof />
       <p className="mt-4 text-center text-[11px] leading-snug text-slate-500 dark:text-slate-500">
         {t('home.stats.ats_hint')}
       </p>

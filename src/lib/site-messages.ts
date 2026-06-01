@@ -157,6 +157,38 @@ export const SITE_STRINGS = {
     fr: 'Decks pour convaincre en réunion · CV & lettres pour les recruteurs.',
     en: 'Decks to win the meeting · CVs and cover letters for recruiters.',
   },
+  'home.stats.social_kicker': {
+    fr: 'Utilisé pour',
+    en: 'Used for',
+  },
+  'home.stats.social_use_pitch': {
+    fr: 'Pitch investisseur',
+    en: 'Investor pitch',
+  },
+  'home.stats.social_use_jobs': {
+    fr: 'Candidatures',
+    en: 'Job applications',
+  },
+  'home.stats.social_use_demo': {
+    fr: 'Demo day & soutenances',
+    en: 'Demo days & thesis defense',
+  },
+  'home.stats.testimonial_1.quote': {
+    fr: '« Mon deck Series A prêt en une soirée — structure claire, rendu pro. »',
+    en: '“My Series A deck ready in one evening — clear story, polished look.”',
+  },
+  'home.stats.testimonial_1.author': {
+    fr: 'Léa M. · Fondatrice',
+    en: 'Léa M. · Founder',
+  },
+  'home.stats.testimonial_2.quote': {
+    fr: '« CV refait en 20 minutes, candidatures envoyées le lendemain. »',
+    en: '“CV rebuilt in 20 minutes — applications sent the next day.”',
+  },
+  'home.stats.testimonial_2.author': {
+    fr: 'Thomas R. · Product manager',
+    en: 'Thomas R. · Product manager',
+  },
   'home.preview.status': {
     fr: 'Studio · aperçu en direct',
     en: 'Studio · live preview',
@@ -867,6 +899,53 @@ export const SITE_STRINGS = {
   },
   'cv.tab_prompt': { fr: 'Invite', en: 'Prompt' },
   'cv.tab_manual': { fr: 'Formulaire', en: 'Form' },
+  'cv.tab_finance': { fr: 'Finance', en: 'Finance' },
+  'cv.finance_intro': {
+    fr: 'Structure corporate : remplissez section par section, un paragraphe à la fois.',
+    en: 'Corporate layout: fill in one section at a time, one paragraph per block.',
+  },
+  'cv.finance.role': { fr: 'Poste visé', en: 'Target role' },
+  'cv.finance.role_ph': {
+    fr: 'Analyste M&A · Auditeur financial services · Analyste FP&A',
+    en: 'M&A Analyst · Financial Services Auditor · FP&A Analyst',
+  },
+  'cv.finance.name': { fr: 'Nom complet', en: 'Full name' },
+  'cv.finance.contact': { fr: 'Coordonnées', en: 'Contact details' },
+  'cv.finance.contact_ph': {
+    fr: 'email@exemple.com · +33 6 00 00 00 00 · Paris',
+    en: 'email@example.com · +44 7700 900000 · London',
+  },
+  'cv.finance.education': { fr: 'Formation', en: 'Education' },
+  'cv.finance.education_ph': {
+    fr: '2024 · Master Finance · HEC Paris\n2019 · Classe prépa ECE · Lycée Henri IV',
+    en: '2024 · MSc Finance · London School of Economics\n2019 · BSc Economics · University of Edinburgh',
+  },
+  'cv.finance.experience': { fr: 'Expériences', en: 'Experience' },
+  'cv.finance.experience_ph': {
+    fr: 'Jan. 2022 – déc. 2024 · Analyste M&A · Rothschild & Co\n4 opérations infra (50–200 M€). Modèles LBO, teasers, dataroom.\n\nSept. 2020 – déc. 2021 · Stage audit · Deloitte\nCycle titres, clôture trimestrielle, contrôles IFRS.',
+    en: 'Jan 2022 – Dec 2024 · M&A Analyst · Rothschild & Co\n4 infra deals (€50–200M). LBO models, teasers, dataroom.\n\nSep 2020 – Dec 2021 · Audit internship · Deloitte\nSecurities cycle, quarterly close, IFRS controls.',
+  },
+  'cv.finance.skills': { fr: 'Compétences & outils', en: 'Skills & tools' },
+  'cv.finance.skills_ph': {
+    fr: 'Excel avancé (VBA), PowerPoint, Bloomberg, DCF / LBO, IFRS, SQL.',
+    en: 'Advanced Excel (VBA), PowerPoint, Bloomberg, DCF / LBO, IFRS, SQL.',
+  },
+  'cv.finance.certifications': {
+    fr: 'Certifications & langues (optionnel)',
+    en: 'Certifications & languages (optional)',
+  },
+  'cv.finance.certifications_ph': {
+    fr: 'CFA Level I · TOEIC 950 · Anglais courant, espagnol professionnel.',
+    en: 'CFA Level I · TOEIC 950 · Fluent English, professional Spanish.',
+  },
+  'cv.finance.offer': {
+    fr: 'Offre / fiche de poste (optionnel)',
+    en: 'Job posting (optional)',
+  },
+  'cv.finance.offer_ph': {
+    fr: 'Collez l’offre pour aligner mots-clés et intitulés ATS.',
+    en: 'Paste the posting to align ATS keywords and job titles.',
+  },
   'cv.prompt_label': { fr: 'Décrivez le profil visé', en: 'Describe the target profile' },
   'cv.prompt_ph': {
     fr: 'Ex. : CV pour un étudiant en marketing avec 2 stages en agence',
@@ -958,6 +1037,11 @@ export const SITE_STRINGS = {
   'cv.tpl.professional.desc': {
     fr: 'Style sobre type cabinet / corporate.',
     en: 'Corporate, conservative layout.',
+  },
+  'cv.tpl.finance': { fr: 'Finance', en: 'Finance' },
+  'cv.tpl.finance.desc': {
+    fr: 'Corporate, barre d’accent, KPIs et rigueur visuelle.',
+    en: 'Corporate layout with accent bar — built for finance KPIs.',
   },
   'cv.tpl.ats': { fr: 'ATS (logiciels de recrutement)', en: 'ATS (applicant tracking)' },
   'cv.tpl.ats.desc': {
