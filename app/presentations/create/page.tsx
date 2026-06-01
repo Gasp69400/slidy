@@ -713,7 +713,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
                 onClick={() => set('detail', d.value)}
                 className={`rounded-xl border p-3.5 text-left transition-all ${
                   form.detail === d.value
-                    ? 'border-indigo-300 bg-indigo-50 text-indigo-700 dark:border-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-200'
+                    ? 'border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-600 dark:bg-brand-950/50 dark:text-brand-200'
                     : 'border-slate-100 text-slate-600 hover:border-slate-200 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600'
                 }`}
               >
@@ -733,7 +733,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
             <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
               {t('create.slides')}
             </Label>
-            <span className="rounded-lg bg-indigo-50 px-3 py-1 text-sm font-bold text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-300">
+            <span className="rounded-lg bg-brand-50 px-3 py-1 text-sm font-bold text-brand-600 dark:bg-brand-950/60 dark:text-brand-300">
               {form.slideCount}
             </span>
           </div>
@@ -761,7 +761,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
                 key={opt.key}
                 className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3.5 transition-all ${
                   form.options[opt.key as keyof typeof form.options]
-                    ? 'border-indigo-200 bg-indigo-50/50 dark:border-indigo-800 dark:bg-indigo-950/30'
+                    ? 'border-brand-200 bg-brand-50/50 dark:border-brand-800 dark:bg-brand-950/30'
                     : 'border-slate-100 hover:border-slate-200 dark:border-slate-700 dark:hover:border-slate-600'
                 }`}
               >
@@ -803,7 +803,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
           type="button"
           onClick={() => void handleGenerate()}
           disabled={!form.topic.trim() || generating}
-          className="h-14 w-full gap-2 rounded-xl bg-indigo-600 text-base shadow-lg shadow-indigo-200 dark:shadow-indigo-950/40 hover:bg-indigo-700"
+          className="h-14 w-full gap-2 rounded-xl bg-brand-500 text-base shadow-lg shadow-brand-200 dark:shadow-brand-950/40 hover:bg-brand-600"
         >
           <Sparkles className="w-5 h-5" />
           {t('create.generate')}

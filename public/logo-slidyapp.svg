@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" role="img" aria-label="Slidy">
+  <defs>
+    <linearGradient id="shell" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1206"/>
+      <stop offset="100%" stop-color="#110a02"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.09)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </linearGradient>
+    <linearGradient id="cardbg" x1="22" y1="12" x2="62" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#241508"/>
+      <stop offset="100%" stop-color="#150c04"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="22" y1="46" x2="62" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF7A1A"/>
+      <stop offset="100%" stop-color="#E63E00"/>
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="34" fill="url(#shell)"/>
+  <path d="M0 0 H140 V70 Q140 34 106 34 H34 Q0 34 0 70 Z" fill="url(#shine)"/>
+  <g transform="translate(30, 30)">
+    <rect x="8" y="16" width="34" height="44" rx="7" fill="rgba(255,120,20,0.07)" stroke="rgba(255,120,20,0.18)" stroke-width="1"/>
+    <rect x="15" y="22" width="34" height="44" rx="7" fill="rgba(255,120,20,0.1)" stroke="rgba(255,120,20,0.25)" stroke-width="1"/>
+    <rect x="22" y="12" width="40" height="52" rx="8" fill="url(#cardbg)"/>
+    <rect x="30" y="22" width="26" height="3" rx="1.5" fill="white" opacity="0.9"/>
+    <rect x="30" y="28.5" width="16" height="2" rx="1" fill="white" opacity="0.4"/>
+    <rect x="30" y="33" width="20" height="2" rx="1" fill="white" opacity="0.3"/>
+    <rect x="22" y="46" width="40" height="18" rx="0 0 8 8" fill="url(#accent)"/>
+    <rect x="30" y="50.5" width="16" height="2.5" rx="1.2" fill="white" opacity="0.85"/>
+    <rect x="30" y="55" width="11" height="2" rx="1" fill="white" opacity="0.5"/>
+    <circle cx="52" cy="53" r="4" fill="rgba(255,255,255,0.15)"/>
+    <path d="M50.5 53l1.2 1.2 2-2" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+  </g>
+</svg>

@@ -86,9 +86,9 @@ export default function PricingPage() {
     <div className="relative isolate min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#f8f6ff_0%,#ffffff_38%,#f4f7fb_100%)] text-slate-900 dark:bg-[linear-gradient(180deg,#0f0d14_0%,#09090b_42%,#0a0c12_100%)] dark:text-slate-50">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_-8%,rgba(139,92,246,0.26),transparent)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-6%,rgba(139,92,246,0.16),transparent)]" />
-        <div className="absolute -left-32 top-24 h-[26rem] w-[26rem] rounded-full bg-violet-300/35 blur-[110px] dark:bg-violet-800/22" />
-        <div className="absolute -right-24 top-[28rem] h-80 w-80 rounded-full bg-fuchsia-300/30 blur-[100px] dark:bg-fuchsia-900/18" />
-        <div className="absolute bottom-0 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-[100%] bg-violet-200/25 blur-[90px] dark:bg-violet-950/35" />
+        <div className="absolute -left-32 top-24 h-[26rem] w-[26rem] rounded-full bg-brand-300/35 blur-[110px] dark:bg-brand-800/22" />
+        <div className="absolute -right-24 top-[28rem] h-80 w-80 rounded-full bg-brand-300/30 blur-[100px] dark:bg-brand-900/18" />
+        <div className="absolute bottom-0 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-[100%] bg-brand-200/25 blur-[90px] dark:bg-brand-950/35" />
         <div
           className="absolute inset-0 opacity-[0.35] dark:opacity-[0.12]"
           style={{
@@ -103,19 +103,19 @@ export default function PricingPage() {
 
       <main className="relative mx-auto max-w-6xl px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pt-14">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-violet-200/55 bg-white/75 px-4 py-1.5 text-xs font-medium tracking-wide text-violet-700 shadow-md shadow-violet-500/[0.12] ring-1 ring-white/60 backdrop-blur-md dark:border-white/14 dark:bg-slate-900/55 dark:text-violet-100 dark:ring-white/10">
-            <Sparkles className="h-3.5 w-3.5 text-violet-500 dark:text-violet-300" />
+          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-brand-200/55 bg-white/75 px-4 py-1.5 text-xs font-medium tracking-wide text-brand-700 shadow-md shadow-brand-500/[0.12] ring-1 ring-white/60 backdrop-blur-md dark:border-white/14 dark:bg-slate-900/55 dark:text-brand-100 dark:ring-white/10">
+            <Sparkles className="h-3.5 w-3.5 text-brand-500 dark:text-brand-300" />
             {t('pricing.hero_badge')}
           </div>
 
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-violet-600 dark:text-violet-400">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-600 dark:text-brand-400">
             {t('pricing.kicker')}
           </p>
           <h1 className="mt-3 text-balance text-4xl font-semibold tracking-tight sm:text-5xl sm:leading-[1.08]">
             <span className="text-slate-900 dark:text-white">
               {t('pricing.title_lead')}{' '}
             </span>
-            <span className="bg-gradient-to-r from-violet-600 via-violet-500 to-fuchsia-600 bg-clip-text text-transparent dark:from-violet-400 dark:via-violet-300 dark:to-fuchsia-400">
+            <span className="bg-gradient-to-r from-brand-600 via-brand-500 to-brand-600 bg-clip-text text-transparent dark:from-brand-400 dark:via-brand-300 dark:to-brand-400">
               {t('pricing.title_accent')}
             </span>
           </h1>
@@ -127,9 +127,9 @@ export default function PricingPage() {
             {trustPills.map(({ icon: Icon, label }) => (
               <li
                 key={label}
-                className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-sm shadow-violet-500/[0.06] ring-1 ring-violet-100/80 backdrop-blur-sm dark:border-white/12 dark:bg-slate-900/55 dark:text-slate-200 dark:ring-white/10"
+                className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-sm shadow-brand-500/[0.06] ring-1 ring-brand-100/80 backdrop-blur-sm dark:border-white/12 dark:bg-slate-900/55 dark:text-slate-200 dark:ring-white/10"
               >
-                <Icon className="h-3.5 w-3.5 text-violet-500 dark:text-violet-400" aria-hidden />
+                <Icon className="h-3.5 w-3.5 text-brand-500 dark:text-brand-400" aria-hidden />
                 {label}
               </li>
             ))}
@@ -139,9 +139,9 @@ export default function PricingPage() {
         <div className="relative mx-auto mt-14 max-w-5xl">
           <div
             aria-hidden
-            className="pointer-events-none absolute -inset-4 rounded-[2.75rem] bg-gradient-to-br from-violet-400/15 via-transparent to-fuchsia-400/12 blur-2xl dark:from-violet-600/12 dark:to-fuchsia-600/10"
+            className="pointer-events-none absolute -inset-4 rounded-[2.75rem] bg-gradient-to-br from-brand-400/15 via-transparent to-brand-400/12 blur-2xl dark:from-brand-600/12 dark:to-brand-600/10"
           />
-          <div className="relative overflow-hidden rounded-[2.25rem] border border-white/70 bg-white/45 p-5 shadow-[0_28px_80px_-36px_rgba(109,40,217,0.28)] ring-1 ring-violet-200/45 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/45 dark:ring-violet-500/15 sm:p-8 lg:p-10">
+          <div className="relative overflow-hidden rounded-[2.25rem] border border-white/70 bg-white/45 p-5 shadow-[0_28px_80px_-36px_rgba(255,118,0,0.28)] ring-1 ring-brand-200/45 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/45 dark:ring-brand-500/15 sm:p-8 lg:p-10">
             <div
               aria-hidden
               className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.55)_0%,transparent_42%,rgba(167,139,250,0.06)_100%)] dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.04)_0%,transparent_50%,rgba(139,92,246,0.08)_100%)]"
@@ -208,14 +208,14 @@ export default function PricingPage() {
           <p className="text-sm text-slate-500 dark:text-slate-400">
             <Link
               href="/legal/cgu"
-              className="font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+              className="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
             >
               {t('home.footer.terms')}
             </Link>
             <span className="mx-2 text-slate-300 dark:text-slate-600">·</span>
             <Link
               href="/"
-              className="font-medium text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300"
+              className="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
             >
               {t('pricing.back')}
             </Link>

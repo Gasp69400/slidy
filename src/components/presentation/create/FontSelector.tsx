@@ -156,7 +156,7 @@ const FontSelector: FC<FontSelectorProps> = ({
             className={cn(
               'rounded-xl border p-3 text-left transition-all',
               selected === font.id
-                ? 'border-indigo-300 bg-indigo-50 dark:border-indigo-600 dark:bg-indigo-950/40'
+                ? 'border-brand-300 bg-brand-50 dark:border-brand-600 dark:bg-brand-950/40'
                 : 'border-slate-100 hover:border-slate-200 dark:border-slate-700 dark:hover:border-slate-600',
             )}
           >

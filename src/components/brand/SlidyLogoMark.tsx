@@ -1,36 +1,55 @@
 import { cn } from '@/lib/utils'
 
+export const SLIDY_LOGO_SRC = '/logo-slidyapp.png?v=5'
+
+/** Filtre pour renforcer l’orange (#ff7600) sur la PNG source. */
+const LOGO_ORANGE_FILTER =
+  'saturate-[1.9] hue-rotate-[-14deg] brightness-[1.04] contrast-[1.12]'
+
 type SlidyLogoMarkProps = {
-  /** `xs` : pastille compacte · `sm` / `md` : logos */
-  size?: 'xs' | 'sm' | 'md'
+  /** `nav` : navbar 32px · `landing` : header 48px · `xs`/`sm` : compact */
+  size?: 'xs' | 'sm' | 'nav' | 'landing'
   className?: string
+  priority?: boolean
+}
+
+/** Carré + coins ~24 % (comme l’ancien logo 140×140, rx 34). */
+const SIZE_CLASS: Record<NonNullable<SlidyLogoMarkProps['size']>, string> = {
+  xs: 'h-5 w-5',
+  sm: 'h-7 w-7',
+  nav: 'h-8 w-8',
+  landing: 'h-12 w-12',
 }
 
 /**
- * Monogramme Slidy : « S » dans le carré dégradé (charte violet → fuchsia).
+ * Logo Slidy — pastille carrée arrondie (style app icon), PNG recadrée au centre.
  */
-export function SlidyLogoMark({ size = 'md', className }: SlidyLogoMarkProps) {
-  const sizeClass =
-    size === 'xs' ?
-      'h-6 w-6 rounded-md text-xs leading-none'
-    : size === 'sm' ?
-      'h-8 w-8 rounded-lg text-[15px] leading-none'
-    : 'h-9 w-9 rounded-xl text-[17px] leading-none'
-
+export function SlidyLogoMark({
+  size = 'nav',
+  className,
+  priority = false,
+}: SlidyLogoMarkProps) {
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 select-none items-center justify-center',
-        'bg-gradient-to-br from-violet-600 via-violet-600 to-fuchsia-500',
-        'text-white shadow-sm ring-1 ring-inset ring-white/15',
-        sizeClass,
+        'inline-flex shrink-0 select-none overflow-hidden',
+        'aspect-square rounded-[24%]',
+        'bg-gradient-to-br from-brand-500 to-brand-600',
+        'shadow-md shadow-brand-500/30 ring-1 ring-inset ring-white/20',
+        SIZE_CLASS[size],
         className,
       )}
-      aria-hidden
     >
-      <span className="translate-y-px font-black italic tracking-[-0.06em] text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.18)]">
-        S
-      </span>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={SLIDY_LOGO_SRC}
+        alt="Slidy"
+        width={782}
+        height={718}
+        decoding="async"
+        fetchPriority={priority ? 'high' : undefined}
+        className={cn('h-full w-full object-cover object-center', LOGO_ORANGE_FILTER)}
+      />
     </span>
   )
 }

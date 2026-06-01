@@ -513,7 +513,7 @@ export default function StudioEditorPage() {
                           altText: m.altText,
                         })
                       }
-                      className="group relative aspect-square overflow-hidden rounded-xl border border-slate-100 bg-slate-100 text-left transition hover:border-indigo-200 hover:shadow-sm disabled:opacity-50"
+                      className="group relative aspect-square overflow-hidden rounded-xl border border-slate-100 bg-slate-100 text-left transition hover:border-brand-200 hover:shadow-sm disabled:opacity-50"
                       disabled={insertFromGallery.isPending}
                       title={m.title ?? t('editor.media_alt')}
                     >
@@ -587,7 +587,7 @@ export default function StudioEditorPage() {
                         className={cn(
                           'min-w-[112px] max-w-[140px] rounded-2xl border px-2 py-2 text-left transition',
                           isActive
-                            ? 'border-indigo-300 bg-indigo-50'
+                            ? 'border-brand-300 bg-brand-50'
                             : 'border-slate-100 bg-slate-50 hover:border-slate-200',
                         )}
                       >
@@ -635,9 +635,9 @@ export default function StudioEditorPage() {
                               className={cn(
                                 'rounded-2xl border border-slate-100 bg-slate-50 px-3 py-2 transition-all duration-200 hover:-translate-y-0.5',
                                 snapshot.isDragging &&
-                                  'border-indigo-300 bg-indigo-50 shadow-sm',
+                                  'border-brand-300 bg-brand-50 shadow-sm',
                                 selectedBlockId === block.id &&
-                                  'border-indigo-300 bg-white',
+                                  'border-brand-300 bg-white',
                                 styleContainerClass(block.styleJson),
                               )}
                               onClick={() => setSelectedBlockId(block.id)}
@@ -720,7 +720,7 @@ export default function StudioEditorPage() {
                 }
               />
               <Button
-                className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700"
+                className="w-full rounded-xl bg-brand-500 hover:bg-brand-600"
                 onClick={() => saveDesign.mutate(design)}
                 disabled={saveDesign.isPending}
               >
@@ -957,7 +957,7 @@ function ControlRow({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 outline-none transition focus:border-indigo-300"
+        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 outline-none transition focus:border-brand-300"
       >
         {options.map((option) => (
           <option key={option} value={option}>

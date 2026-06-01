@@ -226,7 +226,7 @@ export default function StudioPage() {
             className="lg:col-span-2 flex items-center justify-between gap-4 rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-white p-4 shadow-sm transition hover:border-indigo-200 dark:border-indigo-900/40 dark:from-indigo-950/50 dark:to-slate-900"
           >
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-600 text-white">
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-500 text-white">
                 <Contact className="h-5 w-5" />
               </span>
               <div>
@@ -347,7 +347,7 @@ export default function StudioPage() {
             {error && <p className="text-xs text-red-500">{error}</p>}
 
             <Button
-              className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-700"
+              className="w-full rounded-xl bg-brand-500 hover:bg-brand-600"
               disabled={!topic.trim() || createMutation.isPending || disabledType}
               onClick={() => createMutation.mutate()}
             >

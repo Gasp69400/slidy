@@ -45,23 +45,23 @@ const PLAN_VISUAL: Record<
   starter: {
     Icon: Zap,
     iconWrap:
-      'bg-gradient-to-br from-slate-100 to-violet-100 text-violet-600 ring-violet-200/60 dark:from-slate-800 dark:to-violet-950/80 dark:text-violet-300 dark:ring-violet-500/25',
-    orb: 'bg-violet-400/25 dark:bg-violet-500/20',
-    stripe: 'from-slate-400 via-violet-400 to-fuchsia-400/60',
+      'bg-gradient-to-br from-slate-100 to-brand-100 text-brand-600 ring-brand-200/60 dark:from-slate-800 dark:to-brand-950/80 dark:text-brand-300 dark:ring-brand-500/25',
+    orb: 'bg-brand-400/25 dark:bg-brand-500/20',
+    stripe: 'from-slate-400 via-brand-400 to-brand-400/60',
   },
   pro: {
     Icon: Sparkles,
     iconWrap:
-      'bg-gradient-to-br from-violet-100 to-fuchsia-100 text-violet-700 ring-violet-300/50 dark:from-violet-950 dark:to-fuchsia-950/70 dark:text-violet-200 dark:ring-violet-400/30',
-    orb: 'bg-fuchsia-400/30 dark:bg-fuchsia-500/25',
-    stripe: 'from-violet-500 via-fuchsia-500 to-violet-400/50',
+      'bg-gradient-to-br from-brand-100 to-brand-100 text-brand-700 ring-brand-300/50 dark:from-brand-950 dark:to-brand-950/70 dark:text-brand-200 dark:ring-brand-400/30',
+    orb: 'bg-brand-400/30 dark:bg-brand-500/25',
+    stripe: 'from-brand-500 via-brand-500 to-brand-400/50',
   },
   ultimate: {
     Icon: Crown,
     iconWrap:
-      'bg-gradient-to-br from-amber-50 to-violet-100 text-amber-700 ring-amber-200/60 dark:from-amber-950/80 dark:to-violet-950 dark:text-amber-200 dark:ring-amber-500/25',
+      'bg-gradient-to-br from-amber-50 to-brand-100 text-amber-700 ring-amber-200/60 dark:from-amber-950/80 dark:to-brand-950 dark:text-amber-200 dark:ring-amber-500/25',
     orb: 'bg-amber-400/25 dark:bg-amber-500/15',
-    stripe: 'from-amber-400 via-violet-500 to-fuchsia-500/70',
+    stripe: 'from-amber-400 via-brand-500 to-brand-500/70',
   },
 }
 
@@ -69,8 +69,8 @@ export function pricingTierCtaClassName(highlighted: boolean) {
   return cn(
     'flex h-11 w-full items-center justify-center rounded-2xl text-sm font-semibold tracking-tight transition',
     highlighted
-      ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg shadow-slate-900/20 hover:from-violet-700 hover:to-fuchsia-600 hover:shadow-violet-500/25 dark:from-white dark:to-slate-100 dark:text-slate-950 dark:hover:from-violet-200 dark:hover:to-fuchsia-100'
-      : 'border border-slate-200/95 bg-white/40 text-slate-800 backdrop-blur-sm hover:border-violet-300 hover:bg-white/95 dark:border-white/12 dark:bg-white/[0.04] dark:text-white dark:hover:border-violet-400/35 dark:hover:bg-white/[0.1]',
+      ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-lg shadow-slate-900/20 hover:from-brand-700 hover:to-brand-600 hover:shadow-brand-500/25 dark:from-white dark:to-slate-100 dark:text-slate-950 dark:hover:from-brand-200 dark:hover:to-brand-100'
+      : 'border border-slate-200/95 bg-white/40 text-slate-800 backdrop-blur-sm hover:border-brand-300 hover:bg-white/95 dark:border-white/12 dark:bg-white/[0.04] dark:text-white dark:hover:border-brand-400/35 dark:hover:bg-white/[0.1]',
   )
 }
 
@@ -131,17 +131,17 @@ export function PricingTierCard({
       onKeyDown={handleKeyDown}
       className={cn(
         'group relative flex h-full scroll-mt-24 flex-col transition-all duration-500 ease-out',
-        onSelect && 'cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
+        onSelect && 'cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-brand-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
         accent && 'sm:z-[2] sm:-translate-y-1.5 sm:scale-[1.03]',
         flashHighlight &&
-          'z-[3] scale-[1.02] ring-4 ring-violet-500/80 ring-offset-2 ring-offset-transparent',
+          'z-[3] scale-[1.02] ring-4 ring-brand-500/80 ring-offset-2 ring-offset-transparent',
         className,
       )}
     >
       {accent ? (
         <div
           aria-hidden
-          className="absolute -inset-[1px] rounded-[2rem] bg-gradient-to-br from-violet-400/50 via-fuchsia-500/35 to-transparent opacity-85 blur-[2px] dark:from-violet-500/55 dark:via-fuchsia-500/30 dark:opacity-100"
+          className="absolute -inset-[1px] rounded-[2rem] bg-gradient-to-br from-brand-400/50 via-brand-500/35 to-transparent opacity-85 blur-[2px] dark:from-brand-500/55 dark:via-brand-500/30 dark:opacity-100"
         />
       ) : null}
 
@@ -151,10 +151,10 @@ export function PricingTierCard({
           'border border-white/70 bg-white/65 shadow-[0_12px_40px_-20px_rgba(15,23,42,0.18)] backdrop-blur-2xl',
           'transition duration-300',
           !accent &&
-            'hover:border-violet-200/60 hover:bg-white/80 hover:shadow-[0_20px_52px_-24px_rgba(109,40,217,0.18)] dark:border-white/[0.09] dark:bg-slate-950/50 dark:hover:border-violet-500/25 dark:hover:bg-slate-950/70',
+            'hover:border-brand-200/60 hover:bg-white/80 hover:shadow-[0_20px_52px_-24px_rgba(255,118,0,0.18)] dark:border-white/[0.09] dark:bg-slate-950/50 dark:hover:border-brand-500/25 dark:hover:bg-slate-950/70',
           accent &&
-            'border-white/85 bg-[linear-gradient(165deg,rgba(255,255,255,0.96)_0%,rgba(250,246,255,0.9)_52%,rgba(252,247,253,0.85)_100%)] shadow-[0_24px_70px_-30px_rgba(109,40,217,0.35)] ring-1 ring-violet-200/55 dark:bg-[linear-gradient(165deg,rgba(32,29,48,0.97)_0%,rgba(18,16,28,0.92)_45%,rgba(26,20,40,0.9)_100%)] dark:ring-violet-500/25',
-          flashHighlight && 'shadow-xl shadow-violet-500/30',
+            'border-white/85 bg-[linear-gradient(165deg,rgba(255,255,255,0.96)_0%,rgba(255,247,240,0.9)_52%,rgba(255,243,235,0.85)_100%)] shadow-[0_24px_70px_-30px_rgba(255,118,0,0.35)] ring-1 ring-brand-200/55 dark:bg-[linear-gradient(165deg,rgba(32,22,14,0.97)_0%,rgba(18,14,10,0.92)_45%,rgba(26,18,12,0.9)_100%)] dark:ring-brand-500/25',
+          flashHighlight && 'shadow-xl shadow-brand-500/30',
         )}
       >
         {planVisual ? (
@@ -182,7 +182,7 @@ export function PricingTierCard({
           className={cn(
             'pointer-events-none absolute inset-x-0 top-0 h-px',
             accent
-              ? 'bg-gradient-to-r from-transparent via-violet-400/70 to-transparent dark:via-violet-300/50'
+              ? 'bg-gradient-to-r from-transparent via-brand-400/70 to-transparent dark:via-brand-300/50'
               : 'bg-gradient-to-r from-transparent via-slate-200/80 to-transparent dark:via-white/12',
           )}
         />
@@ -217,7 +217,7 @@ export function PricingTierCard({
               </div>
             </div>
             {accent && badgeLabel ? (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-violet-200/60 bg-violet-500/[0.08] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-violet-700 shadow-sm shadow-violet-500/10 dark:border-violet-400/25 dark:bg-violet-400/15 dark:text-violet-100">
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-brand-200/60 bg-brand-500/[0.08] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-700 shadow-sm shadow-brand-500/10 dark:border-brand-400/25 dark:bg-brand-400/15 dark:text-brand-100">
                 <Sparkles className="h-3 w-3" aria-hidden />
                 {badgeLabel}
               </span>
@@ -244,9 +244,9 @@ export function PricingTierCard({
                 key={f}
                 className="flex gap-3 text-[13px] leading-snug text-slate-700 dark:text-slate-300"
               >
-                <span className="mt-0.5 flex h-[1.375rem] w-[1.375rem] shrink-0 items-center justify-center rounded-full bg-violet-500/[0.1] shadow-inner shadow-violet-500/10 ring-[0.5px] ring-violet-400/20 dark:bg-violet-400/15 dark:ring-violet-400/30">
+                <span className="mt-0.5 flex h-[1.375rem] w-[1.375rem] shrink-0 items-center justify-center rounded-full bg-brand-500/[0.1] shadow-inner shadow-brand-500/10 ring-[0.5px] ring-brand-400/20 dark:bg-brand-400/15 dark:ring-brand-400/30">
                   <Check
-                    className="h-[10px] w-[10px] text-violet-600 dark:text-violet-300"
+                    className="h-[10px] w-[10px] text-brand-600 dark:text-brand-300"
                     strokeWidth={3}
                     aria-hidden
                   />

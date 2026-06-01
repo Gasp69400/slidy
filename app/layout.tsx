@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   title: 'Slidy — Présentations IA en quelques secondes',
   description:
     "Créez des slides pro avec l'IA. Décrivez votre idée, obtenez une présentation structurée en quelques secondes — exportez et partagez.",
+  icons: {
+    icon: '/logo-slidyapp.png',
+    apple: '/logo-slidyapp.png',
+  },
 }
 
 export default function RootLayout({

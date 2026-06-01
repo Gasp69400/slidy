@@ -787,8 +787,8 @@ export const SITE_STRINGS = {
   },
   'create.tpl.creative.name': { fr: 'Creative Pop', en: 'Creative Pop' },
   'create.tpl.creative.desc': {
-    fr: 'Violet et fuchsia, formes organiques — énergie sans agressivité.',
-    en: 'Violet and fuchsia, organic shapes — bold but friendly energy.',
+    fr: 'Orange vif, formes organiques — énergie sans agressivité.',
+    en: 'Bright orange, organic shapes — bold but friendly energy.',
   },
   'create.tpl.colorful.name': { fr: 'Sunny Spectrum', en: 'Sunny Spectrum' },
   'create.tpl.colorful.desc': {

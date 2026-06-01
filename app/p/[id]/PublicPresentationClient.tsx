@@ -4,12 +4,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { ChevronLeft, ChevronRight, Grid, Maximize2, X, Settings } from 'lucide-react'
 
 const SLIDE_COLORS = [
-  { bg: 'from-violet-600 to-indigo-700', accent: '#a78bfa', num: 'bg-white/20 text-white' },
+  { bg: 'from-brand-600 to-indigo-700', accent: '#ff9833', num: 'bg-white/20 text-white' },
   { bg: 'from-rose-500 to-pink-700', accent: '#fb7185', num: 'bg-white/20 text-white' },
   { bg: 'from-amber-500 to-orange-600', accent: '#fcd34d', num: 'bg-white/20 text-white' },
   { bg: 'from-emerald-500 to-teal-700', accent: '#6ee7b7', num: 'bg-white/20 text-white' },
   { bg: 'from-sky-500 to-blue-700', accent: '#7dd3fc', num: 'bg-white/20 text-white' },
-  { bg: 'from-fuchsia-500 to-purple-700', accent: '#e879f9', num: 'bg-white/20 text-white' },
+  { bg: 'from-brand-500 to-brand-700', accent: '#ffb87a', num: 'bg-white/20 text-white' },
 ]
 
 type TransitionType = 'fade' | 'slide' | 'zoom'
@@ -109,7 +109,7 @@ export default function PublicPresentationClient({
                     onClick={() => { setTransition(t.id); setShowSettings(false) }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       transition === t.id
-                        ? 'bg-indigo-600 text-white'
+                        ? 'bg-brand-500 text-white'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                   >
@@ -198,12 +198,12 @@ export default function PublicPresentationClient({
             <p className="mt-0.5 text-xs text-slate-500">{presentation.topic} · {presentation.slideCount} slides</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-medium capitalize text-violet-700">
+            <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium capitalize text-brand-700">
               {presentation.presentationType}
             </span>
             <button
               onClick={() => { setCurrentSlide(0); setMode('slideshow') }}
-              className="flex items-center gap-1.5 rounded-full bg-indigo-600 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700 transition-colors"
+              className="flex items-center gap-1.5 rounded-full bg-brand-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-600 transition-colors"
             >
               <Maximize2 className="w-3.5 h-3.5" />
               Présenter

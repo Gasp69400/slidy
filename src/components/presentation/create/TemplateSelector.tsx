@@ -84,7 +84,7 @@ const TemplateSelector: FC<TemplateSelectorProps> = ({ selected, onSelect }) => 
                   tier === 'starter' &&
                     'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200',
                   tier === 'pro' &&
-                    'bg-violet-100 text-violet-700 dark:bg-violet-950/80 dark:text-violet-200',
+                    'bg-brand-100 text-brand-700 dark:bg-brand-950/80 dark:text-brand-200',
                   tier === 'ultimate' &&
                     'bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200',
                 )}
@@ -125,7 +125,7 @@ const TemplateSelector: FC<TemplateSelectorProps> = ({ selected, onSelect }) => 
                       className={cn(
                         'relative h-full overflow-hidden rounded-xl border bg-card p-0 transition-all',
                         isActive && !isLocked
-                          ? 'border-indigo-400 bg-indigo-50/60 shadow-md ring-2 ring-indigo-300/50 dark:border-indigo-500 dark:bg-indigo-950/40 dark:ring-indigo-500/40'
+                          ? 'border-brand-400 bg-brand-50/60 shadow-md ring-2 ring-brand-300/50 dark:border-brand-500 dark:bg-brand-950/40 dark:ring-brand-500/40'
                           : 'border-slate-100 dark:border-slate-700',
                         !isLocked &&
                           'hover:border-slate-200 hover:shadow-sm dark:hover:border-slate-600',

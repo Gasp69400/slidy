@@ -25,7 +25,7 @@ export function CvTemplatePicker({ value, onChange }: Props) {
             className={cn(
               'rounded-2xl border p-2 text-left transition',
               selected
-                ? 'border-indigo-500 ring-2 ring-indigo-500/30'
+                ? 'border-brand-500 ring-2 ring-brand-500/30'
                 : 'border-slate-200 hover:border-slate-300',
             )}
           >

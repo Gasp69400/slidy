@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { SlidyLogoMark } from '@/components/brand/SlidyLogoMark'
+import { SlidyWordmark } from '@/components/brand/SlidyWordmark'
 import { LanguageToggle } from '@/components/LanguageToggle'
 import { SiteHeaderMenu } from '@/components/layout/SiteHeaderMenu'
 import { APP_HEADER_NAV } from '@/lib/app-nav'
@@ -69,8 +70,8 @@ export function Navigation() {
               href="/"
               className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
             >
-              <SlidyLogoMark size="sm" className="shadow-md shadow-violet-500/20" />
-              Slidy
+              <SlidyLogoMark size="nav" className="shadow-md shadow-brand-500/20" />
+              <SlidyWordmark className="text-lg font-bold text-slate-900 dark:text-white" />
             </Link>
           </div>
 
@@ -107,7 +108,7 @@ export function Navigation() {
                   onClick={() => setShowUserMenu((s) => !s)}
                   className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-white text-xs font-bold">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-white text-xs font-bold">
                     {(userName ?? userEmail).charAt(0).toUpperCase()}
                   </div>
                   <span className="hidden max-w-[120px] truncate lg:block">

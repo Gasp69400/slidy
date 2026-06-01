@@ -151,7 +151,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={handleForgotPassword}
                   disabled={resetLoading}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 transition-colors"
+                  className="text-xs text-brand-600 hover:text-brand-800 transition-colors"
                 >
                   {resetLoading ? 'Envoi...' : 'Mot de passe oublié ?'}
                 </button>

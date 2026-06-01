@@ -568,7 +568,7 @@ export default function CvEditorPage() {
 
             <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
               <Button
-                className="rounded-xl bg-indigo-600 hover:bg-indigo-700"
+                className="rounded-xl bg-brand-500 hover:bg-brand-600"
                 disabled={saveMutation.isPending}
                 onClick={() => saveMutation.mutate()}
               >

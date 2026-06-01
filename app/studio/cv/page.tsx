@@ -249,7 +249,7 @@ export default function CvStudioPage() {
     <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8 dark:bg-slate-950">
       <div className="mx-auto max-w-4xl px-4">
         <div className="mb-6 flex items-start gap-3">
-          <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white">
+          <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white">
             <Sparkles className="h-4 w-4" />
           </span>
           <div>
@@ -613,7 +613,7 @@ export default function CvStudioPage() {
           )}
 
           <Button
-            className="mt-6 w-full rounded-xl bg-indigo-600 hover:bg-indigo-700"
+            className="mt-6 w-full rounded-xl bg-brand-500 hover:bg-brand-600"
             disabled={
               !canSubmit || generateMutation.isPending || allowed === false
             }

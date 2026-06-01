@@ -14,7 +14,7 @@ export default function CoverLetterPage() {
     <div className="mx-auto max-w-2xl px-4 py-12 sm:py-16">
       <Card className="rounded-3xl border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/25">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-md shadow-brand-500/25">
             <PenLine className="h-7 w-7" aria-hidden />
           </div>
           <CardTitle className="text-2xl font-semibold text-slate-900 dark:text-slate-50">
@@ -25,7 +25,7 @@ export default function CoverLetterPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center pb-8">
-          <Button asChild className="rounded-xl bg-indigo-600 hover:bg-indigo-700">
+          <Button asChild className="rounded-xl bg-brand-500 hover:bg-brand-600">
             <Link href="/studio/cv">{t('coverLetter.placeholder.cta')}</Link>
           </Button>
         </CardContent>

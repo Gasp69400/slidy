@@ -15,10 +15,10 @@ export function LegalCguPage() {
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50">
       <LandingHeader />
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <p className="text-sm font-medium text-violet-600 dark:text-violet-400">
+        <p className="text-sm font-medium text-brand-600 dark:text-brand-400">
           <Link
             href="/"
-            className="hover:text-violet-700 dark:hover:text-violet-300"
+            className="hover:text-brand-700 dark:hover:text-brand-300"
           >
             {t('legal.cgu.back_home')}
           </Link>
@@ -71,7 +71,7 @@ export function LegalCguPage() {
 
         <p className="mt-12 border-t border-slate-200 pt-8 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
           © {new Date().getFullYear()} Slidy ·{' '}
-          <Link href="/" className="text-violet-600 hover:underline dark:text-violet-400">
+          <Link href="/" className="text-brand-600 hover:underline dark:text-brand-400">
             {t('nav.home')}
           </Link>
         </p>

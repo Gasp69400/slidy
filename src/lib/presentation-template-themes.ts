@@ -57,7 +57,7 @@ export const PRESENTATION_TEMPLATES_META: TemplateMeta[] = [
     label: 'Creative Pop',
     category: 'creative',
     plan_tier: 'starter',
-    description: 'Violet et fuchsia, formes organiques — énergie sans agressivité.',
+    description: 'Orange vif, formes organiques — énergie sans agressivité.',
   },
   {
     slug: 'colorful',
@@ -170,7 +170,7 @@ export const TEMPLATE_PREVIEW: Record<
   // STARTER
   modern: {
     frame: 'rounded-lg border border-slate-200/80 bg-white shadow-sm',
-    header: 'h-[22%] rounded-t-md bg-gradient-to-r from-indigo-600 to-violet-600',
+    header: 'h-[22%] rounded-t-md bg-gradient-to-r from-indigo-600 to-brand-600',
     accentBar: 'w-1 rounded-full bg-indigo-500',
     body: 'bg-slate-50/80',
     line1: 'h-1 w-[72%] rounded-full bg-slate-300',
@@ -187,12 +187,12 @@ export const TEMPLATE_PREVIEW: Record<
     fontFamily: 'ui-sans-serif, system-ui, sans-serif',
   },
   creative: {
-    frame: 'rounded-xl border border-fuchsia-200/80 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 shadow-sm',
-    header: 'h-[22%] rounded-t-xl bg-gradient-to-r from-fuchsia-500 to-violet-600',
-    accentBar: 'w-1.5 rounded-full bg-fuchsia-400',
+    frame: 'rounded-xl border border-brand-200/80 bg-gradient-to-br from-brand-50 via-white to-brand-50 shadow-sm',
+    header: 'h-[22%] rounded-t-xl bg-gradient-to-r from-brand-500 to-brand-600',
+    accentBar: 'w-1.5 rounded-full bg-brand-400',
     body: 'bg-white/60',
-    line1: 'h-1 w-[65%] rounded-full bg-violet-200',
-    line2: 'h-1 w-[50%] rounded-full bg-fuchsia-100',
+    line1: 'h-1 w-[65%] rounded-full bg-brand-200',
+    line2: 'h-1 w-[50%] rounded-full bg-brand-100',
     fontFamily: '"Segoe UI", system-ui, sans-serif',
   },
   colorful: {
@@ -273,11 +273,11 @@ export const TEMPLATE_PREVIEW: Record<
   },
   aurora: {
     frame: 'rounded-xl border border-teal-500/20 bg-slate-950 shadow-xl',
-    header: 'h-[24%] rounded-t-xl bg-gradient-to-r from-teal-500 via-emerald-400 to-violet-500',
+    header: 'h-[24%] rounded-t-xl bg-gradient-to-r from-teal-500 via-emerald-400 to-brand-500',
     accentBar: 'w-1.5 rounded-full bg-teal-400',
     body: 'bg-slate-900',
     line1: 'h-1 w-[70%] rounded-full bg-teal-900/60',
-    line2: 'h-1 w-[52%] rounded-full bg-violet-900/40',
+    line2: 'h-1 w-[52%] rounded-full bg-brand-900/40',
     fontFamily: 'ui-sans-serif, system-ui, sans-serif',
   },
   midnight: {
@@ -325,12 +325,12 @@ export type SlideCardTheme = {
 export const SLIDE_CARD_THEME: Record<PresentationTemplateSlug, SlideCardTheme> = {
   // STARTER
   modern: {
-    bg: 'from-indigo-600 to-violet-700',
+    bg: 'from-indigo-600 to-brand-700',
     titleColor: 'text-white',
     bulletColor: 'text-white/85',
     numBg: 'bg-white/20 text-white',
-    accentColor: '#a78bfa',
-    decorColor: '#a78bfa',
+    accentColor: '#ff9833',
+    decorColor: '#ff9833',
   },
   minimalist: {
     bg: 'from-stone-100 to-stone-200',
@@ -341,12 +341,12 @@ export const SLIDE_CARD_THEME: Record<PresentationTemplateSlug, SlideCardTheme> 
     decorColor: '#a8a29e',
   },
   creative: {
-    bg: 'from-fuchsia-500 to-violet-700',
+    bg: 'from-brand-500 to-brand-700',
     titleColor: 'text-white',
     bulletColor: 'text-white/85',
     numBg: 'bg-white/20 text-white',
-    accentColor: '#e879f9',
-    decorColor: '#e879f9',
+    accentColor: '#ffb87a',
+    decorColor: '#ffb87a',
   },
   colorful: {
     bg: 'from-orange-500 via-amber-500 to-teal-500',
@@ -417,7 +417,7 @@ export const SLIDE_CARD_THEME: Record<PresentationTemplateSlug, SlideCardTheme> 
     decorColor: '#881337',
   },
   aurora: {
-    bg: 'from-slate-950 via-teal-950 to-violet-950',
+    bg: 'from-slate-950 via-teal-950 to-brand-950',
     titleColor: 'text-teal-300',
     bulletColor: 'text-slate-200',
     numBg: 'bg-teal-500/20 text-teal-300',

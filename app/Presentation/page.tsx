@@ -171,12 +171,12 @@ export default function PresentationDetailPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4 px-6 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100">
             <span className="text-3xl">🎯</span>
           </div>
           <h2 className="text-xl font-bold text-slate-800">Aucune présentation sélectionnée</h2>
           <p className="max-w-xs text-sm text-slate-500">Créez une nouvelle présentation depuis votre tableau de bord.</p>
-          <a href="/presentations/create" className="mt-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors">
+          <a href="/presentations/create" className="mt-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition-colors">
             Créer une présentation
           </a>
         </div>
@@ -188,7 +188,7 @@ export default function PresentationDetailPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-violet-500 border-t-transparent" />
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
           <p className="text-sm font-medium text-slate-600">Chargement...</p>
         </div>
       </div>
@@ -224,7 +224,7 @@ export default function PresentationDetailPage() {
                   <button
                     key={t.id}
                     onClick={() => { setTransition(t.id); setShowSettings(false) }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${transition === t.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${transition === t.id ? 'bg-brand-500 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
                   >
                     {t.label}
                   </button>
@@ -306,9 +306,9 @@ export default function PresentationDetailPage() {
             <p className="mt-0.5 text-xs text-slate-500">{data.topic} · {data.slideCount} slides · {data.templateSlug}</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full bg-violet-100 px-3 py-1 text-xs font-medium capitalize text-violet-700">{data.presentationType}</span>
+            <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-medium capitalize text-brand-700">{data.presentationType}</span>
             <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium capitalize text-slate-600">{data.audience}</span>
-            <Button onClick={() => { setCurrentSlide(0); setMode('slideshow') }} size="sm" className="rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-4 gap-1.5">
+            <Button onClick={() => { setCurrentSlide(0); setMode('slideshow') }} size="sm" className="rounded-full bg-brand-500 hover:bg-brand-600 text-white text-xs px-4 gap-1.5">
               <Maximize2 className="w-3.5 h-3.5" />
               Presenter
             </Button>
@@ -364,7 +364,7 @@ export default function PresentationDetailPage() {
                     const json = await res.json() as { success?: boolean; data?: { isPublic: boolean } }
                     if (json.success) setIsPublic(json.data?.isPublic ?? false)
                   }}
-                  className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${isPublic ? 'bg-indigo-600' : 'bg-slate-300'}`}
+                  className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${isPublic ? 'bg-brand-500' : 'bg-slate-300'}`}
                 >
                   <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${isPublic ? 'translate-x-7' : 'translate-x-1'}`} />
                 </button>
@@ -381,7 +381,7 @@ export default function PresentationDetailPage() {
                       setCopied(true)
                       setTimeout(() => setCopied(false), 2000)
                     }}
-                    className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 whitespace-nowrap"
+                    className="text-xs font-semibold text-brand-600 hover:text-brand-700 whitespace-nowrap"
                   >
                     {copied ? 'Copie !' : 'Copier'}
                   </button>
@@ -394,7 +394,7 @@ export default function PresentationDetailPage() {
                     id="share-email"
                     type="email"
                     placeholder="adresse@mail.com"
-                    className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-400"
+                    className="flex-1 text-xs px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-brand-400"
                   />
                   <button
                     onClick={() => {
@@ -405,7 +405,7 @@ export default function PresentationDetailPage() {
                       const body = encodeURIComponent(`Voici ma presentation "${data.title}" :\n\n${url}`)
                       window.open(`mailto:${email}?subject=${subject}&body=${body}`)
                     }}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition-colors"
+                    className="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold rounded-xl transition-colors"
                   >
                     Envoyer
                   </button>
@@ -416,7 +416,7 @@ export default function PresentationDetailPage() {
                   href={data.fileUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50 transition-all"
+                  className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 hover:border-brand-200 hover:bg-brand-50 transition-all"
                 >
                   <span className="text-2xl">📥</span>
                   <span className="text-sm font-medium text-slate-700">Telecharger la presentation</span>

@@ -48,7 +48,7 @@ export default function PresentationsPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-violet-500 border-t-transparent dark:border-violet-400" />
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-500 border-t-transparent dark:border-brand-400" />
       </div>
     )
   }
@@ -66,7 +66,7 @@ export default function PresentationsPage() {
         </div>
         <a
           href="/presentations/create"
-          className="rounded-xl bg-indigo-600 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+          className="rounded-xl bg-brand-500 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-600"
         >
           + Nouvelle présentation
         </a>
@@ -85,7 +85,7 @@ export default function PresentationsPage() {
           </p>
           <a
             href="/presentations/create"
-            className="mt-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
+            className="mt-2 rounded-xl bg-brand-500 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-600"
           >
             Créer une présentation
           </a>
@@ -95,7 +95,7 @@ export default function PresentationsPage() {
           {data.map((p) => (
             <div
               key={p.id}
-              className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition-all hover:border-indigo-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-600 dark:hover:shadow-indigo-950/20"
+              className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition-all hover:border-indigo-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-600 dark:hover:shadow-brand-950/20"
             >
               <button
                 type="button"
