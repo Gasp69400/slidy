@@ -21,7 +21,7 @@ const SIZE_CLASS: Record<NonNullable<SlidyLogoMarkProps['size']>, string> = {
   nav: 'h-[1.125rem] w-[1.125rem]',
   /** @deprecated Préférer `wordmark` dans un conteneur `text-lg` */
   landing: 'h-[1.125rem] w-[1.125rem]',
-  wordmark: 'h-[1.25em] w-[1.25em]',
+  wordmark: 'h-[1em] w-[1em]',
 }
 
 /**
