@@ -96,7 +96,7 @@ export const SITE_STRINGS = {
 
   'home.hero.badge': {
     fr: 'Slides & CV IA · même studio Slidy',
-    en: 'AI slides & resumes · same Slidy studio',
+    en: 'AI slides & CVs · one Slidy studio',
   },
   'home.hero.title1': {
     fr: 'Transformez votre idée en',
@@ -105,11 +105,11 @@ export const SITE_STRINGS = {
   'home.hero.title2': { fr: 'deck soigné', en: 'polished deck' },
   'home.hero.title3': {
     fr: '— sans l’effort du design.',
-    en: '— without the grind.',
+    en: '— without the design grind.',
   },
   'home.hero.subtitle': {
     fr: 'Slides : décrivez votre sujet une fois — l’IA structure le récit et le détail visuel pour que vous présentiez sans y passer la nuit. CV : même principe, avec des modèles adaptés aux logiciels RH (ATS) pour vos candidatures.',
-    en: 'For decks: describe your topic once — AI shapes the storyline and visuals so you’re presentation-ready fast. For job search: structured résumés and cover letters tuned for ATS parsing — Slidy handles both flows.',
+    en: 'Slides: describe your topic once — AI shapes the narrative and visual layer so you can present without pulling an all-nighter. CVs: same approach, with templates tailored to HR software (ATS) for your applications.',
   },
   'home.hero.cta_primary': { fr: 'Commencer gratuitement', en: 'Start for free' },
   'home.hero.cta_secondary': { fr: 'Connexion / Inscription', en: 'Log in / Sign up' },
@@ -119,7 +119,7 @@ export const SITE_STRINGS = {
   },
   'home.hero.cta_cv': {
     fr: 'Créer un CV avec l’IA',
-    en: 'Generate a résumé with AI',
+    en: 'Create a CV with AI',
   },
   'home.stats.docs_label': {
     fr: 'Documents déjà créés sur Slidy',
@@ -131,11 +131,11 @@ export const SITE_STRINGS = {
   },
   'home.stats.docs_hint': {
     fr: 'Présentations, CV et lettres exportés par la communauté.',
-    en: 'Decks, résumés, and letters exported by our users.',
+    en: 'Presentations, CVs, and cover letters exported by our community.',
   },
   'home.stats.ats_label': {
     fr: 'Indicateur ATS moyen (à la génération)',
-    en: 'Avg. ATS readiness (post-generation cue)',
+    en: 'Average ATS score (at generation)',
   },
   'home.stats.ats_value': {
     fr: '89 %',
@@ -143,7 +143,7 @@ export const SITE_STRINGS = {
   },
   'home.stats.ats_hint': {
     fr: '* Score indicatif communiqué après génération d’un CV, pas une mesure garantie contre un ATS réel.',
-    en: '* Illustrative figure shown after generating a résumé — not a vendor-certified ATS benchmark.',
+    en: '* Illustrative score shown after CV generation — not a guarantee against any real ATS.',
   },
   'home.stats.formats_label': {
     fr: 'Deux studios, un même compte',
@@ -151,11 +151,11 @@ export const SITE_STRINGS = {
   },
   'home.stats.formats_value': {
     fr: 'Présentations + CV',
-    en: 'Slides + résumés',
+    en: 'Presentations + CVs',
   },
   'home.stats.formats_sub': {
     fr: 'Decks pour convaincre en réunion · CV & lettres pour les recruteurs.',
-    en: 'Decks for the room · résumés and letters for recruiters.',
+    en: 'Decks to win the meeting · CVs and cover letters for recruiters.',
   },
   'home.preview.status': {
     fr: 'Studio · aperçu en direct',
@@ -176,22 +176,22 @@ export const SITE_STRINGS = {
   'home.how.title': { fr: 'Comment ça marche', en: 'How it works' },
   'home.how.subtitle': {
     fr: 'Même mécanisme pour vos slides ou votre CV — du brief à la version prête à partager.',
-    en: 'Same flow for decks or résumés — from brief to something you’ll actually ship.',
+    en: 'The same flow for slides or CVs — from brief to a version ready to share.',
   },
-  'home.how.1.title': { fr: 'Décrivez votre exposé', en: 'Describe your talk' },
+  'home.how.1.title': { fr: 'Décrivez votre exposé', en: 'Describe your presentation' },
   'home.how.1.body': {
     fr: 'Ajoutez un sujet, une audience et un ton. Nous construisons le récit et le découpage en slides.',
-    en: 'Add a topic, audience, and tone. We shape a clear narrative and slide flow.',
+    en: 'Add a topic, audience, and tone. We build the narrative and slide structure for you.',
   },
-  'home.how.2.title': { fr: 'Affinez en quelques clics', en: 'Refine in seconds' },
+  'home.how.2.title': { fr: 'Affinez en quelques clics', en: 'Refine in a few clicks' },
   'home.how.2.body': {
     fr: 'Modifiez les blocs, changez les visuels, ajustez la mise en page — un éditeur calme qui vous laisse penser.',
-    en: 'Edit blocks, swap visuals, tune layout — a calm editor that stays out of your way.',
+    en: 'Edit blocks, swap visuals, adjust layout — a calm editor that lets you focus on the message.',
   },
   'home.how.3.title': { fr: 'Exportez & présentez', en: 'Export & present' },
   'home.how.3.body': {
     fr: 'Téléchargez en PDF ou PowerPoint, ou partagez un lien. Soyez impeccable sans stress de dernière minute.',
-    en: 'Download PDF or PowerPoint, or share a link. Look sharp without last-minute panic.',
+    en: 'Download as PDF or PowerPoint, or share a link. Look polished without last-minute stress.',
   },
   'home.features.title': {
     fr: 'L’essentiel, sans le superflu',
@@ -199,7 +199,7 @@ export const SITE_STRINGS = {
   },
   'home.features.subtitle': {
     fr: 'Présenter en réunion et postuler avec un CV lisible pour les ATS — tout est dans Slidy.',
-    en: 'Win the room with decks and recruiters with ATS-friendly résumés — Slidy bundles both.',
+    en: 'Present in meetings and apply with ATS-friendly CVs — all in Slidy.',
   },
   'home.features.1.title': {
     fr: 'Génération ultra rapide',
@@ -207,15 +207,15 @@ export const SITE_STRINGS = {
   },
   'home.features.1.desc': {
     fr: 'Du prompt à une structure de slides avant la fin de votre café.',
-    en: 'Go from prompt to structured slides before your coffee cools.',
+    en: 'From prompt to slide structure before your coffee gets cold.',
   },
   'home.features.2.title': {
     fr: 'Un rendu premium',
-    en: 'Designed to look expensive',
+    en: 'Premium visual polish',
   },
   'home.features.2.desc': {
     fr: 'Typographie, espacements et micro-interactions — sans outil de design.',
-    en: 'Modern typography, spacing, and motion — without touching a design tool.',
+    en: 'Typography, spacing, and micro-interactions — no design tool required.',
   },
   'home.features.3.title': {
     fr: 'Pensé pour le quotidien',
@@ -223,15 +223,15 @@ export const SITE_STRINGS = {
   },
   'home.features.3.desc': {
     fr: 'Exports, limites et offres alignés sur la façon dont les équipes livrent vraiment.',
-    en: 'Exports, limits, and plans that match how teams actually ship decks.',
+    en: 'Exports, limits, and plans aligned with how teams actually deliver.',
   },
   'home.features.4.title': {
     fr: 'CV & lettre de motivation IA',
-    en: 'Résumés & cover letters powered by AI',
+    en: 'AI CVs & cover letters',
   },
   'home.features.4.desc': {
     fr: 'Contenu assisté par l’invite, mise en page pro, optimisation affichée à la création pour rassurer sur la compatibilité lecteur.',
-    en: 'Prompt-driven drafts, polished layout, plus a reassuring ATS-style readiness cue when you generate — without promising a flawless scan.',
+    en: 'Prompt-driven drafts, professional layout, and an ATS compatibility cue at generation — reassuring without overpromising.',
   },
   'home.pricing.kicker': {
     fr: 'Tarifs transparents',
@@ -243,7 +243,7 @@ export const SITE_STRINGS = {
   },
   'home.pricing.subtitle': {
     fr: 'Résumé de chaque plan : quotas, fonctionnalités clés pour les présentations et les CV avec optimisations visuelles ATS. Upgrade en un clic quand vous êtes prêt.',
-    en: 'Each card spells out limits and what’s included for decks and résumés — including ATS-style cues. Upgrade in one click when you’re ready.',
+    en: 'Each plan at a glance: quotas, key features for presentations and CVs with ATS-oriented cues. Upgrade in one click when you’re ready.',
   },
   'home.pricing.includes': {
     fr: 'Ce que comprend l’offre',
@@ -251,7 +251,7 @@ export const SITE_STRINGS = {
   },
   'home.pricing.footnote': {
     fr: 'Sans engagement sur Starter · Période d’essai disponible selon les offres payantes configurées.',
-    en: 'No commitment on Starter · Trial eligibility depends on configured paid plans.',
+    en: 'No commitment on Starter · Free trial available depending on configured paid plans.',
   },
   'home.pricing.link_full': {
     fr: 'Page tarifs détaillée et conditions →',
@@ -263,11 +263,11 @@ export const SITE_STRINGS = {
   },
   'home.footer.title': {
     fr: 'Prêt pour votre prochain deck ?',
-    en: 'Ready to ship your next deck?',
+    en: 'Ready for your next deck?',
   },
   'home.footer.subtitle': {
     fr: 'Rejoignez ceux qui utilisent l’IA pour mieux présenter, plus vite.',
-    en: 'Join thousands who use AI to present better, faster.',
+    en: 'Join teams using AI to present better, faster.',
   },
   'home.footer.cta_primary': { fr: 'Commencer gratuitement', en: 'Start for free' },
   'home.footer.cta_secondary': { fr: 'Connexion / Inscription', en: 'Log in / Sign up' },
