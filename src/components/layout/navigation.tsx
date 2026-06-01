@@ -68,10 +68,10 @@ export function Navigation() {
           <div className="flex min-w-0 items-center gap-3">
             <Link
               href="/"
-              className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
+              className="flex shrink-0 items-center gap-1.5 text-lg font-bold tracking-tight text-slate-900 dark:text-white"
             >
-              <SlidyLogoMark size="nav" className="shadow-md shadow-brand-500/20" />
-              <SlidyWordmark className="text-lg font-bold text-slate-900 dark:text-white" />
+              <SlidyLogoMark size="wordmark" className="shadow-md shadow-brand-500/20" />
+              <SlidyWordmark />
             </Link>
           </div>
 

@@ -7,18 +7,21 @@ const LOGO_ORANGE_FILTER =
   'saturate-[1.9] hue-rotate-[-14deg] brightness-[1.04] contrast-[1.12]'
 
 type SlidyLogoMarkProps = {
-  /** `nav` : navbar 32px · `landing` : header 48px · `xs`/`sm` : compact */
-  size?: 'xs' | 'sm' | 'nav' | 'landing'
+  /** `wordmark` : même hauteur que le texte parent (navbar / landing) · `xs`/`sm` : compact */
+  size?: 'xs' | 'sm' | 'nav' | 'landing' | 'wordmark'
   className?: string
   priority?: boolean
 }
 
 /** Carré + coins ~24 % (comme l’ancien logo 140×140, rx 34). */
 const SIZE_CLASS: Record<NonNullable<SlidyLogoMarkProps['size']>, string> = {
-  xs: 'h-5 w-5',
-  sm: 'h-7 w-7',
-  nav: 'h-8 w-8',
-  landing: 'h-12 w-12',
+  xs: 'h-3.5 w-3.5',
+  sm: 'h-4 w-4',
+  /** @deprecated Préférer `wordmark` dans un conteneur `text-lg` */
+  nav: 'h-[1.125rem] w-[1.125rem]',
+  /** @deprecated Préférer `wordmark` dans un conteneur `text-lg` */
+  landing: 'h-[1.125rem] w-[1.125rem]',
+  wordmark: 'h-[1.25em] w-[1.25em]',
 }
 
 /**

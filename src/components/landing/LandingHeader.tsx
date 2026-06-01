@@ -24,10 +24,10 @@ export function LandingHeader() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 rounded-lg outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="flex shrink-0 items-center gap-1.5 text-lg font-semibold text-slate-900 outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-brand-500 dark:text-slate-50"
         >
-          <SlidyLogoMark size="landing" />
-          <SlidyWordmark className="text-lg font-semibold text-slate-900 dark:text-slate-50" />
+          <SlidyLogoMark size="wordmark" />
+          <SlidyWordmark />
         </Link>
 
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
