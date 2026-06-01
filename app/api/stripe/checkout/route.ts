@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireSessionUser } from '@/lib/api-auth'
 import { prisma } from '@/lib/prisma'
 import { getStripe } from '@/lib/stripe'
+import { planTierFromStripePriceId } from '@/lib/plans'
 
 const PRICE_IDS: Record<string, string> = {
   pro: process.env.STRIPE_PRO_PRICE_ID ?? '',
@@ -33,22 +34,32 @@ export async function GET(request: NextRequest) {
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? request.nextUrl.origin
 
+    const tier = planTierFromStripePriceId(priceId)
+
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       payment_method_types: ['card'],
       customer_email: user.stripeCustomerId ? undefined : user.email,
       customer: user.stripeCustomerId ?? undefined,
+      client_reference_id: auth.userId,
       line_items: [
         {
           price: priceId,
           quantity: 1,
         },
       ],
+      subscription_data: {
+        metadata: {
+          userId: auth.userId,
+          ...(tier ? { planTier: tier } : {}),
+        },
+      },
       success_url: `${appUrl}/account?success=true`,
       cancel_url: `${appUrl}/pricing?canceled=true`,
       metadata: {
         userId: auth.userId,
         plan,
+        ...(tier ? { planTier: tier } : {}),
       },
     })
 

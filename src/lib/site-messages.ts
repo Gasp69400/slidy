@@ -384,8 +384,8 @@ export const SITE_STRINGS = {
   en: 'For students and young pros who want to stand out.',
 },
 'pricing.tier.pro.f1': {
-  fr: '60 créations / jour',
-  en: '60 creations / day',
+  fr: '50 créations / mois',
+  en: '50 creations / month',
 },
 'pricing.tier.pro.f2': { fr: 'CV optimisé ATS + lettre de motivation', en: 'ATS CV + cover letter' },
 'pricing.tier.pro.f3': {
@@ -399,7 +399,7 @@ export const SITE_STRINGS = {
   fr: 'La solution complète pour maximiser vos chances.',
   en: 'The complete solution to maximize your chances.',
 },
-'pricing.tier.ultimate.f1': { fr: '200 créations / jour', en: '200 creations / day' },
+'pricing.tier.ultimate.f1': { fr: '200 créations / mois', en: '200 creations / month' },
 'pricing.tier.ultimate.f2': {
   fr: 'Tout le Pro + tous les templates débloqués',
   en: 'Everything in Pro + all templates unlocked',
@@ -452,9 +452,11 @@ export const SITE_STRINGS = {
   },
   'studio.cv_card_cta': { fr: 'Ouvrir l’outil CV', en: 'Open CV builder' },
   'studio.plan_line': {
-    fr: 'Plan {plan} · {max} créations / jour',
-    en: 'Plan {plan} · {max} creations / day',
+    fr: 'Plan {plan} · {max} créations / {period}',
+    en: 'Plan {plan} · {max} creations / {period}',
   },
+  'studio.quota_period.day': { fr: 'jour', en: 'day' },
+  'studio.quota_period.month': { fr: 'mois', en: 'month' },
   'studio.exports': { fr: 'Exports', en: 'Exports' },
   'studio.plan_blocked': {
     fr: 'Ce type de document n’est pas inclus dans ton plan actuel.',

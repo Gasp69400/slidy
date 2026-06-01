@@ -1,4 +1,4 @@
-import type { SubscriptionStatus } from '@prisma/client'
+import type { PlanTier, SubscriptionStatus } from '@prisma/client'
 import type { User as SupabaseAuthUser } from '@supabase/supabase-js'
 
 import { prisma } from '@/lib/prisma'
@@ -28,6 +28,7 @@ async function migrateLegacyUserToSupabaseAuth(
     name: string
     stripeCustomerId: string | null
     subscriptionStatus: SubscriptionStatus
+    planTier: PlanTier
   },
   supabaseUser: SupabaseAuthUser,
   email: string,
@@ -53,6 +54,7 @@ async function migrateLegacyUserToSupabaseAuth(
         hashedPassword: null,
         stripeCustomerId: legacy.stripeCustomerId,
         subscriptionStatus: legacy.subscriptionStatus,
+        planTier: legacy.planTier,
       },
     })
 
@@ -119,6 +121,7 @@ export async function ensureAppUserFromSupabase(
         name: byEmail.name,
         stripeCustomerId: byEmail.stripeCustomerId,
         subscriptionStatus: byEmail.subscriptionStatus,
+        planTier: byEmail.planTier,
       },
       supabaseUser,
       email,

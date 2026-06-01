@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 import { requireSessionUser } from '@/lib/api-auth'
 import { prisma } from '@/lib/prisma'
-import { getCapabilities, planFromSubscription } from '@/lib/plans'
+import { getCapabilities, resolveUserPlan } from '@/lib/plans'
 
 export async function GET() {
   const auth = await requireSessionUser()
@@ -12,18 +12,17 @@ export async function GET() {
   try {
     const user = await prisma.user.findUnique({
       where: { id: auth.userId },
-      select: { subscriptionStatus: true },
+      select: { subscriptionStatus: true, planTier: true },
     })
 
     if (!user) {
-      const plan = planFromSubscription('TRIAL')
       return NextResponse.json({
         success: true,
-        data: getCapabilities(plan),
+        data: getCapabilities('STARTER'),
       })
     }
 
-    const plan = planFromSubscription(user.subscriptionStatus)
+    const plan = resolveUserPlan(user)
     return NextResponse.json({
       success: true,
       data: getCapabilities(plan),
@@ -34,10 +33,9 @@ export async function GET() {
       error instanceof Prisma.PrismaClientInitializationError ||
       error instanceof Prisma.PrismaClientKnownRequestError
     ) {
-      const plan = planFromSubscription('TRIAL')
       return NextResponse.json({
         success: true,
-        data: getCapabilities(plan),
+        data: getCapabilities('STARTER'),
       })
     }
     return NextResponse.json(
@@ -46,4 +44,3 @@ export async function GET() {
     )
   }
 }
-

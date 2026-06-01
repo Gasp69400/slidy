@@ -1,6 +1,8 @@
 import { Stripe } from 'stripe'
+import { PlanTier, SubscriptionStatus } from '@prisma/client'
+
 import { prisma } from '@/lib/prisma'
-import { SubscriptionStatus } from '@prisma/client'
+import { planTierFromStripePriceId } from '@/lib/plans'
 
 let stripeSingleton: Stripe | undefined
 
@@ -27,7 +29,7 @@ export const SUBSCRIPTION_PLANS = {
     price: 1900,
     priceId: process.env.STRIPE_PRO_PRICE_ID || 'price_pro',
     features: [
-      '60 documents par jour',
+      '50 documents par mois',
       'Templates Pro débloqués',
       'Export PDF + PPTX',
       'Support email',
@@ -39,7 +41,7 @@ export const SUBSCRIPTION_PLANS = {
     price: 4900,
     priceId: process.env.STRIPE_ULTIMATE_PRICE_ID || 'price_ultimate',
     features: [
-      '200 documents par jour',
+      '200 documents par mois',
       'Tous les templates débloqués',
       'Export PDF + PPTX + JSON',
       'Support prioritaire',
@@ -49,6 +51,87 @@ export const SUBSCRIPTION_PLANS = {
 }
 
 export const TRIAL_DAYS = 14
+
+function subscriptionStatusFromStripe(status: Stripe.Subscription.Status): SubscriptionStatus {
+  switch (status) {
+    case 'active':
+      return SubscriptionStatus.ACTIVE
+    case 'trialing':
+      return SubscriptionStatus.TRIAL
+    case 'past_due':
+      return SubscriptionStatus.PAST_DUE
+    case 'unpaid':
+      return SubscriptionStatus.UNPAID
+    case 'canceled':
+    case 'incomplete_expired':
+      return SubscriptionStatus.CANCELED
+    default:
+      return SubscriptionStatus.TRIAL
+  }
+}
+
+function planTierFromSubscription(subscription: Stripe.Subscription): PlanTier | null {
+  const priceId = subscription.items.data[0]?.price?.id
+  if (!priceId) return null
+  return planTierFromStripePriceId(priceId)
+}
+
+async function resolveUserIdForSubscription(
+  subscription: Stripe.Subscription,
+  hintUserId?: string | null,
+): Promise<string | null> {
+  if (hintUserId) return hintUserId
+  if (subscription.metadata?.userId) return subscription.metadata.userId
+
+  const customerId =
+    typeof subscription.customer === 'string' ?
+      subscription.customer
+    : subscription.customer?.id
+
+  if (!customerId) return null
+
+  const user = await prisma.user.findFirst({
+    where: { stripeCustomerId: customerId },
+    select: { id: true },
+  })
+  return user?.id ?? null
+}
+
+/** Synchronise statut Stripe + plan Pro/Ultimate en base. */
+export async function syncStripeSubscription(
+  subscription: Stripe.Subscription,
+  hintUserId?: string | null,
+): Promise<void> {
+  const userId = await resolveUserIdForSubscription(subscription, hintUserId)
+  if (!userId) {
+    console.warn('syncStripeSubscription: userId introuvable', subscription.id)
+    return
+  }
+
+  const status = subscriptionStatusFromStripe(subscription.status)
+  const tier = planTierFromSubscription(subscription)
+  const entitled =
+    status === SubscriptionStatus.ACTIVE ||
+    status === SubscriptionStatus.TRIAL ||
+    status === SubscriptionStatus.PAST_DUE
+
+  const customerId =
+    typeof subscription.customer === 'string' ?
+      subscription.customer
+    : subscription.customer?.id
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      ...(customerId ? { stripeCustomerId: customerId } : {}),
+      subscriptionStatus: status,
+      planTier:
+        entitled && tier ? tier
+        : entitled ? undefined
+        : PlanTier.STARTER,
+    },
+  })
+}
 
 /**
  * Crée une Checkout Session Stripe (redirection vers page de paiement)
@@ -64,15 +147,24 @@ export async function createCheckoutSession({
   priceId: string
   trialDays?: number
 }) {
+  const tier = planTierFromStripePriceId(priceId)
   const session = await getStripe().checkout.sessions.create({
     mode: 'subscription',
     customer_email: userEmail,
+    client_reference_id: userId,
     line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: {
       ...(trialDays > 0 ? { trial_period_days: trialDays } : {}),
-      metadata: { userId },
+      metadata: {
+        userId,
+        ...(tier ? { planTier: tier } : {}),
+      },
     },
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?success=true`,
+    metadata: {
+      userId,
+      ...(tier ? { planTier: tier } : {}),
+    },
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/account?success=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
   })
   return session
@@ -129,6 +221,9 @@ export async function createSubscription({
       data: {
         subscriptionStatus:
           trialDays > 0 ? SubscriptionStatus.TRIAL : SubscriptionStatus.ACTIVE,
+        ...(planTierFromStripePriceId(priceId) ?
+          { planTier: planTierFromStripePriceId(priceId)! }
+        : {}),
       },
     })
 
@@ -225,64 +320,71 @@ export async function updateSubscription(userId: string, newPriceId: string) {
 /**
  * Gère les webhooks Stripe
  */
-export async function handleWebhook(event: any) {
+export async function handleWebhook(event: Stripe.Event) {
   try {
     switch (event.type) {
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated': {
-        const subscription = event.data.object
-        const userId = subscription.metadata.userId
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session
+        const userId =
+          session.metadata?.userId ?? session.client_reference_id ?? null
 
-        if (!userId) break
-
-        let status: SubscriptionStatus
-        switch (subscription.status) {
-          case 'active':
-            status = SubscriptionStatus.ACTIVE
-            break
-          case 'past_due':
-            status = SubscriptionStatus.PAST_DUE
-            break
-          case 'canceled':
-          case 'unpaid':
-            status = SubscriptionStatus.CANCELED
-            break
-          default:
-            status = SubscriptionStatus.TRIAL
+        if (userId && session.customer) {
+          await prisma.user.update({
+            where: { id: userId },
+            data: {
+              stripeCustomerId: String(session.customer),
+            },
+          })
         }
 
-        await prisma.user.update({
-          where: { id: userId },
-          data: { subscriptionStatus: status },
-        })
+        if (session.subscription) {
+          const subscription = await getStripe().subscriptions.retrieve(
+            String(session.subscription),
+          )
+          await syncStripeSubscription(subscription, userId)
+        }
+        break
+      }
 
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated':
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object as Stripe.Subscription
+        await syncStripeSubscription(subscription)
         break
       }
 
       case 'invoice.payment_succeeded': {
-        const invoice = event.data.object
+        const invoice = event.data.object as Stripe.Invoice
         const customerId = invoice.customer
+        if (!customerId) break
 
         const user = await prisma.user.findFirst({
-          where: { stripeCustomerId: customerId as string },
+          where: { stripeCustomerId: String(customerId) },
         })
+        if (!user) break
 
-        if (user) {
+        if (invoice.subscription) {
+          const subscription = await getStripe().subscriptions.retrieve(
+            String(invoice.subscription),
+          )
+          await syncStripeSubscription(subscription, user.id)
+        } else {
           await prisma.user.update({
             where: { id: user.id },
             data: { subscriptionStatus: SubscriptionStatus.ACTIVE },
           })
         }
-
         break
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object
+        const invoice = event.data.object as Stripe.Invoice
         const customerId = invoice.customer
+        if (!customerId) break
 
         const user = await prisma.user.findFirst({
-          where: { stripeCustomerId: customerId as string },
+          where: { stripeCustomerId: String(customerId) },
         })
 
         if (user) {
@@ -291,7 +393,6 @@ export async function handleWebhook(event: any) {
             data: { subscriptionStatus: SubscriptionStatus.UNPAID },
           })
         }
-
         break
       }
 

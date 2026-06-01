@@ -7,7 +7,7 @@ import {
   exportDocumentToPdf,
   exportDocumentToPptx,
 } from '@/lib/exporters'
-import { getCapabilities, planFromSubscription } from '@/lib/plans'
+import { getCapabilities, resolveUserPlan } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 
 type Params = { params: { id: string } }
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, { params }: Params) {
 
     const user = await prisma.user.findUnique({
       where: { id: auth.userId },
-      select: { subscriptionStatus: true },
+      select: { subscriptionStatus: true, planTier: true },
     })
     if (!user) {
       return NextResponse.json(
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, { params }: Params) {
       )
     }
 
-    const caps = getCapabilities(planFromSubscription(user.subscriptionStatus))
+    const caps = getCapabilities(resolveUserPlan(user))
     if (!caps.exportFormats.includes(format)) {
       return NextResponse.json(
         {

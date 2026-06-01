@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { requireSessionUser } from '@/lib/api-auth'
-import { getCapabilities, planFromSubscription } from '@/lib/plans'
+import { getCapabilities, getDocumentQuotaWindowStart, resolveUserPlan } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 import { resolveGroqChatModel } from '@/lib/server-chat-llm'
 
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: auth.userId },
-      select: { subscriptionStatus: true },
+      select: { subscriptionStatus: true, planTier: true },
     })
 
     if (!user) {
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const caps = getCapabilities(planFromSubscription(user.subscriptionStatus))
+    const caps = getCapabilities(resolveUserPlan(user))
     if (!caps.allowedDocumentTypes.includes(input.type)) {
       return NextResponse.json(
         {
@@ -129,23 +129,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const startOfDay = new Date()
-    startOfDay.setHours(0, 0, 0, 0)
-    const todayCount = await prisma.generationJob.count({
+    const quotaStart = getDocumentQuotaWindowStart(caps.documentQuotaPeriod)
+    const usedCount = await prisma.generationJob.count({
       where: {
         userId: auth.userId,
-        createdAt: { gte: startOfDay },
+        createdAt: { gte: quotaStart },
       },
     })
 
-    if (todayCount >= caps.maxDocumentsPerDay) {
+    if (usedCount >= caps.maxDocuments) {
+      const periodLabel = caps.documentQuotaPeriod === 'month' ? 'mensuelle' : 'quotidienne'
       return NextResponse.json(
         {
-          error:
-            'Limite quotidienne atteinte pour votre plan. Passez au plan supérieur pour générer plus de documents.',
+          error: `Limite ${periodLabel} atteinte pour votre plan. Passez au plan supérieur pour générer plus de documents.`,
           quota: {
-            used: todayCount,
-            max: caps.maxDocumentsPerDay,
+            used: usedCount,
+            max: caps.maxDocuments,
+            period: caps.documentQuotaPeriod,
           },
         },
         { status: 429 },

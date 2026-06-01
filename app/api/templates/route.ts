@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Template } from '@prisma/client'
 
 import { requireSessionUser } from '@/lib/api-auth'
-import { planFromSubscription, PLAN_ORDER } from '@/lib/plans'
+import { resolveUserPlan, PLAN_ORDER } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(_request: NextRequest) {
@@ -12,7 +12,7 @@ export async function GET(_request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: auth.userId },
-      select: { subscriptionStatus: true },
+      select: { subscriptionStatus: true, planTier: true },
     })
 
     if (!user) {
@@ -22,7 +22,7 @@ export async function GET(_request: NextRequest) {
       )
     }
 
-    const allowedTier = planFromSubscription(user.subscriptionStatus)
+    const allowedTier = resolveUserPlan(user)
 
     const allowedRank = PLAN_ORDER[allowedTier]
 

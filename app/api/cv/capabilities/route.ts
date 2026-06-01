@@ -1,16 +1,20 @@
 import { NextResponse } from 'next/server'
 
-import { getCapabilities, planFromSubscription } from '@/lib/plans'
-import { requireSupabaseSession } from '@/lib/supabase/require-supabase-session'
+import { requireSessionUser } from '@/lib/api-auth'
+import { getCapabilities, resolveUserPlan } from '@/lib/plans'
+import { prisma } from '@/lib/prisma'
 
-/**
- * Capacités pour le module CV sans Prisma : plan par défaut « trial » côté produit.
- */
 export async function GET() {
-  const session = await requireSupabaseSession()
-  if (!session.ok) return session.response
+  const auth = await requireSessionUser()
+  if (!auth.ok) return auth.response
 
-  const plan = planFromSubscription('TRIAL')
+  const user = await prisma.user.findUnique({
+    where: { id: auth.userId },
+    select: { subscriptionStatus: true, planTier: true },
+  })
+
+  const plan = user ? resolveUserPlan(user) : 'STARTER'
+
   return NextResponse.json({
     success: true,
     data: getCapabilities(plan),

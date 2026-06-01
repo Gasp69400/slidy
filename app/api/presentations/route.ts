@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireSessionUser } from '@/lib/api-auth'
 import { prisma } from '@/lib/prisma'
-import { planFromSubscription, getCapabilities } from '@/lib/plans'
+import { getCapabilities, getDocumentQuotaWindowStart, resolveUserPlan } from '@/lib/plans'
 import { PRESENTATION_TEMPLATES_META } from '@/lib/presentation-template-themes'
 
 export async function GET(_request: NextRequest) {
@@ -36,28 +36,29 @@ export async function POST(request: NextRequest) {
     // Recupere l'utilisateur et son plan
     const user = await prisma.user.findUnique({
       where: { id: auth.userId },
-      select: { subscriptionStatus: true },
+      select: { subscriptionStatus: true, planTier: true },
     })
     if (!user) {
       return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 })
     }
 
-    const plan = planFromSubscription(user.subscriptionStatus)
+    const plan = resolveUserPlan(user)
     const capabilities = getCapabilities(plan)
 
-    // Verifie la limite de presentations par jour
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const countToday = await prisma.presentation.count({
+    // Verifie la limite de presentations selon le quota du plan
+    const quotaStart = getDocumentQuotaWindowStart(capabilities.documentQuotaPeriod)
+    const countInPeriod = await prisma.presentation.count({
       where: {
         userId: auth.userId,
-        createdAt: { gte: today },
+        createdAt: { gte: quotaStart },
       },
     })
-    if (countToday >= capabilities.maxDocumentsPerDay) {
+    if (countInPeriod >= capabilities.maxDocuments) {
+      const periodLabel =
+        capabilities.documentQuotaPeriod === 'month' ? 'mois' : 'jour'
       return NextResponse.json(
         {
-          error: `Limite atteinte : votre plan ${plan} permet ${capabilities.maxDocumentsPerDay} presentations par jour.`,
+          error: `Limite atteinte : votre plan ${plan} permet ${capabilities.maxDocuments} presentations par ${periodLabel}.`,
         },
         { status: 403 },
       )

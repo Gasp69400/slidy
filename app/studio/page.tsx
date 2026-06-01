@@ -113,7 +113,8 @@ export default function StudioPage() {
           success: true,
           data: {
             plan: 'STARTER' as const,
-            maxDocumentsPerDay: 10,
+            maxDocuments: 5,
+            documentQuotaPeriod: 'month' as const,
             allowedDocumentTypes: [
               'PRESENTATION',
               'DOCUMENT',
@@ -128,7 +129,8 @@ export default function StudioPage() {
         success: boolean
         data: {
           plan: 'STARTER' | 'PRO' | 'ULTIMATE'
-          maxDocumentsPerDay: number
+          maxDocuments: number
+          documentQuotaPeriod: 'day' | 'month'
           allowedDocumentTypes: DocType[]
           exportFormats: Array<'pdf' | 'pptx' | 'json'>
         }
@@ -332,7 +334,12 @@ export default function StudioPage() {
                 <p className="font-medium text-slate-800">
                   {t('studio.plan_line', {
                     plan: caps.plan,
-                    max: caps.maxDocumentsPerDay,
+                    max: caps.maxDocuments,
+                    period: t(
+                      caps.documentQuotaPeriod === 'month'
+                        ? 'studio.quota_period.month'
+                        : 'studio.quota_period.day',
+                    ),
                   })}
                 </p>
                 <p className="mt-1">
