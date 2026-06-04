@@ -1,40 +1,97 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requireSupabaseSession } from '@/lib/supabase/require-supabase-session'
-import { createCheckoutSession, SUBSCRIPTION_PLANS } from '@/lib/stripe'
 import { z } from 'zod'
 
+import { createCheckoutSession } from '@/lib/stripe'
+import {
+  resolveCheckoutPriceId,
+  type StripeCheckoutPlanId,
+} from '@/lib/stripe-prices'
+import { requireSupabaseSession } from '@/lib/supabase/require-supabase-session'
+
 const subscribeSchema = z.object({
-  priceId: z.string(),
+  planId: z.enum(['pro', 'ultimate']).optional(),
+  priceId: z.string().optional(),
   trialDays: z.number().min(0).max(365).optional(),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const session = await requireSupabaseSession()
-    if (!session.ok) return session.response
+    if (!session.ok) {
+      return NextResponse.json(
+        {
+          error: 'Connectez-vous pour souscrire à un plan payant.',
+          code: 'AUTH_REQUIRED',
+        },
+        { status: 401 },
+      )
+    }
 
-    const { userId } = session
     const body = await request.json()
-    const { priceId, trialDays } = subscribeSchema.parse(body)
+    const parsed = subscribeSchema.parse(body)
+
+    const resolved = resolveCheckoutPriceId({
+      planId: parsed.planId as StripeCheckoutPlanId | undefined,
+      priceId: parsed.priceId,
+    })
+
+    if ('error' in resolved) {
+      console.error('[stripe/subscribe] priceId:', resolved.error, {
+        planId: parsed.planId,
+        priceId: parsed.priceId,
+      })
+      return NextResponse.json(
+        { error: resolved.error, code: 'INVALID_PRICE_ID' },
+        { status: 400 },
+      )
+    }
+
+    console.info('[stripe/subscribe] checkout', {
+      userId: session.userId,
+      planId: parsed.planId,
+      priceId: resolved.priceId,
+      trialDays: parsed.trialDays ?? 0,
+    })
+
     const checkoutSession = await createCheckoutSession({
-      userId,
+      userId: session.userId,
       userEmail: session.email!,
-      priceId,
-      trialDays,
+      priceId: resolved.priceId,
+      trialDays: parsed.trialDays,
     })
 
     return NextResponse.json({ url: checkoutSession.url })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Données invalides', details: error.errors },
-        { status: 400 }
+        {
+          error: 'Données invalides',
+          code: 'VALIDATION_ERROR',
+          details: error.errors,
+        },
+        { status: 400 },
       )
     }
-    console.error('Subscribe error:', error)
+
+    const message =
+      error instanceof Error ? error.message : 'Erreur interne du serveur'
+
+    console.error('[stripe/subscribe]', message, error)
+
+    if (message.includes('STRIPE_SECRET_KEY')) {
+      return NextResponse.json(
+        {
+          error:
+            'Paiement indisponible : STRIPE_SECRET_KEY manquante côté serveur (Vercel).',
+          code: 'STRIPE_NOT_CONFIGURED',
+        },
+        { status: 503 },
+      )
+    }
+
     return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
-      { status: 500 }
+      { error: message, code: 'CHECKOUT_FAILED' },
+      { status: 500 },
     )
   }
 }

@@ -27,6 +27,7 @@ export default function PricingPage() {
   const [selectedPlanId, setSelectedPlanId] =
     useState<PricingPlanId>(DEFAULT_SELECTED_PLAN)
   const [flashPlanId, setFlashPlanId] = useState<PricingPlanId | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const cardRefs = useRef<Record<string, HTMLElement | null>>({})
 
   const tiers = useMemo(() => buildPricingTiers(t), [t])
@@ -63,22 +64,79 @@ export default function PricingPage() {
     planId: string,
     trialDays: number,
   ) => {
+    setCheckoutError(null)
     setLoadingPlan(planId)
+
+    if (!priceId?.trim()) {
+      const msg = t('pricing.checkout_missing_price')
+      setCheckoutError(msg)
+      console.error('[pricing] priceId vide pour le plan', planId)
+      setLoadingPlan(null)
+      return
+    }
+
     try {
       const res = await fetch('/api/stripe/subscribe', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, trialDays }),
+        body: JSON.stringify({
+          planId,
+          priceId,
+          trialDays,
+        }),
       })
-      const data = await res.json()
+
+      let data: {
+        url?: string
+        error?: string
+        code?: string
+        details?: unknown
+      } = {}
+
+      try {
+        data = await res.json()
+      } catch {
+        data = { error: `Réponse invalide (${res.status})` }
+      }
+
+      if (!res.ok) {
+        const detail =
+          data.error ??
+          (typeof data.details === 'string' ? data.details : null) ??
+          `HTTP ${res.status}`
+        console.error('[pricing] subscribe failed', {
+          status: res.status,
+          planId,
+          priceId,
+          code: data.code,
+          details: data.details,
+          error: data.error,
+        })
+        if (data.code === 'AUTH_REQUIRED') {
+          setCheckoutError(t('pricing.checkout_login'))
+        } else {
+          setCheckoutError(t('pricing.checkout_error', { detail }))
+        }
+        return
+      }
+
       if (data.url) {
         trackBeginCheckout(planId, trialDays)
         window.location.href = data.url
-      } else {
-        console.error('Pas de lien Stripe reçu', data)
+        return
       }
+
+      console.error('[pricing] Pas de lien Stripe reçu', { planId, priceId, data })
+      setCheckoutError(
+        t('pricing.checkout_error', {
+          detail: data.error ?? 'URL Stripe absente',
+        }),
+      )
     } catch (err) {
-      console.error('Erreur abonnement', err)
+      const detail = err instanceof Error ? err.message : String(err)
+      console.error('[pricing] Erreur abonnement', err)
+      setCheckoutError(t('pricing.checkout_error', { detail }))
     } finally {
       setLoadingPlan(null)
     }
@@ -203,6 +261,14 @@ export default function PricingPage() {
         </div>
 
         <div className="mx-auto mt-10 flex max-w-lg flex-col items-center gap-3 text-center">
+          {checkoutError ? (
+            <p
+              role="alert"
+              className="w-full rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200"
+            >
+              {checkoutError}
+            </p>
+          ) : null}
           <p className="inline-flex items-center gap-2 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-4 py-2 text-xs font-medium text-emerald-800 shadow-sm dark:border-emerald-800/40 dark:bg-emerald-950/40 dark:text-emerald-200">
             <Shield className="h-3.5 w-3.5 shrink-0" aria-hidden />
             {t('pricing.secure')}

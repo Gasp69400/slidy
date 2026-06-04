@@ -148,6 +148,10 @@ export async function createCheckoutSession({
   trialDays?: number
 }) {
   const tier = planTierFromStripePriceId(priceId)
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') ??
+    'http://localhost:3000'
+
   const session = await getStripe().checkout.sessions.create({
     mode: 'subscription',
     customer_email: userEmail,
@@ -164,9 +168,14 @@ export async function createCheckoutSession({
       userId,
       ...(tier ? { planTier: tier } : {}),
     },
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/account?success=true`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+    success_url: `${appUrl}/account?success=true`,
+    cancel_url: `${appUrl}/pricing?canceled=true`,
   })
+
+  if (!session.url) {
+    throw new Error('Stripe n’a pas renvoyé d’URL de checkout')
+  }
+
   return session
 }
 

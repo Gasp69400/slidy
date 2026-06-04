@@ -362,6 +362,18 @@ export const SITE_STRINGS = {
     fr: 'Paiement sécurisé via Stripe · Annulation à tout moment',
     en: 'Secure checkout via Stripe · Cancel anytime',
   },
+  'pricing.checkout_error': {
+    fr: 'Impossible de lancer le paiement. Détail : {detail}',
+    en: 'Could not start checkout. Details: {detail}',
+  },
+  'pricing.checkout_login': {
+    fr: 'Connectez-vous pour souscrire, puis réessayez.',
+    en: 'Sign in to subscribe, then try again.',
+  },
+  'pricing.checkout_missing_price': {
+    fr: 'Tarif Stripe non configuré pour ce plan (variables d’environnement).',
+    en: 'Stripe price not configured for this plan (environment variables).',
+  },
   'pricing.tier.starter.name': { fr: 'Starter', en: 'Starter' },
 'pricing.tier.starter.desc': {
   fr: 'Essayez Slidy gratuitement pour vos premières créations.',
