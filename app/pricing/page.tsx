@@ -18,6 +18,10 @@ import {
 } from '@/components/pricing/PricingTierCard'
 import { useSiteLocale } from '@/lib/site-locale'
 import { buildPricingTiers, DEFAULT_SELECTED_PLAN, type PricingPlanId } from '@/lib/pricing-tiers'
+import {
+  getClientStripePriceId,
+  type StripePaidPlanId,
+} from '@/lib/stripe-client-price-ids'
 import { trackBeginCheckout } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
 
@@ -60,17 +64,38 @@ export default function PricingPage() {
   }, [])
 
   const handleSubscribe = async (
-    priceId: string,
+    _fallbackPriceId: string,
     planId: string,
     trialDays: number,
   ) => {
     setCheckoutError(null)
     setLoadingPlan(planId)
 
+    const priceId =
+      planId === 'pro' || planId === 'ultimate'
+        ? getClientStripePriceId(planId as StripePaidPlanId)
+        : _fallbackPriceId.trim()
+
+    const priceEnvKey =
+      planId === 'pro'
+        ? 'NEXT_PUBLIC_STRIPE_PRO_PRICE_ID'
+        : planId === 'ultimate'
+          ? 'NEXT_PUBLIC_STRIPE_ULTIMATE_PRICE_ID'
+          : null
+
+    console.log('[pricing] checkout — priceId avant appel Stripe', {
+      planId,
+      priceId: priceId || '(vide / undefined)',
+      priceEnvKey,
+    })
+
     if (!priceId?.trim()) {
       const msg = t('pricing.checkout_missing_price')
       setCheckoutError(msg)
-      console.error('[pricing] priceId vide pour le plan', planId)
+      console.error('[pricing] priceId vide pour le plan', {
+        planId,
+        priceEnvKey,
+      })
       setLoadingPlan(null)
       return
     }

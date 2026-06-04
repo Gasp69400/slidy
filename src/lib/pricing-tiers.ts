@@ -1,4 +1,5 @@
 import type { SiteStrKey } from '@/lib/site-messages'
+import { getClientStripePriceId } from '@/lib/stripe-client-price-ids'
 
 export type PricingPlanId = 'starter' | 'pro' | 'ultimate'
 
@@ -52,7 +53,7 @@ export function buildPricingTiers(t: Translate): PricingTierDefinition[] {
       cta: t('pricing.tier.pro.cta'),
       href: null,
       highlighted: true,
-      priceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID ?? '',
+      priceId: getClientStripePriceId('pro') || null,
       planId: 'pro',
       trialDays: 0,
     },
@@ -69,7 +70,7 @@ export function buildPricingTiers(t: Translate): PricingTierDefinition[] {
       cta: t('pricing.tier.ultimate.cta'),
       href: null,
       highlighted: false,
-      priceId: process.env.NEXT_PUBLIC_STRIPE_ULTIMATE_PRICE_ID ?? '',
+      priceId: getClientStripePriceId('ultimate') || null,
       planId: 'ultimate',
       trialDays: 2,
     },

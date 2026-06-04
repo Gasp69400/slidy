@@ -10,13 +10,13 @@ function trimId(value: string | undefined): string {
 export function getStripePriceIdForPlan(plan: StripeCheckoutPlanId): string {
   if (plan === 'pro') {
     return (
-      trimId(process.env.STRIPE_PRO_PRICE_ID) ||
-      trimId(process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID)
+      trimId(process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID) ||
+      trimId(process.env.STRIPE_PRO_PRICE_ID)
     )
   }
   return (
-    trimId(process.env.STRIPE_ULTIMATE_PRICE_ID) ||
-    trimId(process.env.NEXT_PUBLIC_STRIPE_ULTIMATE_PRICE_ID)
+    trimId(process.env.NEXT_PUBLIC_STRIPE_ULTIMATE_PRICE_ID) ||
+    trimId(process.env.STRIPE_ULTIMATE_PRICE_ID)
   )
 }
 
@@ -36,10 +36,15 @@ export function resolveCheckoutPriceId(input: {
   priceId?: string
 }): { priceId: string } | { error: string } {
   if (input.planId) {
+    const clientPrice = input.priceId?.trim() ?? ''
+    if (clientPrice && isKnownStripePriceId(clientPrice)) {
+      return { priceId: clientPrice }
+    }
+
     const fromPlan = getStripePriceIdForPlan(input.planId)
     if (!fromPlan) {
       return {
-        error: `Price ID manquant pour le plan ${input.planId}. Définissez STRIPE_${input.planId.toUpperCase()}_PRICE_ID (et NEXT_PUBLIC_STRIPE_${input.planId.toUpperCase()}_PRICE_ID) sur Vercel.`,
+        error: `Price ID manquant pour le plan ${input.planId}. Définissez NEXT_PUBLIC_STRIPE_${input.planId.toUpperCase()}_PRICE_ID (et STRIPE_${input.planId.toUpperCase()}_PRICE_ID) sur Vercel.`,
       }
     }
     return { priceId: fromPlan }
@@ -67,7 +72,7 @@ export function publicStripePriceIdsForClient(): {
   ultimate: string
 } {
   return {
-    pro: trimId(process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID),
-    ultimate: trimId(process.env.NEXT_PUBLIC_STRIPE_ULTIMATE_PRICE_ID),
+    pro: getStripePriceIdForPlan('pro'),
+    ultimate: getStripePriceIdForPlan('ultimate'),
   }
 }
