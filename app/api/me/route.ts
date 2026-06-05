@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 import {
@@ -35,6 +34,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    const dbUnavailable = auth.dbUnavailable ?? false
+
     if (!profile) {
       profile = fallbackAppUserProfile(auth.email)
     }
@@ -65,6 +66,7 @@ export async function GET(request: NextRequest) {
           subscriptionStatus: profile.subscriptionStatus,
           planTier: profile.planTier,
           activePlan: profile.activePlan,
+          dbUnavailable,
           canCancelSubscription,
           subscription: stripeSubscription
             ? {
@@ -80,25 +82,6 @@ export async function GET(request: NextRequest) {
     )
   } catch (error) {
     console.error('GET /api/me error:', error)
-
-    if (
-      error instanceof Prisma.PrismaClientInitializationError ||
-      (error instanceof Prisma.PrismaClientKnownRequestError &&
-        ['P1000', 'P1001', 'P1002', 'P1003', 'P1011', 'P1017'].includes(
-          error.code,
-        ))
-    ) {
-      return jsonWithSessionCookies(
-        {
-          success: false,
-          error:
-            'Base de données inaccessible. Vérifiez SUPABASE_DATABASE_URL sur Vercel.',
-          code: 'DATABASE_UNAVAILABLE',
-        },
-        { status: 503 },
-        sessionCookies,
-      )
-    }
 
     return jsonWithSessionCookies(
       {

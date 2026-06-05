@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 
 import { prisma } from '@/lib/prisma'
 import { resolveUserPlan } from '@/lib/plans'
+import { isPrismaConnectionError } from '@/lib/prisma-errors'
 
 export type AppUserProfile = {
   email: string
@@ -47,6 +48,7 @@ export async function loadAppUserProfile(
       activePlan: resolveUserPlan(user),
     }
   } catch (error) {
+    if (isPrismaConnectionError(error)) return null
     if (!isPrismaSchemaMismatch(error)) throw error
 
     console.warn('[loadAppUserProfile] planTier indisponible, repli sans colonne')

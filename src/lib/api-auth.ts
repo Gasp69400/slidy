@@ -5,6 +5,7 @@ import {
   applySessionCookies,
   createSupabaseRouteHandlerClient,
 } from '@/lib/supabase/route-handler'
+import { isPrismaConnectionError } from '@/lib/prisma-errors'
 import { createSupabaseServerClient } from '@/lib/supabase/server-client'
 import { ensureAppUserFromSupabase } from '@/lib/supabase/sync-app-user'
 
@@ -13,6 +14,8 @@ export type SessionAuthOk = {
   userId: string
   email: string
   sessionCookies?: NextResponse
+  /** Prisma injoignable : session Supabase valide, sync BDD ignorée. */
+  dbUnavailable?: boolean
 }
 
 export type SessionAuthFail = {
@@ -60,7 +63,24 @@ export async function requireSessionUser(
       }
     }
 
-    await ensureAppUserFromSupabase(user)
+    try {
+      await ensureAppUserFromSupabase(user)
+    } catch (syncError) {
+      if (isPrismaConnectionError(syncError)) {
+        console.warn(
+          'requireSessionUser: sync Prisma ignorée (BDD injoignable)',
+          syncError,
+        )
+        return {
+          ok: true,
+          userId: user.id,
+          email: user.email,
+          sessionCookies,
+          dbUnavailable: true,
+        }
+      }
+      throw syncError
+    }
 
     return {
       ok: true,
@@ -71,13 +91,14 @@ export async function requireSessionUser(
   } catch (e) {
     console.error('requireSessionUser:', e)
 
-    if (e instanceof Prisma.PrismaClientInitializationError) {
+    if (isPrismaConnectionError(e)) {
       return {
         ok: false,
         response: NextResponse.json(
           {
             error:
-              'Base de données inaccessible. Vérifiez SUPABASE_DATABASE_URL dans .env.local.',
+              'Base de données inaccessible. Vérifiez SUPABASE_DATABASE_URL (mot de passe Supabase > Settings > Database).',
+            code: 'DATABASE_UNAVAILABLE',
           },
           { status: 503 },
         ),
@@ -85,31 +106,12 @@ export async function requireSessionUser(
     }
 
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
-      const prismaConnectionCodes = new Set([
-        'P1000',
-        'P1001',
-        'P1002',
-        'P1003',
-        'P1011',
-        'P1017',
-      ])
-      if (prismaConnectionCodes.has(e.code)) {
-        return {
-          ok: false,
-          response: NextResponse.json(
-            {
-              error:
-                'Base de données inaccessible ou mal configurée. Vérifiez SUPABASE_DATABASE_URL dans .env.local.',
-            },
-            { status: 503 },
-          ),
-        }
-      }
       return {
         ok: false,
         response: NextResponse.json(
           {
             error: `Erreur base de données (${e.code}). Réessayez ou vérifiez la configuration.`,
+            code: 'DATABASE_ERROR',
           },
           { status: 503 },
         ),

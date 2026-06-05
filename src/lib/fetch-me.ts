@@ -9,6 +9,7 @@ export type MeProfile = {
   planTier: PlanTier
   activePlan: PlanTier
   canCancelSubscription: boolean
+  dbUnavailable?: boolean
   subscription: {
     cancelAtPeriodEnd: boolean
     currentPeriodEnd: number

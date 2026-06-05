@@ -96,6 +96,10 @@ export const SITE_STRINGS = {
     fr: 'Impossible de charger votre profil. Détail : {detail}',
     en: 'Could not load your profile. Details: {detail}',
   },
+  'account.db_unavailable': {
+    fr: 'Connexion base de données indisponible — affichage limité (plan Starter par défaut). Mettez à jour SUPABASE_DATABASE_URL sur Vercel avec le mot de passe actuel de Supabase.',
+    en: 'Database connection unavailable — limited view (default Starter plan). Update SUPABASE_DATABASE_URL on Vercel with your current Supabase database password.',
+  },
   'account.back_home': { fr: 'Retour à l’accueil', en: 'Back to home' },
   'account.plan_label': { fr: 'Plan actuel', en: 'Current plan' },
   'account.plan.STARTER': { fr: 'Starter', en: 'Starter' },
