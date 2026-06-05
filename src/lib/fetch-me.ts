@@ -36,7 +36,7 @@ async function fetchMeFromApi(): Promise<Response> {
 /** Charge le profil via session navigateur + synchronisation cookies serveur. */
 export async function fetchMeProfile(): Promise<
   | { ok: true; data: MeProfile }
-  | { ok: false; unauthorized: boolean; error?: boolean }
+  | { ok: false; unauthorized: boolean; error?: boolean; message?: string }
 > {
   const supabase = createSupabaseBrowserClient()
   const {
@@ -60,13 +60,32 @@ export async function fetchMeProfile(): Promise<
     return { ok: false, unauthorized: true }
   }
 
-  if (!res.ok) {
-    return { ok: false, unauthorized: false, error: true }
+  const json = (await res.json().catch(() => ({}))) as MeApiResponse & {
+    code?: string
   }
 
-  const json = (await res.json()) as MeApiResponse
+  if (!res.ok) {
+    console.error('[fetchMeProfile] /api/me failed', {
+      status: res.status,
+      error: json.error,
+      code: json.code,
+    })
+    return {
+      ok: false,
+      unauthorized: false,
+      error: true,
+      message: json.error ?? `HTTP ${res.status}`,
+    }
+  }
+
   if (!json.success || !json.data) {
-    return { ok: false, unauthorized: false, error: true }
+    console.error('[fetchMeProfile] réponse invalide', json)
+    return {
+      ok: false,
+      unauthorized: false,
+      error: true,
+      message: json.error ?? 'Réponse profil invalide',
+    }
   }
 
   return { ok: true, data: json.data }

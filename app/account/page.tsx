@@ -60,7 +60,7 @@ export default function AccountPage() {
   const { t, locale } = useSiteLocale()
   const [data, setData] = useState<MeProfile | null>(null)
   const [unauthorized, setUnauthorized] = useState(false)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -74,13 +74,20 @@ export default function AccountPage() {
             setUnauthorized(true)
             setData(null)
           } else {
-            setError(true)
+            setError(
+              result.message
+                ? t('account.err_load_detail', { detail: result.message })
+                : t('account.err_load'),
+            )
           }
           return
         }
         setData(result.data)
-      } catch {
-        if (!cancelled) setError(true)
+      } catch (err) {
+        if (!cancelled) {
+          const detail = err instanceof Error ? err.message : String(err)
+          setError(t('account.err_load_detail', { detail }))
+        }
       } finally {
         if (!cancelled) setLoading(false)
       }
@@ -122,8 +129,11 @@ export default function AccountPage() {
               </p>
             )}
             {!unauthorized && !loading && error && (
-              <p className="text-sm text-red-600 dark:text-red-700">
-                {t('account.err_load')}
+              <p
+                role="alert"
+                className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+              >
+                {error}
               </p>
             )}
             {!unauthorized && !loading && data && (

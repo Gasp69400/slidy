@@ -130,13 +130,29 @@ export async function ensureAppUserFromSupabase(
     return
   }
 
-  await prisma.user.create({
-    data: {
-      id: supabaseId,
-      email,
-      name,
-      hashedPassword: null,
-      subscriptionStatus: 'TRIAL',
-    },
-  })
+  try {
+    await prisma.user.create({
+      data: {
+        id: supabaseId,
+        email,
+        name,
+        hashedPassword: null,
+        subscriptionStatus: 'TRIAL',
+        planTier: 'STARTER',
+      },
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (!message.includes('planTier')) throw error
+
+    await prisma.user.create({
+      data: {
+        id: supabaseId,
+        email,
+        name,
+        hashedPassword: null,
+        subscriptionStatus: 'TRIAL',
+      },
+    })
+  }
 }

@@ -1,42 +1,58 @@
+import { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
+import {
+  fallbackAppUserProfile,
+  loadAppUserProfile,
+} from '@/lib/app-user-profile'
 import { jsonWithSessionCookies, requireSessionUser } from '@/lib/api-auth'
-import { resolveUserPlan } from '@/lib/plans'
-import { prisma } from '@/lib/prisma'
+import { createSupabaseRouteHandlerClient } from '@/lib/supabase/route-handler'
+import { ensureAppUserFromSupabase } from '@/lib/supabase/sync-app-user'
 import { getSubscriptionInfo } from '@/lib/stripe'
 
 export async function GET(request: NextRequest) {
+  let sessionCookies: NextResponse | undefined
+
   try {
     const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
+    sessionCookies = auth.sessionCookies
 
-    const user = await prisma.user.findUnique({
-      where: { id: auth.userId },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        subscriptionStatus: true,
-        planTier: true,
-      },
-    })
+    let profile = await loadAppUserProfile(auth.userId, auth.email)
 
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Utilisateur non trouvé' },
-        { status: 404 },
-      )
+    if (!profile) {
+      try {
+        const { supabase } = createSupabaseRouteHandlerClient(request)
+        const {
+          data: { user: supabaseUser },
+        } = await supabase.auth.getUser()
+        if (supabaseUser) {
+          await ensureAppUserFromSupabase(supabaseUser)
+          profile = await loadAppUserProfile(auth.userId, auth.email)
+        }
+      } catch (syncError) {
+        console.warn('[GET /api/me] sync utilisateur échouée:', syncError)
+      }
     }
 
-    const activePlan = resolveUserPlan(user)
-    const stripeSubscription = await getSubscriptionInfo(auth.userId)
+    if (!profile) {
+      profile = fallbackAppUserProfile(auth.email)
+    }
+
+    let stripeSubscription: Awaited<ReturnType<typeof getSubscriptionInfo>> = null
+    try {
+      stripeSubscription = await getSubscriptionInfo(auth.userId)
+    } catch (stripeError) {
+      console.warn('[GET /api/me] Stripe indisponible:', stripeError)
+    }
+
     const entitled =
-      user.subscriptionStatus === 'ACTIVE' ||
-      user.subscriptionStatus === 'TRIAL' ||
-      user.subscriptionStatus === 'PAST_DUE'
+      profile.subscriptionStatus === 'ACTIVE' ||
+      profile.subscriptionStatus === 'TRIAL' ||
+      profile.subscriptionStatus === 'PAST_DUE'
     const canCancelSubscription =
       entitled &&
-      (activePlan === 'PRO' || activePlan === 'ULTIMATE') &&
+      (profile.activePlan === 'PRO' || profile.activePlan === 'ULTIMATE') &&
       Boolean(stripeSubscription) &&
       !stripeSubscription?.cancelAtPeriodEnd
 
@@ -44,8 +60,11 @@ export async function GET(request: NextRequest) {
       {
         success: true,
         data: {
-          ...user,
-          activePlan,
+          email: profile.email,
+          name: profile.name,
+          subscriptionStatus: profile.subscriptionStatus,
+          planTier: profile.planTier,
+          activePlan: profile.activePlan,
           canCancelSubscription,
           subscription: stripeSubscription
             ? {
@@ -57,13 +76,38 @@ export async function GET(request: NextRequest) {
         },
       },
       undefined,
-      auth.sessionCookies,
+      sessionCookies,
     )
   } catch (error) {
     console.error('GET /api/me error:', error)
-    return NextResponse.json(
-      { error: 'Erreur interne du serveur' },
+
+    if (
+      error instanceof Prisma.PrismaClientInitializationError ||
+      (error instanceof Prisma.PrismaClientKnownRequestError &&
+        ['P1000', 'P1001', 'P1002', 'P1003', 'P1011', 'P1017'].includes(
+          error.code,
+        ))
+    ) {
+      return jsonWithSessionCookies(
+        {
+          success: false,
+          error:
+            'Base de données inaccessible. Vérifiez SUPABASE_DATABASE_URL sur Vercel.',
+          code: 'DATABASE_UNAVAILABLE',
+        },
+        { status: 503 },
+        sessionCookies,
+      )
+    }
+
+    return jsonWithSessionCookies(
+      {
+        success: false,
+        error: 'Erreur interne du serveur',
+        code: 'INTERNAL_ERROR',
+      },
       { status: 500 },
+      sessionCookies,
     )
   }
 }

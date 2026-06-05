@@ -92,6 +92,10 @@ export const SITE_STRINGS = {
     fr: 'Impossible de charger votre profil.',
     en: 'Could not load your profile.',
   },
+  'account.err_load_detail': {
+    fr: 'Impossible de charger votre profil. Détail : {detail}',
+    en: 'Could not load your profile. Details: {detail}',
+  },
   'account.back_home': { fr: 'Retour à l’accueil', en: 'Back to home' },
   'account.plan_label': { fr: 'Plan actuel', en: 'Current plan' },
   'account.plan.STARTER': { fr: 'Starter', en: 'Starter' },
