@@ -94,7 +94,11 @@ export const SITE_STRINGS = {
   },
   'account.back_home': { fr: 'Retour à l’accueil', en: 'Back to home' },
   'account.plan_label': { fr: 'Plan actuel', en: 'Current plan' },
-  'account.plan.STARTER': { fr: 'Starter (gratuit)', en: 'Starter (free)' },
+  'account.plan.STARTER': { fr: 'Starter', en: 'Starter' },
+  'account.plan_starter_hint': {
+    fr: 'Plan gratuit — idéal pour découvrir Slidy.',
+    en: 'Free plan — great to get started with Slidy.',
+  },
   'account.plan.PRO': { fr: 'Pro', en: 'Pro' },
   'account.plan.ULTIMATE': { fr: 'Ultimate', en: 'Ultimate' },
   'account.cancel_cta': {
@@ -105,7 +109,10 @@ export const SITE_STRINGS = {
     fr: 'Résiliation programmée — accès maintenu jusqu’au {date}.',
     en: 'Cancellation scheduled — access until {date}.',
   },
-  'account.upgrade_cta': { fr: 'Voir les plans', en: 'View plans' },
+  'account.upgrade_cta': {
+    fr: 'Passer au plan supérieur',
+    en: 'Upgrade your plan',
+  },
   'account.cancel.title': {
     fr: 'Résilier mon abonnement',
     en: 'Cancel my subscription',

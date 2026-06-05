@@ -143,15 +143,22 @@ export default function AccountPage() {
                   <dd className="text-base font-semibold text-slate-900 dark:text-slate-900">
                     {t(planKey(activePlan))}
                   </dd>
+                  {!isPaidPlan ? (
+                    <dd className="mt-1 text-slate-600 dark:text-slate-600">
+                      {t('account.plan_starter_hint')}
+                    </dd>
+                  ) : null}
                 </div>
-                <div>
-                  <dt className="font-medium text-slate-500 dark:text-slate-600">
-                    {t('account.status_label')}
-                  </dt>
-                  <dd className="text-slate-900 dark:text-slate-900">
-                    {t(statusKey(data.subscriptionStatus))}
-                  </dd>
-                </div>
+                {isPaidPlan ? (
+                  <div>
+                    <dt className="font-medium text-slate-500 dark:text-slate-600">
+                      {t('account.status_label')}
+                    </dt>
+                    <dd className="text-slate-900 dark:text-slate-900">
+                      {t(statusKey(data.subscriptionStatus))}
+                    </dd>
+                  </div>
+                ) : null}
               </dl>
             )}
 
@@ -176,8 +183,11 @@ export default function AccountPage() {
               </Button>
             )}
 
-            {!unauthorized && !loading && data && activePlan === 'STARTER' && (
-              <Button className="w-full rounded-full" asChild>
+            {!unauthorized && !loading && data && !isPaidPlan && (
+              <Button
+                className="w-full rounded-full bg-brand-500 shadow-md shadow-brand-500/25 hover:bg-brand-600"
+                asChild
+              >
                 <Link href="/pricing">{t('account.upgrade_cta')}</Link>
               </Button>
             )}
