@@ -12,17 +12,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { fetchMeProfile, type MeProfile } from '@/lib/fetch-me'
 import { useSiteLocale } from '@/lib/site-locale'
 
-type MePayload = {
-  success: boolean
-  data?: {
-    email: string | null
-    name: string | null
-    subscriptionStatus: string | null
-  }
-  error?: string
-}
+type PlanTier = MeProfile['activePlan']
 
 function statusKey(
   status: string | null | undefined,
@@ -41,9 +34,31 @@ function statusKey(
   return 'account.status.UNKNOWN'
 }
 
+function planKey(
+  plan: PlanTier,
+):
+  | 'account.plan.STARTER'
+  | 'account.plan.PRO'
+  | 'account.plan.ULTIMATE' {
+  if (plan === 'PRO') return 'account.plan.PRO'
+  if (plan === 'ULTIMATE') return 'account.plan.ULTIMATE'
+  return 'account.plan.STARTER'
+}
+
+function formatPeriodEnd(
+  unix: number | null | undefined,
+  locale: 'fr' | 'en',
+): string {
+  if (!unix) return '—'
+  return new Date(unix * 1000).toLocaleDateString(
+    locale === 'en' ? 'en-GB' : 'fr-FR',
+    { day: 'numeric', month: 'long', year: 'numeric' },
+  )
+}
+
 export default function AccountPage() {
-  const { t } = useSiteLocale()
-  const [data, setData] = useState<MePayload['data'] | null>(null)
+  const { t, locale } = useSiteLocale()
+  const [data, setData] = useState<MeProfile | null>(null)
   const [unauthorized, setUnauthorized] = useState(false)
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -52,20 +67,18 @@ export default function AccountPage() {
     let cancelled = false
     ;(async () => {
       try {
-        const res = await fetch('/api/me')
-        if (res.status === 401) {
-          if (!cancelled) {
+        const result = await fetchMeProfile()
+        if (cancelled) return
+        if (!result.ok) {
+          if (result.unauthorized) {
             setUnauthorized(true)
             setData(null)
+          } else {
+            setError(true)
           }
           return
         }
-        const json = (await res.json()) as MePayload
-        if (!cancelled && res.ok && json.success && json.data) {
-          setData(json.data)
-        } else if (!cancelled) {
-          setError(true)
-        }
+        setData(result.data)
       } catch {
         if (!cancelled) setError(true)
       } finally {
@@ -76,6 +89,10 @@ export default function AccountPage() {
       cancelled = true
     }
   }, [])
+
+  const activePlan = data?.activePlan ?? 'STARTER'
+  const isPaidPlan = activePlan === 'PRO' || activePlan === 'ULTIMATE'
+  const cancelScheduled = data?.subscription?.cancelAtPeriodEnd ?? false
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -100,10 +117,14 @@ export default function AccountPage() {
               </div>
             )}
             {!unauthorized && loading && (
-              <p className="text-sm text-slate-500 dark:text-slate-600">{t('editor.loading_short')}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-600">
+                {t('editor.loading_short')}
+              </p>
             )}
             {!unauthorized && !loading && error && (
-              <p className="text-sm text-red-600 dark:text-red-700">{t('account.err_load')}</p>
+              <p className="text-sm text-red-600 dark:text-red-700">
+                {t('account.err_load')}
+              </p>
             )}
             {!unauthorized && !loading && data && (
               <dl className="space-y-3 text-sm">
@@ -117,6 +138,14 @@ export default function AccountPage() {
                 </div>
                 <div>
                   <dt className="font-medium text-slate-500 dark:text-slate-600">
+                    {t('account.plan_label')}
+                  </dt>
+                  <dd className="text-base font-semibold text-slate-900 dark:text-slate-900">
+                    {t(planKey(activePlan))}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="font-medium text-slate-500 dark:text-slate-600">
                     {t('account.status_label')}
                   </dt>
                   <dd className="text-slate-900 dark:text-slate-900">
@@ -125,6 +154,34 @@ export default function AccountPage() {
                 </div>
               </dl>
             )}
+
+            {!unauthorized && !loading && data && cancelScheduled && (
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                {t('account.cancel_pending', {
+                  date: formatPeriodEnd(
+                    data.subscription?.currentPeriodEnd,
+                    locale,
+                  ),
+                })}
+              </p>
+            )}
+
+            {!unauthorized && !loading && data && isPaidPlan && (
+              <Button
+                variant="outline"
+                className="w-full rounded-full border-red-200 text-red-700 hover:bg-red-50 dark:border-red-300 dark:text-red-800"
+                asChild
+              >
+                <Link href="/account/cancel">{t('account.cancel_cta')}</Link>
+              </Button>
+            )}
+
+            {!unauthorized && !loading && data && activePlan === 'STARTER' && (
+              <Button className="w-full rounded-full" asChild>
+                <Link href="/pricing">{t('account.upgrade_cta')}</Link>
+              </Button>
+            )}
+
             <Button
               variant="outline"
               className="mt-2 w-full rounded-full border-slate-200 bg-white text-slate-800 shadow-sm hover:bg-slate-50 dark:border-slate-300 dark:bg-white dark:hover:bg-slate-100"

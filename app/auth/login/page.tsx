@@ -65,6 +65,11 @@ export default function LoginPage() {
         return
       }
 
+      await fetch('/api/auth/session', {
+        method: 'POST',
+        credentials: 'include',
+      })
+
       window.location.href = redirectTo
     } catch {
       setError(t('auth.login.err_unexpected'))

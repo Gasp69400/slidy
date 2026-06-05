@@ -263,24 +263,35 @@ export async function cancelSubscription(userId: string) {
 
     const subscriptions = await getStripe().subscriptions.list({
       customer: user.stripeCustomerId,
-      status: 'active',
+      status: 'all',
+      limit: 10,
     })
 
-    if (subscriptions.data.length === 0) {
+    const subscription = subscriptions.data.find(
+      (s) => s.status === 'active' || s.status === 'trialing',
+    )
+
+    if (!subscription) {
       throw new Error('Aucun abonnement actif trouvé')
     }
 
-    const subscription = subscriptions.data[0]
-    await getStripe().subscriptions.update(subscription.id, {
+    if (subscription.cancel_at_period_end) {
+      return {
+        success: true,
+        alreadyScheduled: true,
+        currentPeriodEnd: subscription.current_period_end,
+      }
+    }
+
+    const updated = await getStripe().subscriptions.update(subscription.id, {
       cancel_at_period_end: true,
     })
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { subscriptionStatus: SubscriptionStatus.CANCELED },
-    })
-
-    return { success: true }
+    return {
+      success: true,
+      alreadyScheduled: false,
+      currentPeriodEnd: updated.current_period_end,
+    }
   } catch (error) {
     console.error('Error canceling subscription:', error)
     throw new Error("Erreur lors de l'annulation de l'abonnement")

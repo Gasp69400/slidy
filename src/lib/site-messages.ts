@@ -93,6 +93,60 @@ export const SITE_STRINGS = {
     en: 'Could not load your profile.',
   },
   'account.back_home': { fr: 'Retour à l’accueil', en: 'Back to home' },
+  'account.plan_label': { fr: 'Plan actuel', en: 'Current plan' },
+  'account.plan.STARTER': { fr: 'Starter (gratuit)', en: 'Starter (free)' },
+  'account.plan.PRO': { fr: 'Pro', en: 'Pro' },
+  'account.plan.ULTIMATE': { fr: 'Ultimate', en: 'Ultimate' },
+  'account.cancel_cta': {
+    fr: 'Résilier mon abonnement',
+    en: 'Cancel my subscription',
+  },
+  'account.cancel_pending': {
+    fr: 'Résiliation programmée — accès maintenu jusqu’au {date}.',
+    en: 'Cancellation scheduled — access until {date}.',
+  },
+  'account.upgrade_cta': { fr: 'Voir les plans', en: 'View plans' },
+  'account.cancel.title': {
+    fr: 'Résilier mon abonnement',
+    en: 'Cancel my subscription',
+  },
+  'account.cancel.subtitle': {
+    fr: 'Vous conservez l’accès à votre plan jusqu’à la fin de la période en cours.',
+    en: 'You keep access to your plan until the end of the current billing period.',
+  },
+  'account.cancel.plan_label': { fr: 'Plan concerné', en: 'Plan' },
+  'account.cancel.body': {
+    fr: 'La résiliation prend effet à la fin de votre période de facturation. Vous ne serez plus débité ensuite et repasserez sur le plan Starter.',
+    en: 'Cancellation takes effect at the end of your billing period. You will not be charged again and will return to the Starter plan.',
+  },
+  'account.cancel.confirm': {
+    fr: 'Confirmer la résiliation',
+    en: 'Confirm cancellation',
+  },
+  'account.cancel.back': {
+    fr: 'Retour à mon abonnement',
+    en: 'Back to my subscription',
+  },
+  'account.cancel.success': {
+    fr: 'Votre résiliation est enregistrée. Accès maintenu jusqu’au {date}.',
+    en: 'Your cancellation is scheduled. Access until {date}.',
+  },
+  'account.cancel.already': {
+    fr: 'Une résiliation est déjà programmée pour le {date}.',
+    en: 'A cancellation is already scheduled for {date}.',
+  },
+  'account.cancel.err': {
+    fr: 'Impossible de résilier pour le moment. Détail : {detail}',
+    en: 'Could not cancel right now. Details: {detail}',
+  },
+  'account.cancel.login_hint': {
+    fr: 'Connectez-vous pour gérer votre abonnement.',
+    en: 'Sign in to manage your subscription.',
+  },
+  'account.cancel.not_eligible': {
+    fr: 'Aucun abonnement payant actif à résilier.',
+    en: 'No active paid subscription to cancel.',
+  },
 
   'home.hero.badge': {
     fr: 'Slides & CV IA · même studio Slidy',

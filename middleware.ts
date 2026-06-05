@@ -46,7 +46,6 @@ export async function middleware(request: NextRequest) {
 
     const protectedRoutes = [
       '/studio',
-      '/account',
       '/clients',
       '/settings',
       '/billing',

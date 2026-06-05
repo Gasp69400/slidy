@@ -1,6 +1,10 @@
 import { Prisma } from '@prisma/client'
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
+import {
+  applySessionCookies,
+  createSupabaseRouteHandlerClient,
+} from '@/lib/supabase/route-handler'
 import { createSupabaseServerClient } from '@/lib/supabase/server-client'
 import { ensureAppUserFromSupabase } from '@/lib/supabase/sync-app-user'
 
@@ -8,6 +12,7 @@ export type SessionAuthOk = {
   ok: true
   userId: string
   email: string
+  sessionCookies?: NextResponse
 }
 
 export type SessionAuthFail = {
@@ -17,12 +22,29 @@ export type SessionAuthFail = {
 
 export type SessionAuthResult = SessionAuthOk | SessionAuthFail
 
+function withSessionCookies(
+  response: NextResponse,
+  sessionCookies?: NextResponse,
+): NextResponse {
+  if (!sessionCookies) return response
+  return applySessionCookies(response, sessionCookies)
+}
+
 /**
  * Session Supabase (cookies Next) + ligne Prisma `users`.
+ * Passez `request` dans les Route Handlers pour rafraîchir les cookies de session.
  */
-export async function requireSessionUser(): Promise<SessionAuthResult> {
+export async function requireSessionUser(
+  request?: NextRequest,
+): Promise<SessionAuthResult> {
   try {
-    const supabase = createSupabaseServerClient()
+    const routeClient = request
+      ? createSupabaseRouteHandlerClient(request)
+      : null
+    const supabase =
+      routeClient?.supabase ?? createSupabaseServerClient()
+    const sessionCookies = routeClient?.cookieResponse()
+
     const {
       data: { user },
       error,
@@ -31,7 +53,10 @@ export async function requireSessionUser(): Promise<SessionAuthResult> {
     if (error || !user?.id || !user.email) {
       return {
         ok: false,
-        response: NextResponse.json({ error: 'Non authentifié' }, { status: 401 }),
+        response: withSessionCookies(
+          NextResponse.json({ error: 'Non authentifié' }, { status: 401 }),
+          sessionCookies,
+        ),
       }
     }
 
@@ -41,6 +66,7 @@ export async function requireSessionUser(): Promise<SessionAuthResult> {
       ok: true,
       userId: user.id,
       email: user.email,
+      sessionCookies,
     }
   } catch (e) {
     console.error('requireSessionUser:', e)
@@ -108,4 +134,14 @@ export async function requireSessionUser(): Promise<SessionAuthResult> {
       ),
     }
   }
+}
+
+export function jsonWithSessionCookies(
+  body: unknown,
+  init: ResponseInit | undefined,
+  sessionCookies?: NextResponse,
+): NextResponse {
+  const res = NextResponse.json(body, init)
+  if (!sessionCookies) return res
+  return applySessionCookies(res, sessionCookies)
 }
