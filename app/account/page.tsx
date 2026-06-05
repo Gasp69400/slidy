@@ -100,7 +100,6 @@ export default function AccountPage() {
   const activePlan = data?.activePlan ?? 'STARTER'
   const isPaidPlan = activePlan === 'PRO' || activePlan === 'ULTIMATE'
   const cancelScheduled = data?.subscription?.cancelAtPeriodEnd ?? false
-  const dbUnavailable = data?.dbUnavailable ?? false
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -171,12 +170,6 @@ export default function AccountPage() {
                   </div>
                 ) : null}
               </dl>
-            )}
-
-            {!unauthorized && !loading && data && dbUnavailable && (
-              <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                {t('account.db_unavailable')}
-              </p>
             )}
 
             {!unauthorized && !loading && data && cancelScheduled && (
