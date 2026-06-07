@@ -1,10 +1,6 @@
 import { cn } from '@/lib/utils'
 
-export const SLIDY_LOGO_SRC = '/logo-slidyapp.png?v=5'
-
-/** Filtre pour renforcer l’orange (#ff7600) sur la PNG source. */
-const LOGO_ORANGE_FILTER =
-  'saturate-[1.9] hue-rotate-[-14deg] brightness-[1.04] contrast-[1.12]'
+export const SLIDY_LOGO_SRC = '/logo-slidyapp.png?v=6'
 
 type SlidyLogoMarkProps = {
   /** `wordmark` : même hauteur que le texte parent (navbar / landing) · `xs`/`sm` : compact */
@@ -37,8 +33,7 @@ export function SlidyLogoMark({
       className={cn(
         'inline-flex shrink-0 select-none overflow-hidden',
         'aspect-square rounded-[24%]',
-        'bg-gradient-to-br from-brand-500 to-brand-600',
-        'shadow-md shadow-brand-500/30 ring-1 ring-inset ring-white/20',
+        'shadow-md shadow-brand-500/25',
         SIZE_CLASS[size],
         className,
       )}
@@ -47,11 +42,11 @@ export function SlidyLogoMark({
       <img
         src={SLIDY_LOGO_SRC}
         alt="Slidy"
-        width={782}
-        height={718}
+        width={1024}
+        height={1024}
         decoding="async"
         fetchPriority={priority ? 'high' : undefined}
-        className={cn('h-full w-full object-cover object-center', LOGO_ORANGE_FILTER)}
+        className="h-full w-full object-cover object-center"
       />
     </span>
   )
