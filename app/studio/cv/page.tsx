@@ -7,8 +7,15 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { Sparkles } from 'lucide-react'
 
 import { CvTemplatePicker } from '@/components/cv/CvTemplatePicker'
+import {
+  StudioField,
+  StudioHeader,
+  StudioPanel,
+  StudioShell,
+  studioInputClass,
+  studioSelectTriggerClass,
+} from '@/components/studio/studio-ui'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -292,35 +299,28 @@ export default function CvStudioPage() {
 
   if (capsData && allowed === false) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-16">
-        <Card className="rounded-3xl border-slate-200 bg-white p-8 text-center shadow-sm">
-          <p className="text-sm text-slate-700">{t('cv.upgrade')}</p>
+      <StudioShell>
+        <StudioPanel className="mx-auto max-w-lg text-center">
+          <p className="text-sm text-slate-700 dark:text-slate-300">{t('cv.upgrade')}</p>
           <Button asChild className="mt-4 rounded-xl">
             <Link href="/pricing">{t('cv.pricing')}</Link>
           </Button>
-        </Card>
-      </div>
+        </StudioPanel>
+      </StudioShell>
     )
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8 dark:bg-slate-950">
-      <div className="mx-auto max-w-4xl px-4">
-        <div className="mb-6 flex items-start gap-3">
-          <span className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white">
-            <Sparkles className="h-4 w-4" />
-          </span>
-          <div>
-            <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-50">
-              {t('cv.page_title')}
-            </h1>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              {t('cv.page_sub')}
-            </p>
-          </div>
-        </div>
+    <StudioShell>
+      <StudioHeader
+        icon={Sparkles}
+        badge={t('studio.badge')}
+        title={t('cv.page_title')}
+        subtitle={t('cv.page_sub')}
+      />
 
-        <Card className="rounded-3xl border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
+        <StudioPanel step={1} title={t('cv.section_content')} description={t('cv.page_sub')}>
           <Tabs
             value={inputMode}
             onValueChange={(v) => {
@@ -333,7 +333,7 @@ export default function CvStudioPage() {
               }
             }}
           >
-            <TabsList className="grid w-full max-w-xl grid-cols-3 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+            <TabsList className="grid w-full max-w-xl grid-cols-3 rounded-xl bg-slate-100/90 p-1 dark:bg-slate-800/80">
               <TabsTrigger value="manual" className="rounded-lg text-sm">
                 {t('cv.tab_manual')}
               </TabsTrigger>
@@ -345,7 +345,7 @@ export default function CvStudioPage() {
               </TabsTrigger>
             </TabsList>
 
-            <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50/90 p-4 dark:border-slate-800 dark:bg-slate-800/50">
+            <div className="mt-5 rounded-2xl border border-slate-100/90 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40">
               <Label>{t('cv.photo')}</Label>
               <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
                 {t('cv.photo_create_hint')}
@@ -683,76 +683,79 @@ export default function CvStudioPage() {
               </div>
             </TabsContent>
           </Tabs>
+        </StudioPanel>
 
-          <div className="mt-8 space-y-3 border-t border-slate-100 pt-6 dark:border-slate-800">
-            <Label className="text-slate-800 dark:text-slate-200">{t('cv.templates')}</Label>
+        <aside className="z-0 space-y-6 xl:sticky xl:top-20 xl:self-start">
+          <StudioPanel step={2} title={t('cv.templates')}>
             <CvTemplatePicker value={templateSlug} onChange={setTemplateSlug} />
-          </div>
+          </StudioPanel>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div>
-              <Label>{t('cv.locale')}</Label>
-              <Select
-                value={contentLocale}
-                onValueChange={(v) => setContentLocale(v as 'fr' | 'en')}
-              >
-                <SelectTrigger className="mt-1 rounded-xl">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fr">Français</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectContent>
-              </Select>
+          <StudioPanel step={3} title={t('cv.section_appearance')}>
+            <div className="space-y-4">
+              <StudioField label={t('cv.locale')}>
+                <Select
+                  value={contentLocale}
+                  onValueChange={(v) => setContentLocale(v as 'fr' | 'en')}
+                >
+                  <SelectTrigger className={studioSelectTriggerClass}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fr">Français</SelectItem>
+                    <SelectItem value="en">English</SelectItem>
+                  </SelectContent>
+                </Select>
+              </StudioField>
+              <StudioField label={t('cv.font')}>
+                <Select
+                  value={fontFamily}
+                  onValueChange={(v) => setFontFamily(v as CvFontFamily)}
+                >
+                  <SelectTrigger className={studioSelectTriggerClass}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="inter">{t('cv.font.inter')}</SelectItem>
+                    <SelectItem value="georgia">{t('cv.font.georgia')}</SelectItem>
+                    <SelectItem value="source">{t('cv.font.source')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </StudioField>
+              <StudioField label={t('cv.layout')}>
+                <Select
+                  value={layoutDensity}
+                  onValueChange={(v) => setLayoutDensity(v as CvLayoutDensity)}
+                >
+                  <SelectTrigger className={studioSelectTriggerClass}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="compact">{t('cv.layout.compact')}</SelectItem>
+                    <SelectItem value="normal">{t('cv.layout.normal')}</SelectItem>
+                    <SelectItem value="spacious">{t('cv.layout.spacious')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </StudioField>
+              <StudioField label={t('cv.accent')}>
+                <Input
+                  type="color"
+                  className="h-10 w-full cursor-pointer rounded-xl border-slate-200"
+                  value={accentHex}
+                  onChange={(e) => setAccentHex(e.target.value)}
+                />
+              </StudioField>
             </div>
-            <div>
-              <Label>{t('cv.font')}</Label>
-              <Select
-                value={fontFamily}
-                onValueChange={(v) => setFontFamily(v as CvFontFamily)}
-              >
-                <SelectTrigger className="mt-1 rounded-xl">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="inter">{t('cv.font.inter')}</SelectItem>
-                  <SelectItem value="georgia">{t('cv.font.georgia')}</SelectItem>
-                  <SelectItem value="source">{t('cv.font.source')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{t('cv.layout')}</Label>
-              <Select
-                value={layoutDensity}
-                onValueChange={(v) => setLayoutDensity(v as CvLayoutDensity)}
-              >
-                <SelectTrigger className="mt-1 rounded-xl">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="compact">{t('cv.layout.compact')}</SelectItem>
-                  <SelectItem value="normal">{t('cv.layout.normal')}</SelectItem>
-                  <SelectItem value="spacious">{t('cv.layout.spacious')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{t('cv.accent')}</Label>
-              <Input
-                type="color"
-                className="mt-1 h-10 w-full cursor-pointer rounded-xl border-slate-200"
-                value={accentHex}
-                onChange={(e) => setAccentHex(e.target.value)}
-              />
-            </div>
-          </div>
+          </StudioPanel>
 
-          {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+          {error ? (
+            <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
+              {error}
+            </p>
+          ) : null}
 
           {generateMutation.isPending && (
             <div
-              className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/95 p-4 shadow-sm dark:border-emerald-800/60 dark:bg-emerald-950/50"
+              className="rounded-2xl border border-emerald-200/80 bg-emerald-50/95 p-4 shadow-sm dark:border-emerald-800/60 dark:bg-emerald-950/50"
               role="status"
               aria-live="polite"
             >
@@ -776,7 +779,7 @@ export default function CvStudioPage() {
           )}
 
           <Button
-            className="mt-6 w-full rounded-xl bg-brand-500 hover:bg-brand-600"
+            className="h-12 w-full rounded-xl bg-brand-500 shadow-lg shadow-brand-500/25 hover:bg-brand-600"
             disabled={
               !canSubmit || generateMutation.isPending || allowed === false
             }
@@ -784,8 +787,8 @@ export default function CvStudioPage() {
           >
             {generateMutation.isPending ? t('cv.generating') : t('cv.generate')}
           </Button>
-        </Card>
+        </aside>
       </div>
-    </div>
+    </StudioShell>
   )
 }

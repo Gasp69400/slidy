@@ -62,7 +62,7 @@ export function Navigation() {
     )
 
   return (
-    <nav className="border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
+    <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 flex-row items-center justify-between gap-4 sm:h-16">
           <div className="flex min-w-0 items-center gap-3">
@@ -103,10 +103,12 @@ export function Navigation() {
 
             {/* Bouton profil — caché sur mobile */}
             {userEmail && (
-              <div className="relative hidden sm:block">
+              <div className="relative z-[60] hidden sm:block">
                 <button
                   onClick={() => setShowUserMenu((s) => !s)}
                   className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  aria-expanded={showUserMenu}
+                  aria-haspopup="menu"
                 >
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-white text-xs font-bold">
                     {(userName ?? userEmail).charAt(0).toUpperCase()}
@@ -120,10 +122,14 @@ export function Navigation() {
                 {showUserMenu && (
                   <>
                     <div
-                      className="fixed inset-0 z-40"
+                      className="fixed inset-0 z-[55]"
                       onClick={() => setShowUserMenu(false)}
+                      aria-hidden
                     />
-                    <div className="absolute right-0 top-11 z-50 w-56 rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900">
+                    <div
+                      role="menu"
+                      className="absolute right-0 top-[calc(100%+0.35rem)] z-[60] w-56 rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900"
+                    >
                       <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
                         <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">
                           {userName ?? userEmail}

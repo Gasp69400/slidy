@@ -757,6 +757,7 @@ export const SITE_STRINGS = {
   },
 
   'create.title': { fr: 'Créer une présentation', en: 'Create presentation' },
+  'create.section_settings': { fr: 'Style et structure', en: 'Style & structure' },
   'create.subtitle': {
     fr: 'Décrivez votre sujet et laissez l’IA construire un récit professionnel.',
     en: 'Describe your topic and let AI craft a professional narrative.',
@@ -980,6 +981,8 @@ export const SITE_STRINGS = {
     fr: 'Remplissez le formulaire ou utilisez une invite — choisissez un modèle, puis affinez et exportez en PDF.',
     en: 'Fill in the form or use a prompt — pick a template, refine, and export to PDF.',
   },
+  'cv.section_content': { fr: 'Contenu du CV', en: 'CV content' },
+  'cv.section_appearance': { fr: 'Apparence', en: 'Appearance' },
   'cv.tab_prompt': { fr: 'Invite', en: 'Prompt' },
   'cv.tab_manual': { fr: 'Formulaire', en: 'Form' },
   'cv.tab_finance': { fr: 'Finance', en: 'Finance' },

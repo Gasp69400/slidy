@@ -3,11 +3,20 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
-import { Plus, Sparkles, FileText, ArrowRight, Contact } from 'lucide-react'
+import { Plus, Sparkles, FileText, Contact } from 'lucide-react'
 
+import {
+  StudioDocRow,
+  StudioEmptyState,
+  StudioField,
+  StudioHeader,
+  StudioPanel,
+  StudioQuickLink,
+  StudioShell,
+  studioInputClass,
+  studioSelectTriggerClass,
+} from '@/components/studio/studio-ui'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -220,219 +229,173 @@ export default function StudioPage() {
   )
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 py-8">
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 lg:grid-cols-[360px_1fr]">
-        {canCv && (
-          <Link
-            href="/studio/cv"
-            className="lg:col-span-2 flex items-center justify-between gap-4 rounded-3xl border border-indigo-100 bg-gradient-to-r from-indigo-50 to-white p-4 shadow-sm transition hover:border-indigo-200 dark:border-indigo-900/40 dark:from-indigo-950/50 dark:to-slate-900"
+    <StudioShell>
+        <StudioHeader
+          icon={Sparkles}
+          badge={t('studio.badge')}
+          title={t('studio.new_title')}
+          subtitle={t('studio.new_sub')}
+        />
+
+        {canCv ? (
+          <div className="mb-6">
+            <StudioQuickLink
+              href="/studio/cv"
+              icon={Contact}
+              title={t('studio.cv_card_title')}
+              subtitle={t('studio.cv_card_sub')}
+              cta={t('studio.cv_card_cta')}
+            />
+          </div>
+        ) : null}
+
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,380px)_1fr] lg:items-start">
+          <StudioPanel
+            step={1}
+            title={t('studio.new_title')}
+            description={t('studio.new_sub')}
+            className="z-0 lg:sticky lg:top-20 lg:self-start"
           >
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-500 text-white">
-                <Contact className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="font-semibold text-slate-900 dark:text-slate-50">
-                  {t('studio.cv_card_title')}
-                </p>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  {t('studio.cv_card_sub')}
-                </p>
+            <div className="space-y-4">
+              <StudioField label={t('studio.label_topic')}>
+                <Input
+                  placeholder={t('studio.ph_topic')}
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  className={studioInputClass}
+                />
+              </StudioField>
+
+              <StudioField label={t('studio.label_title')}>
+                <Input
+                  placeholder={t('studio.ph_title')}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className={studioInputClass}
+                />
+              </StudioField>
+
+              <div className="grid grid-cols-2 gap-3">
+                <StudioField label={t('studio.label_type')}>
+                  <Select value={type} onValueChange={(v) => setType(v as DocType)}>
+                    <SelectTrigger className={studioSelectTriggerClass}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(
+                        [
+                          'PRESENTATION',
+                          'WHITEBOARD',
+                          'DOCUMENT',
+                          'NOTES',
+                          'VISUAL_PAGE',
+                          'MARKETING_PRESENTATION',
+                        ] as DocType[]
+                      ).map((docType) => (
+                        <SelectItem key={docType} value={docType}>
+                          {typeLabels[docType]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </StudioField>
+
+                <StudioField label={t('studio.label_detail')}>
+                  <Select
+                    value={detailLevel}
+                    onValueChange={(v) =>
+                      setDetailLevel(v as 'short' | 'medium' | 'detailed')
+                    }
+                  >
+                    <SelectTrigger className={studioSelectTriggerClass}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="short">{detailLabels.short}</SelectItem>
+                      <SelectItem value="medium">{detailLabels.medium}</SelectItem>
+                      <SelectItem value="detailed">{detailLabels.detailed}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </StudioField>
               </div>
-            </div>
-            <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
-              {t('studio.cv_card_cta')} →
-            </span>
-          </Link>
-        )}
-        <Card className="h-fit rounded-3xl border-slate-100 bg-white p-5 shadow-sm">
-          <div className="mb-5">
-            <p className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-medium text-indigo-700">
-              <Sparkles className="h-3.5 w-3.5" />
-              {t('studio.badge')}
-            </p>
-            <h1 className="mt-3 text-xl font-semibold text-slate-900">
-              {t('studio.new_title')}
-            </h1>
-            <p className="mt-1 text-xs text-slate-500">{t('studio.new_sub')}</p>
-          </div>
 
-          <div className="space-y-3">
-            <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">
-                {t('studio.label_topic')}
-              </label>
-              <Input
-                placeholder={t('studio.ph_topic')}
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
-                className="rounded-xl border-slate-200"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-slate-600">
-                {t('studio.label_title')}
-              </label>
-              <Input
-                placeholder={t('studio.ph_title')}
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="rounded-xl border-slate-200"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="mb-1 block text-xs font-medium text-slate-600">
-                  {t('studio.label_type')}
-                </label>
-                <Select value={type} onValueChange={(v) => setType(v as DocType)}>
-                  <SelectTrigger className="rounded-xl border-slate-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(
-                      [
-                        'PRESENTATION',
-                        'WHITEBOARD',
-                        'DOCUMENT',
-                        'NOTES',
-                        'VISUAL_PAGE',
-                        'MARKETING_PRESENTATION',
-                      ] as DocType[]
-                    ).map((docType) => (
-                      <SelectItem key={docType} value={docType}>
-                        {typeLabels[docType]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-slate-600">
-                  {t('studio.label_detail')}
-                </label>
-                <Select
-                  value={detailLevel}
-                  onValueChange={(v) =>
-                    setDetailLevel(v as 'short' | 'medium' | 'detailed')
-                  }
-                >
-                  <SelectTrigger className="rounded-xl border-slate-200">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="short">{detailLabels.short}</SelectItem>
-                    <SelectItem value="medium">{detailLabels.medium}</SelectItem>
-                    <SelectItem value="detailed">{detailLabels.detailed}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+              {caps ? (
+                <div className="rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400">
+                  <p className="font-medium text-slate-800 dark:text-slate-200">
+                    {t('studio.plan_line', {
+                      plan: caps.plan,
+                      max: caps.maxDocuments,
+                      period: t(
+                        caps.documentQuotaPeriod === 'month'
+                          ? 'studio.quota_period.month'
+                          : 'studio.quota_period.day',
+                      ),
+                    })}
+                  </p>
+                  <p className="mt-1">
+                    {t('studio.exports')}:{' '}
+                    {caps.exportFormats.join(', ').toUpperCase()}
+                  </p>
+                </div>
+              ) : null}
 
-            {caps && (
-              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs text-slate-600">
-                <p className="font-medium text-slate-800">
-                  {t('studio.plan_line', {
-                    plan: caps.plan,
-                    max: caps.maxDocuments,
-                    period: t(
-                      caps.documentQuotaPeriod === 'month'
-                        ? 'studio.quota_period.month'
-                        : 'studio.quota_period.day',
-                    ),
-                  })}
+              {disabledType ? (
+                <p className="text-xs text-amber-700 dark:text-amber-300">
+                  {t('studio.plan_blocked')}
                 </p>
-                <p className="mt-1">
-                  {t('studio.exports')}: {caps.exportFormats.join(', ').toUpperCase()}
+              ) : null}
+              {error ? (
+                <p className="rounded-xl bg-red-50 px-3 py-2 text-xs text-red-700 dark:bg-red-950/40 dark:text-red-300">
+                  {error}
                 </p>
-              </div>
-            )}
+              ) : null}
 
-            {disabledType && (
-              <p className="text-xs text-amber-600">{t('studio.plan_blocked')}</p>
-            )}
-            {error && <p className="text-xs text-red-500">{error}</p>}
-
-            <Button
-              className="w-full rounded-xl bg-brand-500 hover:bg-brand-600"
-              disabled={!topic.trim() || createMutation.isPending || disabledType}
-              onClick={() => createMutation.mutate()}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {createMutation.isPending
-                ? t('studio.btn_generating')
-                : t('studio.btn_open')}
-            </Button>
-          </div>
-        </Card>
-
-        <Card className="rounded-3xl border-slate-100 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-semibold text-slate-900">
-                {t('studio.docs_title')}
-              </h2>
-              <p className="text-xs text-slate-500">{t('studio.docs_sub')}</p>
+              <Button
+                className="h-11 w-full rounded-xl bg-brand-500 shadow-lg shadow-brand-500/25 hover:bg-brand-600"
+                disabled={!topic.trim() || createMutation.isPending || disabledType}
+                onClick={() => createMutation.mutate()}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {createMutation.isPending
+                  ? t('studio.btn_generating')
+                  : t('studio.btn_open')}
+              </Button>
             </div>
-          </div>
+          </StudioPanel>
 
-          {isLoading ? (
-            <p className="text-sm text-slate-500">{t('studio.loading')}</p>
-          ) : docs.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center">
-              <FileText className="mx-auto mb-2 h-6 w-6 text-slate-300" />
-              <p className="text-sm text-slate-500">{t('studio.empty')}</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {docs.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="flex items-stretch gap-2 rounded-2xl border border-slate-100 bg-slate-50 transition hover:border-slate-200 hover:bg-white"
-                >
-                  <button
-                    type="button"
-                    className="flex min-w-0 flex-1 items-center justify-between px-4 py-3 text-left"
-                    onClick={() =>
+          <StudioPanel
+            step={2}
+            title={t('studio.docs_title')}
+            description={t('studio.docs_sub')}
+          >
+            {isLoading ? (
+              <p className="text-sm text-slate-500">{t('studio.loading')}</p>
+            ) : docs.length === 0 ? (
+              <StudioEmptyState icon={FileText} message={t('studio.empty')} />
+            ) : (
+              <div className="space-y-2">
+                {docs.map((doc) => (
+                  <StudioDocRow
+                    key={doc.id}
+                    title={doc.title}
+                    meta={`${typeLabels[doc.type]} · ${doc._count?.blocks ?? 0} ${t('studio.blocks')}`}
+                    openLabel={t('studio.open')}
+                    deleteLabel={t('studio.doc_delete')}
+                    deleting={deleteMutation.isPending}
+                    onOpen={() =>
                       router.push(
                         doc.type === 'CV_COVER'
                           ? `/studio/cv/${doc.id}`
                           : `/studio/${doc.id}`,
                       )
                     }
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">
-                        {doc.title}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {typeLabels[doc.type]} · {doc._count?.blocks ?? 0}{' '}
-                        {t('studio.blocks')}
-                      </p>
-                    </div>
-                    <span className="inline-flex shrink-0 items-center gap-1 pl-2 text-xs text-slate-500">
-                      {t('studio.open')}{' '}
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </span>
-                  </button>
-                  <div className="flex shrink-0 items-center border-l border-slate-100 pr-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-8 rounded-xl border-red-200 text-xs text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/60 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-300"
-                      disabled={deleteMutation.isPending}
-                      onClick={() => confirmAndDelete(doc)}
-                    >
-                      {t('studio.doc_delete')}
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      </div>
-    </div>
+                    onDelete={() => confirmAndDelete(doc)}
+                  />
+                ))}
+              </div>
+            )}
+          </StudioPanel>
+        </div>
+      </StudioShell>
   )
 }

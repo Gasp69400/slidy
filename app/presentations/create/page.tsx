@@ -21,6 +21,12 @@ import { Slider } from '@/components/ui/slider'
 import TemplateSelector from '@/components/presentation/create/TemplateSelector'
 import GenerationProgress from '@/components/presentation/create/GenerationProgress'
 import FontSelector from '@/components/presentation/create/FontSelector'
+import {
+  StudioField,
+  StudioHeader,
+  StudioPanel,
+  StudioShell,
+} from '@/components/studio/studio-ui'
 import { useSiteLocale } from '@/lib/site-locale'
 import type { SiteLocale } from '@/lib/site-messages'
 import { normalizePresentationTemplateSlug } from '@/lib/presentation-template-themes'
@@ -573,39 +579,37 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
   }
 
   return (
-    <div className="p-6 lg:p-10 max-w-5xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-          {t('create.title')}
-        </h1>
-        <p className="mt-1 text-slate-500 dark:text-slate-400">
-          {t('create.subtitle')}
-        </p>
-      </div>
+    <StudioShell>
+      <StudioHeader
+        icon={Sparkles}
+        badge={t('studio.badge')}
+        title={t('create.title')}
+        subtitle={t('create.subtitle')}
+      />
 
-      <div className="space-y-8">
-        <div className="space-y-2">
-          <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-            {t('create.topic')}
-          </Label>
-          <Textarea
-            placeholder={t('create.topic_ph')}
-            value={form.topic}
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-              set('topic', e.target.value)
-            }
-            className="h-24 resize-none rounded-xl border-slate-200 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-50 dark:placeholder:text-slate-500"
-          />
-        </div>
+      <div className="space-y-6">
+        <StudioPanel step={1} title={t('create.topic')} description={t('create.subtitle')}>
+          <div className="space-y-6">
+            <StudioField label={t('create.topic')}>
+              <Textarea
+                placeholder={t('create.topic_ph')}
+                value={form.topic}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  set('topic', e.target.value)
+                }
+                className="min-h-[7rem] resize-none rounded-xl border-slate-200/90 bg-white shadow-sm dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-50"
+              />
+            </StudioField>
 
-        <div className="space-y-2">
-          <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-            {t('create.photos')}
-          </Label>
-          <p className="text-xs text-slate-500 dark:text-slate-400">{t('create.photos_hint')}</p>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500">
-            {t('create.photos_limit', { max: MAX_ATTACHED_PHOTOS })}
-          </p>
+            <StudioField
+              label={t('create.photos')}
+              hint={
+                <>
+                  {t('create.photos_hint')}{' '}
+                  {t('create.photos_limit', { max: MAX_ATTACHED_PHOTOS })}
+                </>
+              }
+            >
           <input
             ref={photoInputRef}
             type="file"
@@ -656,13 +660,14 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
               ))}
             </div>
           ) : null}
-        </div>
+            </StudioField>
+          </div>
+        </StudioPanel>
 
-        <div className="grid sm:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-              {t('create.audience')}
-            </Label>
+        <StudioPanel step={2} title={t('create.section_settings')}>
+          <div className="space-y-6">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <StudioField label={t('create.audience')}>
             <Select
               value={form.audience}
               onValueChange={(v) => set('audience', v as PresentationAudience)}
@@ -678,11 +683,8 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
                 ))}
               </SelectContent>
             </Select>
-          </div>
-          <div className="space-y-2">
-            <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-              {t('create.tone')}
-            </Label>
+          </StudioField>
+          <StudioField label={t('create.tone')}>
             <Select
               value={form.tone}
               onValueChange={(v) => set('tone', v)}
@@ -698,13 +700,10 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </StudioField>
         </div>
 
-        <div className="space-y-2">
-          <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-            {t('create.detail')}
-          </Label>
+        <StudioField label={t('create.detail')}>
           <div className="grid grid-cols-3 gap-3">
             {detailLevels.map((d) => (
               <button
@@ -726,13 +725,10 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
               </button>
             ))}
           </div>
-        </div>
+        </StudioField>
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-              {t('create.slides')}
-            </Label>
+        <StudioField label={t('create.slides')}>
+          <div className="flex items-center justify-end">
             <span className="rounded-lg bg-brand-50 px-3 py-1 text-sm font-bold text-brand-600 dark:bg-brand-950/60 dark:text-brand-300">
               {form.slideCount}
             </span>
@@ -749,12 +745,13 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
             <span>{t('create.slides_min')}</span>
             <span>{t('create.slides_max')}</span>
           </div>
-        </div>
+        </StudioField>
+          </div>
+        </StudioPanel>
 
-        <div className="space-y-3">
-          <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-            {t('create.enhance')}
-          </Label>
+        <StudioPanel step={3} title={t('create.enhance')}>
+          <div className="space-y-6">
+        <StudioField label={t('create.enhance')}>
           <div className="grid grid-cols-2 gap-3">
             {optionItems.map((opt) => (
               <label
@@ -777,33 +774,28 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
               </label>
             ))}
           </div>
-        </div>
+        </StudioField>
 
         <FontSelector
           selected={form.fontPair}
           onSelect={(id) => set('fontPair', id)}
         />
 
-        <div className="space-y-3">
-          <div>
-            <Label className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-              {t('create.template')}
-            </Label>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {t('create.template_preview_hint')}
-            </p>
-          </div>
+        <StudioField label={t('create.template')} hint={t('create.template_preview_hint')}>
           <TemplateSelector
             selected={form.template}
             onSelect={(slug) => set('template', slug)}
           />
-        </div>
+        </StudioField>
+          </div>
+        </StudioPanel>
 
+        <StudioPanel step={4} title={t('create.generate')}>
         <Button
           type="button"
           onClick={() => void handleGenerate()}
           disabled={!form.topic.trim() || generating}
-          className="h-14 w-full gap-2 rounded-xl bg-brand-500 text-base shadow-lg shadow-brand-200 dark:shadow-brand-950/40 hover:bg-brand-600"
+          className="h-14 w-full gap-2 rounded-xl bg-brand-500 text-base shadow-lg shadow-brand-500/25 hover:bg-brand-600"
         >
           <Sparkles className="w-5 h-5" />
           {t('create.generate')}
@@ -826,10 +818,11 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
             {generateError}
           </p>
         ) : null}
-        <p className="-mt-4 text-center text-xs text-slate-400 dark:text-slate-500">
+        <p className="text-center text-xs text-slate-400 dark:text-slate-500">
           {t('create.generate_note')}
         </p>
+        </StudioPanel>
       </div>
-    </div>
+    </StudioShell>
   )
 }

@@ -47,7 +47,7 @@ export function SiteHeaderMenu({
           <Menu className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} className="w-56">
+      <DropdownMenuContent align={align} className="z-[60] w-56">
         <DropdownMenuItem asChild>
           <Link href="/">{t('nav.home')}</Link>
         </DropdownMenuItem>
