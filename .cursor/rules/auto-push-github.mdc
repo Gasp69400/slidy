@@ -1,0 +1,15 @@
+---
+description: Pousser automatiquement sur GitHub après chaque changement de code
+alwaysApply: true
+---
+
+# Push GitHub automatique
+
+Après avoir terminé une tâche qui modifie le code :
+
+1. **Commit** les fichiers pertinents avec un message concis (pourquoi, pas seulement quoi).
+2. **Push** immédiatement sur `origin` (branche courante) — **sans demander confirmation** à l'utilisateur.
+3. Ne pas inclure de secrets (`.env`, clés API, credentials).
+4. Ne pas push si l'utilisateur demande explicitement de ne pas le faire, ou s'il n'y a aucun changement à committer.
+
+En cas d'échec du push (auth, conflit), informer l'utilisateur et proposer la résolution.
