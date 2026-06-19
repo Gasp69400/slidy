@@ -10,11 +10,11 @@ type Params = {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: Params,
 ) {
   try {
-    const auth = await requireSessionUser()
+    const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
 
     const presentation = await prisma.presentation.findFirst({
@@ -45,11 +45,11 @@ export async function GET(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: Params,
 ) {
   try {
-    const auth = await requireSessionUser()
+    const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
 
     const result = await prisma.presentation.deleteMany({

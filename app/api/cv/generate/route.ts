@@ -15,7 +15,9 @@ import {
   manualCvInputSchema,
 } from '@/lib/cv-schema'
 import { mergeToCvMetadata } from '@/lib/cv-synthesize'
+import { getCapabilitiesForUserId } from '@/lib/user-capabilities'
 import { requireSupabaseSession } from '@/lib/supabase/require-supabase-session'
+import { ensureAppUserFromSupabase } from '@/lib/supabase/sync-app-user'
 
 export const runtime = 'nodejs'
 
@@ -79,6 +81,25 @@ export async function POST(request: NextRequest) {
   const { supabase, userId } = session
 
   try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (user) {
+      try {
+        await ensureAppUserFromSupabase(user)
+      } catch (syncErr) {
+        console.warn('POST /api/cv/generate: sync Prisma ignorée', syncErr)
+      }
+    }
+
+    const caps = await getCapabilitiesForUserId(userId)
+    if (!caps.allowedDocumentTypes.includes('CV_COVER')) {
+      return NextResponse.json(
+        { error: 'Votre offre ne permet pas de créer un CV. Passez à Pro ou Ultimate.' },
+        { status: 403 },
+      )
+    }
+
     const json = await request.json()
     const parsed = bodySchema.safeParse(json)
     if (!parsed.success) {

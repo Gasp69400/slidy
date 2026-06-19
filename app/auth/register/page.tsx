@@ -83,8 +83,11 @@ export default function RegisterPage() {
       }
 
       if (data.session) {
-        router.refresh()
-        router.push('/studio')
+        await fetch('/api/auth/session', {
+          method: 'POST',
+          credentials: 'include',
+        })
+        window.location.href = '/studio'
         return
       }
 

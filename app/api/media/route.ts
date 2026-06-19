@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireSessionUser } from '@/lib/api-auth'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(_request: NextRequest) {
-  const auth = await requireSessionUser()
+export async function GET(request: NextRequest) {
+  const auth = await requireSessionUser(request)
   if (!auth.ok) return auth.response
 
   try {

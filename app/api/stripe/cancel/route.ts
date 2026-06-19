@@ -5,9 +5,9 @@ import { resolveUserPlan } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 import { cancelSubscription } from '@/lib/stripe'
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
-    const auth = await requireSessionUser()
+    const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
 
     const user = await prisma.user.findUnique({

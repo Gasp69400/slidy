@@ -26,7 +26,7 @@ const updateBlockSchema = z.object({
 type Params = { params: { id: string; blockId: string } }
 
 export async function PATCH(request: NextRequest, { params }: Params) {
-  const auth = await requireSessionUser()
+  const auth = await requireSessionUser(request)
   if (!auth.ok) return auth.response
 
   try {
@@ -91,8 +91,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: Params) {
-  const auth = await requireSessionUser()
+export async function DELETE(request: NextRequest, { params }: Params) {
+  const auth = await requireSessionUser(request)
   if (!auth.ok) return auth.response
 
   try {

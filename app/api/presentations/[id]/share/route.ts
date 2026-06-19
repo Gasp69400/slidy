@@ -4,9 +4,9 @@ import { prisma } from '@/lib/prisma'
 
 type Params = { params: { id: string } }
 
-export async function POST(_request: NextRequest, { params }: Params) {
+export async function POST(request: NextRequest, { params }: Params) {
   try {
-    const auth = await requireSessionUser()
+    const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
 
     const presentation = await prisma.presentation.findFirst({

@@ -4,9 +4,9 @@ import { prisma } from '@/lib/prisma'
 import { getCapabilities, getDocumentQuotaWindowStart, resolveUserPlan } from '@/lib/plans'
 import { PRESENTATION_TEMPLATES_META } from '@/lib/presentation-template-themes'
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const auth = await requireSessionUser()
+    const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
 
     const presentations = await prisma.presentation.findMany({
@@ -28,7 +28,7 @@ export async function GET(_request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requireSessionUser()
+    const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
 
     const body = await request.json()

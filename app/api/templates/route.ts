@@ -5,9 +5,9 @@ import { requireSessionUser } from '@/lib/api-auth'
 import { resolveUserPlan, PLAN_ORDER } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const auth = await requireSessionUser()
+    const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
 
     const user = await prisma.user.findUnique({

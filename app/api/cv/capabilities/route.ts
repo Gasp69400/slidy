@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 import { requireSessionUser } from '@/lib/api-auth'
 import { getCapabilities, resolveUserPlan } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
-  const auth = await requireSessionUser()
+export async function GET(request: NextRequest) {
+  const auth = await requireSessionUser(request)
   if (!auth.ok) return auth.response
 
   const user = await prisma.user.findUnique({

@@ -67,8 +67,8 @@ function buildStarterBlocks(input: {
   ]
 }
 
-export async function GET(_request: NextRequest) {
-  const auth = await requireSessionUser()
+export async function GET(request: NextRequest) {
+  const auth = await requireSessionUser(request)
   if (!auth.ok) return auth.response
 
   try {
@@ -89,7 +89,7 @@ export async function GET(_request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await requireSessionUser()
+  const auth = await requireSessionUser(request)
   if (!auth.ok) return auth.response
 
   try {

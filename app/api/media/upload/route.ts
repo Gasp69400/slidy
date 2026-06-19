@@ -9,7 +9,7 @@ import { prisma } from '@/lib/prisma'
 const MAX_FILE_SIZE = 8 * 1024 * 1024 // 8MB
 
 export async function POST(request: NextRequest) {
-  const auth = await requireSessionUser()
+  const auth = await requireSessionUser(request)
   if (!auth.ok) return auth.response
 
   try {

@@ -11,7 +11,7 @@ const reorderSchema = z.object({
 type Params = { params: { id: string } }
 
 export async function POST(request: NextRequest, { params }: Params) {
-  const auth = await requireSessionUser()
+  const auth = await requireSessionUser(request)
   if (!auth.ok) return auth.response
 
   try {

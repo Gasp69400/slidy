@@ -11,7 +11,7 @@ const PRICE_IDS: Record<string, string> = {
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireSessionUser()
+    const auth = await requireSessionUser(request)
     if (!auth.ok) return auth.response
 
     const plan = request.nextUrl.searchParams.get('plan')
