@@ -9,6 +9,7 @@ export const SITE_STRINGS = {
   'nav.studio': { fr: 'Studio', en: 'Studio' },
   'nav.cv': { fr: 'CV & lettre', en: 'CV & cover letter' },
   'nav.presentations': { fr: 'Mes présentations', en: 'My presentations' },
+  'nav.presentations_short': { fr: 'Slides', en: 'Slides' },
   'presentations.view': { fr: 'Voir', en: 'View' },
   'presentations.delete': { fr: 'Supprimer', en: 'Delete' },
   'presentations.delete_confirm': {
@@ -44,6 +45,8 @@ export const SITE_STRINGS = {
     fr: 'Lettre de motivation',
     en: 'Cover Letter',
   },
+  'nav.menu_cover_letter_short': { fr: 'Lettre', en: 'Letter' },
+  'nav.mobile_tabs': { fr: 'Navigation principale', en: 'Main navigation' },
   'coverLetter.placeholder.title': {
     fr: 'Lettre de motivation',
     en: 'Cover letter',

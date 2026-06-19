@@ -46,11 +46,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <Providers>
-          <ConditionalNavigation>
-            <main className="min-h-screen bg-background text-foreground transition-colors">
-              {children}
-            </main>
-          </ConditionalNavigation>
+          <ConditionalNavigation>{children}</ConditionalNavigation>
         </Providers>
       </body>
     </html>

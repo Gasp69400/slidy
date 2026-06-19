@@ -3,6 +3,7 @@
 import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
+import { MOBILE_TAB_BAR_BOTTOM } from '@/lib/mobile-layout'
 import { cn } from '@/lib/utils'
 
 export const studioInputClass =
@@ -35,7 +36,7 @@ export function StudioShell({
         aria-hidden
         className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-300/10 blur-3xl dark:bg-brand-600/10"
       />
-      <div className="relative z-0 mx-auto max-w-6xl px-3 py-5 pb-24 sm:px-6 sm:py-8 lg:py-10 xl:pb-10">
+      <div className="relative z-0 mx-auto max-w-6xl px-3 py-5 pb-36 sm:px-6 sm:py-8 lg:py-10 xl:pb-10">
         {children}
       </div>
     </div>
@@ -275,11 +276,12 @@ export function StudioMobileActionBar({
   return (
     <div
       className={cn(
-        'fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/90 bg-white/95 p-3 backdrop-blur-md',
-        'pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:border-slate-800 dark:bg-slate-950/95',
+        'fixed inset-x-0 z-40 border-t border-slate-200/90 bg-white/95 p-3 backdrop-blur-md',
+        'dark:border-slate-800 dark:bg-slate-950/95',
         hideFrom === 'xl' ? 'xl:hidden' : 'lg:hidden',
         className,
       )}
+      style={{ bottom: MOBILE_TAB_BAR_BOTTOM }}
     >
       <div className="mx-auto max-w-6xl">{children}</div>
     </div>
