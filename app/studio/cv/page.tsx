@@ -692,11 +692,11 @@ export default function CvStudioPage() {
         </StudioPanel>
 
         <aside className="z-0 order-1 space-y-5 sm:space-y-6 xl:order-2 xl:sticky xl:top-20 xl:self-start">
-          <StudioPanel step={2} title={t('cv.templates')}>
+          <StudioPanel step={2} mobileStep={3} title={t('cv.templates')}>
             <CvTemplatePicker value={templateSlug} onChange={setTemplateSlug} />
           </StudioPanel>
 
-          <StudioPanel step={3} title={t('cv.section_appearance')}>
+          <StudioPanel step={3} mobileStep={2} title={t('cv.section_appearance')}>
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <StudioField label={t('cv.locale')}>
                 <Select

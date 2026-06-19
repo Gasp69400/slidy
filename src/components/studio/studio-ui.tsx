@@ -91,13 +91,19 @@ export function StudioPanel({
   title,
   description,
   step,
+  mobileStep,
 }: {
   children: ReactNode
   className?: string
   title?: string
   description?: string
   step?: number | string
+  /** Numéro affiché en mobile quand l’ordre des sections diffère du desktop. */
+  mobileStep?: number | string
 }) {
+  const stepBadgeClass =
+    'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-xs font-bold text-brand-700 dark:bg-brand-500/15 dark:text-brand-300'
+
   return (
     <section
       className={cn(
@@ -111,9 +117,14 @@ export function StudioPanel({
         <header className="mb-5 border-b border-slate-100 pb-4 dark:border-slate-800">
           <div className="flex items-start gap-3">
             {step !== undefined ? (
-              <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-xs font-bold text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
-                {step}
-              </span>
+              mobileStep !== undefined ? (
+                <>
+                  <span className={cn(stepBadgeClass, 'xl:hidden')}>{mobileStep}</span>
+                  <span className={cn(stepBadgeClass, 'hidden xl:inline-flex')}>{step}</span>
+                </>
+              ) : (
+                <span className={stepBadgeClass}>{step}</span>
+              )
             ) : null}
             <div>
               <h2 className="text-base font-semibold text-slate-900 dark:text-white">
