@@ -24,6 +24,7 @@ import FontSelector from '@/components/presentation/create/FontSelector'
 import {
   StudioField,
   StudioHeader,
+  StudioMobileActionBar,
   StudioPanel,
   StudioShell,
 } from '@/components/studio/studio-ui'
@@ -587,7 +588,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
         subtitle={t('create.subtitle')}
       />
 
-      <div className="space-y-6">
+      <div className="space-y-5 sm:space-y-6">
         <StudioPanel step={1} title={t('create.topic')} description={t('create.subtitle')}>
           <div className="space-y-6">
             <StudioField label={t('create.topic')}>
@@ -704,13 +705,13 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
         </div>
 
         <StudioField label={t('create.detail')}>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-3 min-[420px]:gap-3">
             {detailLevels.map((d) => (
               <button
                 key={d.value}
                 type="button"
                 onClick={() => set('detail', d.value)}
-                className={`rounded-xl border p-3.5 text-left transition-all ${
+                className={`min-h-[44px] rounded-xl border p-3 text-left transition-all min-[420px]:p-3.5 ${
                   form.detail === d.value
                     ? 'border-brand-300 bg-brand-50 text-brand-700 dark:border-brand-600 dark:bg-brand-950/50 dark:text-brand-200'
                     : 'border-slate-100 text-slate-600 hover:border-slate-200 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600'
@@ -752,7 +753,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
         <StudioPanel step={3} title={t('create.enhance')}>
           <div className="space-y-6">
         <StudioField label={t('create.enhance')}>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
             {optionItems.map((opt) => (
               <label
                 key={opt.key}
@@ -795,7 +796,7 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
           type="button"
           onClick={() => void handleGenerate()}
           disabled={!form.topic.trim() || generating}
-          className="h-14 w-full gap-2 rounded-xl bg-brand-500 text-base shadow-lg shadow-brand-500/25 hover:bg-brand-600"
+          className="hidden h-14 w-full gap-2 rounded-xl bg-brand-500 text-base shadow-lg shadow-brand-500/25 hover:bg-brand-600 lg:flex"
         >
           <Sparkles className="w-5 h-5" />
           {t('create.generate')}
@@ -823,6 +824,26 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
         </p>
         </StudioPanel>
       </div>
+
+      <StudioMobileActionBar>
+        <Button
+          type="button"
+          onClick={() => void handleGenerate()}
+          disabled={!form.topic.trim() || generating || photosStillUploading}
+          className="h-12 w-full gap-2 rounded-xl bg-brand-500 text-base shadow-lg shadow-brand-500/25 hover:bg-brand-600"
+        >
+          <Sparkles className="h-5 w-5" />
+          {t('create.generate')}
+        </Button>
+        {generateError ? (
+          <p
+            role="alert"
+            className="mt-2 px-1 text-center text-xs text-red-600 dark:text-red-400"
+          >
+            {generateError}
+          </p>
+        ) : null}
+      </StudioMobileActionBar>
     </StudioShell>
   )
 }

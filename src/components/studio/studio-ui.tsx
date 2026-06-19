@@ -35,7 +35,7 @@ export function StudioShell({
         aria-hidden
         className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-brand-300/10 blur-3xl dark:bg-brand-600/10"
       />
-      <div className="relative z-0 mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-10">
+      <div className="relative z-0 mx-auto max-w-6xl px-3 py-5 pb-24 sm:px-6 sm:py-8 lg:py-10 xl:pb-10">
         {children}
       </div>
     </div>
@@ -56,10 +56,10 @@ export function StudioHeader({
   actions?: ReactNode
 }) {
   return (
-    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-      <div className="flex items-start gap-4">
+    <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex items-start gap-3 sm:gap-4">
         {Icon ? (
-          <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-lg shadow-brand-500/30 ring-1 ring-white/20">
+          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 text-white shadow-lg shadow-brand-500/30 ring-1 ring-white/20 sm:h-12 sm:w-12 sm:rounded-2xl">
             <Icon className="h-5 w-5" strokeWidth={2.25} />
           </span>
         ) : null}
@@ -69,7 +69,7 @@ export function StudioHeader({
               {badge}
             </p>
           ) : null}
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-[1.75rem]">
+          <h1 className="text-xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-[1.75rem]">
             {title}
           </h1>
           {subtitle ? (
@@ -100,9 +100,9 @@ export function StudioPanel({
   return (
     <section
       className={cn(
-        'rounded-[1.75rem] border border-white/70 bg-white/80 p-5 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl',
+        'rounded-[1.35rem] border border-white/70 bg-white/80 p-4 shadow-[0_20px_60px_-40px_rgba(15,23,42,0.35)] backdrop-blur-xl',
         'dark:border-white/10 dark:bg-slate-900/70 dark:shadow-black/30',
-        'sm:p-6',
+        'sm:rounded-[1.75rem] sm:p-6',
         className,
       )}
     >
@@ -243,7 +243,7 @@ export function StudioDocRow({
             {meta}
           </p>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-brand-700 opacity-0 transition group-hover:opacity-100 dark:text-brand-300">
+        <span className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-brand-700 sm:opacity-0 sm:transition group-hover:sm:opacity-100 dark:text-brand-300">
           {openLabel}
         </span>
       </button>
@@ -257,6 +257,31 @@ export function StudioDocRow({
           {deleteLabel}
         </button>
       </div>
+    </div>
+  )
+}
+
+/** Barre d’action fixe en bas sur mobile (safe-area iOS). */
+export function StudioMobileActionBar({
+  children,
+  className,
+  hideFrom = 'lg',
+}: {
+  children: ReactNode
+  className?: string
+  /** Breakpoint à partir duquel la barre disparaît (layout desktop). */
+  hideFrom?: 'lg' | 'xl'
+}) {
+  return (
+    <div
+      className={cn(
+        'fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/90 bg-white/95 p-3 backdrop-blur-md',
+        'pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:border-slate-800 dark:bg-slate-950/95',
+        hideFrom === 'xl' ? 'xl:hidden' : 'lg:hidden',
+        className,
+      )}
+    >
+      <div className="mx-auto max-w-6xl">{children}</div>
     </div>
   )
 }

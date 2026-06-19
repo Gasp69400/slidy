@@ -11,6 +11,7 @@ import {
   StudioField,
   StudioHeader,
   StudioPanel,
+  StudioMobileActionBar,
   StudioShell,
   studioInputClass,
   studioSelectTriggerClass,
@@ -319,8 +320,13 @@ export default function CvStudioPage() {
         subtitle={t('cv.page_sub')}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
-        <StudioPanel step={1} title={t('cv.section_content')} description={t('cv.page_sub')}>
+      <div className="flex flex-col gap-5 sm:gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
+        <StudioPanel
+          step={1}
+          title={t('cv.section_content')}
+          description={t('cv.page_sub')}
+          className="order-2 xl:order-1"
+        >
           <Tabs
             value={inputMode}
             onValueChange={(v) => {
@@ -333,14 +339,14 @@ export default function CvStudioPage() {
               }
             }}
           >
-            <TabsList className="grid w-full max-w-xl grid-cols-3 rounded-xl bg-slate-100/90 p-1 dark:bg-slate-800/80">
-              <TabsTrigger value="manual" className="rounded-lg text-sm">
+            <TabsList className="grid h-auto w-full max-w-xl grid-cols-3 gap-0.5 rounded-xl bg-slate-100/90 p-1 dark:bg-slate-800/80">
+              <TabsTrigger value="manual" className="rounded-lg px-1 py-2 text-[11px] sm:px-3 sm:text-sm">
                 {t('cv.tab_manual')}
               </TabsTrigger>
-              <TabsTrigger value="prompt" className="rounded-lg text-sm">
+              <TabsTrigger value="prompt" className="rounded-lg px-1 py-2 text-[11px] sm:px-3 sm:text-sm">
                 {t('cv.tab_prompt')}
               </TabsTrigger>
-              <TabsTrigger value="finance" className="rounded-lg text-sm">
+              <TabsTrigger value="finance" className="rounded-lg px-1 py-2 text-[11px] sm:px-3 sm:text-sm">
                 {t('cv.tab_finance')}
               </TabsTrigger>
             </TabsList>
@@ -685,13 +691,13 @@ export default function CvStudioPage() {
           </Tabs>
         </StudioPanel>
 
-        <aside className="z-0 space-y-6 xl:sticky xl:top-20 xl:self-start">
+        <aside className="z-0 order-1 space-y-5 sm:space-y-6 xl:order-2 xl:sticky xl:top-20 xl:self-start">
           <StudioPanel step={2} title={t('cv.templates')}>
             <CvTemplatePicker value={templateSlug} onChange={setTemplateSlug} />
           </StudioPanel>
 
           <StudioPanel step={3} title={t('cv.section_appearance')}>
-            <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <StudioField label={t('cv.locale')}>
                 <Select
                   value={contentLocale}
@@ -736,7 +742,7 @@ export default function CvStudioPage() {
                   </SelectContent>
                 </Select>
               </StudioField>
-              <StudioField label={t('cv.accent')}>
+              <StudioField label={t('cv.accent')} className="col-span-2">
                 <Input
                   type="color"
                   className="h-10 w-full cursor-pointer rounded-xl border-slate-200"
@@ -779,7 +785,7 @@ export default function CvStudioPage() {
           )}
 
           <Button
-            className="h-12 w-full rounded-xl bg-brand-500 shadow-lg shadow-brand-500/25 hover:bg-brand-600"
+            className="hidden h-12 w-full rounded-xl bg-brand-500 shadow-lg shadow-brand-500/25 hover:bg-brand-600 xl:flex"
             disabled={
               !canSubmit || generateMutation.isPending || allowed === false
             }
@@ -789,6 +795,18 @@ export default function CvStudioPage() {
           </Button>
         </aside>
       </div>
+
+      <StudioMobileActionBar hideFrom="xl">
+        <Button
+          className="h-12 w-full rounded-xl bg-brand-500 shadow-lg shadow-brand-500/25 hover:bg-brand-600"
+          disabled={
+            !canSubmit || generateMutation.isPending || allowed === false
+          }
+          onClick={() => generateMutation.mutate()}
+        >
+          {generateMutation.isPending ? t('cv.generating') : t('cv.generate')}
+        </Button>
+      </StudioMobileActionBar>
     </StudioShell>
   )
 }

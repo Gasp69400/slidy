@@ -11,6 +11,7 @@ import {
   StudioField,
   StudioHeader,
   StudioPanel,
+  StudioMobileActionBar,
   StudioQuickLink,
   StudioShell,
   studioInputClass,
@@ -351,7 +352,7 @@ export default function StudioPage() {
               ) : null}
 
               <Button
-                className="h-11 w-full rounded-xl bg-brand-500 shadow-lg shadow-brand-500/25 hover:bg-brand-600"
+                className="hidden h-11 w-full rounded-xl bg-brand-500 shadow-lg shadow-brand-500/25 hover:bg-brand-600 lg:flex"
                 disabled={!topic.trim() || createMutation.isPending || disabledType}
                 onClick={() => createMutation.mutate()}
               >
@@ -396,6 +397,19 @@ export default function StudioPage() {
             )}
           </StudioPanel>
         </div>
+
+      <StudioMobileActionBar>
+        <Button
+          className="h-12 w-full rounded-xl bg-brand-500 shadow-lg shadow-brand-500/25 hover:bg-brand-600"
+          disabled={!topic.trim() || createMutation.isPending || disabledType}
+          onClick={() => createMutation.mutate()}
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          {createMutation.isPending
+            ? t('studio.btn_generating')
+            : t('studio.btn_open')}
+        </Button>
+      </StudioMobileActionBar>
       </StudioShell>
   )
 }

@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { APP_HEADER_NAV } from '@/lib/app-nav'
 import { useSiteLocale } from '@/lib/site-locale'
 import { useTheme, type ThemePreference } from '@/lib/theme'
 import { cn } from '@/lib/utils'
@@ -39,7 +40,7 @@ export function SiteHeaderMenu({
           variant="outline"
           size="icon"
           className={cn(
-            'shrink-0 rounded-full border-slate-200 bg-white text-slate-800 shadow-sm hover:bg-slate-50 dark:border-slate-300 dark:bg-white dark:text-slate-800 dark:hover:bg-slate-100',
+            'h-9 w-9 shrink-0 rounded-full border-slate-200 bg-white text-slate-800 shadow-sm hover:bg-slate-50 dark:border-slate-300 dark:bg-white dark:text-slate-800 dark:hover:bg-slate-100 sm:h-8 sm:w-8',
             triggerClassName,
           )}
           aria-label={t('landing.menu_trigger')}
@@ -47,15 +48,19 @@ export function SiteHeaderMenu({
           <Menu className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} className="z-[60] w-56">
+      <DropdownMenuContent align={align} className="z-[60] max-h-[min(85vh,32rem)] w-56 overflow-y-auto">
         <DropdownMenuItem asChild>
           <Link href="/">{t('nav.home')}</Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {APP_HEADER_NAV.map((item) => (
+          <DropdownMenuItem key={item.href} asChild>
+            <Link href={item.href}>{t(item.labelKey)}</Link>
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/pricing">{t('landing.pricing')}</Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/templates">{t('nav.templates')}</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/auth/login">{t('landing.login')}</Link>

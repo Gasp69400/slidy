@@ -101,22 +101,23 @@ export function Navigation() {
           <div className="flex shrink-0 items-center gap-2">
             <LanguageToggle className="h-8 px-2 text-xs" />
 
-            {/* Bouton profil — caché sur mobile */}
+            {/* Profil — avatar seul sur mobile, nom sur grand écran */}
             {userEmail && (
-              <div className="relative z-[60] hidden sm:block">
+              <div className="relative z-[60]">
                 <button
                   onClick={() => setShowUserMenu((s) => !s)}
-                  className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  className="flex h-9 min-w-[2.25rem] items-center gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 sm:px-3"
                   aria-expanded={showUserMenu}
                   aria-haspopup="menu"
+                  aria-label={userName ?? userEmail}
                 >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-white text-xs font-bold">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">
                     {(userName ?? userEmail).charAt(0).toUpperCase()}
                   </div>
                   <span className="hidden max-w-[120px] truncate lg:block">
                     {userName ?? userEmail}
                   </span>
-                  <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                  <ChevronDown className="hidden h-3.5 w-3.5 text-slate-400 sm:block" />
                 </button>
 
                 {showUserMenu && (

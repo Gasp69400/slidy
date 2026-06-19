@@ -129,7 +129,7 @@ function TemplateCard({
       onClick={onSelect}
       aria-pressed={selected}
       className={cn(
-        'group relative flex flex-col rounded-xl border-2 p-2 text-left transition-all',
+        'group relative flex min-h-[44px] flex-col rounded-xl border-2 p-1.5 text-left transition-all sm:p-2',
         'bg-white shadow-sm dark:bg-slate-800/95',
         selected
           ? 'border-brand-500 shadow-md shadow-brand-500/20'
@@ -159,7 +159,7 @@ export function CvTemplatePicker({ value, onChange, layout = 'sidebar' }: Props)
     <div
       className={cn(
         'grid gap-2.5',
-        layout === 'wide' ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2',
+        layout === 'wide' ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-3 gap-2 xl:grid-cols-2 xl:gap-2.5',
       )}
     >
       {CV_TEMPLATES.map((tpl) => (
