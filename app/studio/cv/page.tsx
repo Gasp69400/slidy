@@ -322,10 +322,20 @@ export default function CvStudioPage() {
 
       <div className="flex flex-col gap-5 sm:gap-6 xl:grid xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
         <StudioPanel
+          step={2}
+          mobileStep={1}
+          title={t('cv.templates')}
+          className="order-1 xl:order-none xl:col-start-2 xl:row-start-1"
+        >
+          <CvTemplatePicker value={templateSlug} onChange={setTemplateSlug} />
+        </StudioPanel>
+
+        <StudioPanel
           step={1}
+          mobileStep={2}
           title={t('cv.section_content')}
           description={t('cv.page_sub')}
-          className="order-2 xl:order-1"
+          className="order-2 xl:order-none xl:col-start-1 xl:row-start-1 xl:row-span-3"
         >
           <Tabs
             value={inputMode}
@@ -691,12 +701,8 @@ export default function CvStudioPage() {
           </Tabs>
         </StudioPanel>
 
-        <aside className="z-0 order-1 space-y-5 sm:space-y-6 xl:order-2 xl:sticky xl:top-20 xl:self-start">
-          <StudioPanel step={2} mobileStep={3} title={t('cv.templates')}>
-            <CvTemplatePicker value={templateSlug} onChange={setTemplateSlug} />
-          </StudioPanel>
-
-          <StudioPanel step={3} mobileStep={2} title={t('cv.section_appearance')}>
+        <div className="z-0 order-3 flex flex-col gap-5 sm:gap-6 xl:col-start-2 xl:row-start-2 xl:sticky xl:top-20 xl:self-start">
+          <StudioPanel step={3} title={t('cv.section_appearance')}>
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <StudioField label={t('cv.locale')}>
                 <Select
@@ -793,7 +799,7 @@ export default function CvStudioPage() {
           >
             {generateMutation.isPending ? t('cv.generating') : t('cv.generate')}
           </Button>
-        </aside>
+        </div>
       </div>
 
       <StudioMobileActionBar hideFrom="xl">
