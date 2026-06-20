@@ -14,7 +14,7 @@ export type UserIdentity = {
 const OWNER_PLAN: PlanTier = 'ULTIMATE'
 
 /** Compte fondateur (accès Ultimate même en Starter). Complété par SLIDY_OWNER_EMAILS. */
-const BUILTIN_OWNER_EMAILS = ['gaspard.nepple@etu.univ-st-etienne.fr']
+const BUILTIN_OWNER_EMAILS = ['g.nepple@icloud.com']
 
 function parseEnvList(value: string | undefined): string[] {
   return (value ?? '')
