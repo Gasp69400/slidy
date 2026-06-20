@@ -94,7 +94,22 @@ async function resolveUserIdForSubscription(
     where: { stripeCustomerId: customerId },
     select: { id: true },
   })
-  return user?.id ?? null
+  if (user?.id) return user.id
+
+  try {
+    const customer = await getStripe().customers.retrieve(customerId)
+    if (!customer.deleted && customer.email) {
+      const byEmail = await prisma.user.findUnique({
+        where: { email: customer.email.trim().toLowerCase() },
+        select: { id: true },
+      })
+      return byEmail?.id ?? null
+    }
+  } catch {
+    /* ignore */
+  }
+
+  return null
 }
 
 /** Synchronise statut Stripe + plan Pro/Ultimate en base. */
@@ -177,6 +192,89 @@ export async function createCheckoutSession({
   }
 
   return session
+}
+
+/**
+ * Checkout Stripe sans compte : l’email est saisi sur la page Stripe.
+ * L’abonnement est rattaché au compte à l’inscription (même email).
+ */
+export async function createGuestCheckoutSession({
+  priceId,
+  trialDays = TRIAL_DAYS,
+  planId,
+}: {
+  priceId: string
+  trialDays?: number
+  planId?: string
+}) {
+  const tier = planTierFromStripePriceId(priceId)
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') ??
+    'http://localhost:3000'
+
+  const session = await getStripe().checkout.sessions.create({
+    mode: 'subscription',
+    line_items: [{ price: priceId, quantity: 1 }],
+    subscription_data: {
+      ...(trialDays > 0 ? { trial_period_days: trialDays } : {}),
+      metadata: {
+        guestCheckout: 'true',
+        ...(planId ? { planId } : {}),
+        ...(tier ? { planTier: tier } : {}),
+      },
+    },
+    metadata: {
+      guestCheckout: 'true',
+      ...(planId ? { planId } : {}),
+      ...(tier ? { planTier: tier } : {}),
+    },
+    success_url: `${appUrl}/auth/register?checkout=success`,
+    cancel_url: `${appUrl}/pricing?canceled=true`,
+  })
+
+  if (!session.url) {
+    throw new Error('Stripe n’a pas renvoyé d’URL de checkout')
+  }
+
+  return session
+}
+
+/** Rattache un client Stripe existant (paiement invité) après inscription. */
+export async function linkStripeCustomerByEmail(
+  userId: string,
+  email: string,
+): Promise<void> {
+  try {
+    const normalized = email.trim().toLowerCase()
+    const customers = await getStripe().customers.list({
+      email: normalized,
+      limit: 3,
+    })
+
+    const customer = customers.data.find((c) => !c.deleted)
+    if (!customer) return
+
+    const subscriptions = await getStripe().subscriptions.list({
+      customer: customer.id,
+      status: 'all',
+      limit: 5,
+    })
+
+    const active = subscriptions.data.find((s) =>
+      ['active', 'trialing', 'past_due'].includes(s.status),
+    )
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { stripeCustomerId: customer.id },
+    })
+
+    if (active) {
+      await syncStripeSubscription(active, userId)
+    }
+  } catch (error) {
+    console.warn('linkStripeCustomerByEmail:', error)
+  }
 }
 
 /**
@@ -345,8 +443,21 @@ export async function handleWebhook(event: Stripe.Event) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
-        const userId =
+        let userId =
           session.metadata?.userId ?? session.client_reference_id ?? null
+
+        const checkoutEmail =
+          session.customer_details?.email ??
+          session.customer_email ??
+          null
+
+        if (!userId && checkoutEmail) {
+          const byEmail = await prisma.user.findUnique({
+            where: { email: checkoutEmail.trim().toLowerCase() },
+            select: { id: true },
+          })
+          userId = byEmail?.id ?? null
+        }
 
         if (userId && session.customer) {
           await prisma.user.update({

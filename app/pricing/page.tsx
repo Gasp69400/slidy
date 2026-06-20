@@ -125,7 +125,7 @@ export default function PricingPage() {
         data = { error: `Réponse invalide (${res.status})` }
       }
 
-      if (!res.ok) {
+        if (!res.ok) {
         const detail =
           data.error ??
           (typeof data.details === 'string' ? data.details : null) ??
@@ -138,11 +138,7 @@ export default function PricingPage() {
           details: data.details,
           error: data.error,
         })
-        if (data.code === 'AUTH_REQUIRED') {
-          setCheckoutError(t('pricing.checkout_login'))
-        } else {
-          setCheckoutError(t('pricing.checkout_error', { detail }))
-        }
+        setCheckoutError(t('pricing.checkout_error', { detail }))
         return
       }
 

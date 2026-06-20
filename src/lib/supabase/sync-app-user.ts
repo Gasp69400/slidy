@@ -2,6 +2,7 @@ import type { PlanTier, SubscriptionStatus } from '@prisma/client'
 import type { User as SupabaseAuthUser } from '@supabase/supabase-js'
 
 import { prisma } from '@/lib/prisma'
+import { linkStripeCustomerByEmail } from '@/lib/stripe'
 
 function displayNameFromSupabase(
   supabaseUser: SupabaseAuthUser,
@@ -106,6 +107,7 @@ export async function ensureAppUserFromSupabase(
       where: { id: supabaseId },
       data: { email, name },
     })
+    await linkStripeCustomerByEmail(supabaseId, email)
     return
   }
 
@@ -127,6 +129,7 @@ export async function ensureAppUserFromSupabase(
       email,
       name,
     )
+    await linkStripeCustomerByEmail(supabaseId, email)
     return
   }
 
@@ -155,4 +158,6 @@ export async function ensureAppUserFromSupabase(
       },
     })
   }
+
+  await linkStripeCustomerByEmail(supabaseId, email)
 }

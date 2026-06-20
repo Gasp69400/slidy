@@ -54,5 +54,13 @@ export function shouldShowMobileTabBar(pathname: string): boolean {
   return true
 }
 
-/** Routes sans header complet (accueil marketing, pricing, compte). */
+/** Routes avec `LandingHeader` intégré (pas de nav app en double). */
+export function usesLandingHeader(pathname: string): boolean {
+  if (pathname === '/' || pathname === '/pricing') return true
+  if (pathname === '/account' || pathname.startsWith('/account/')) return true
+  if (pathname === '/legal/cgu' || pathname.startsWith('/legal/')) return true
+  return false
+}
+
+/** @deprecated Préférer usesLandingHeader */
 export const HIDE_TOP_NAV_PATHS = new Set(['/', '/pricing', '/account'])

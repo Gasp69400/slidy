@@ -3,15 +3,11 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 
-import {
-  HIDE_TOP_NAV_PATHS,
-  shouldShowMobileTabBar,
-} from '@/lib/app-nav'
+import { shouldShowMobileTabBar, usesLandingHeader } from '@/lib/app-nav'
 import { MOBILE_TAB_BAR_PADDING } from '@/lib/mobile-layout'
 import { cn } from '@/lib/utils'
 
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav'
-import { MobileMinimalHeader } from '@/components/layout/MobileMinimalHeader'
 import { Navigation } from '@/components/layout/navigation'
 
 type Props = {
@@ -20,12 +16,12 @@ type Props = {
 
 export function ConditionalNavigation({ children }: Props) {
   const pathname = usePathname()
-  const hideTopNav = HIDE_TOP_NAV_PATHS.has(pathname)
+  const showAppNav = !usesLandingHeader(pathname)
   const showTabBar = shouldShowMobileTabBar(pathname)
 
   return (
     <>
-      {!hideTopNav ? <Navigation /> : <MobileMinimalHeader />}
+      {showAppNav ? <Navigation /> : null}
       {showTabBar ? <MobileBottomNav /> : null}
       <main
         className={cn(

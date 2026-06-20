@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
-import { createCheckoutSession } from '@/lib/stripe'
+import {
+  createCheckoutSession,
+  createGuestCheckoutSession,
+} from '@/lib/stripe'
 import {
   resolveCheckoutPriceId,
   type StripeCheckoutPlanId,
@@ -16,17 +19,6 @@ const subscribeSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await requireSupabaseSession()
-    if (!session.ok) {
-      return NextResponse.json(
-        {
-          error: 'Connectez-vous pour souscrire à un plan payant.',
-          code: 'AUTH_REQUIRED',
-        },
-        { status: 401 },
-      )
-    }
-
     const body = await request.json()
     const parsed = subscribeSchema.parse(body)
 
@@ -46,18 +38,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.info('[stripe/subscribe] checkout', {
-      userId: session.userId,
+    const session = await requireSupabaseSession(request)
+    const trialDays = parsed.trialDays ?? 0
+
+    if (session.ok) {
+      console.info('[stripe/subscribe] checkout (connecté)', {
+        userId: session.userId,
+        planId: parsed.planId,
+        priceId: resolved.priceId,
+        trialDays,
+      })
+
+      const checkoutSession = await createCheckoutSession({
+        userId: session.userId,
+        userEmail: session.email!,
+        priceId: resolved.priceId,
+        trialDays,
+      })
+
+      return NextResponse.json({ url: checkoutSession.url })
+    }
+
+    console.info('[stripe/subscribe] checkout (invité)', {
       planId: parsed.planId,
       priceId: resolved.priceId,
-      trialDays: parsed.trialDays ?? 0,
+      trialDays,
     })
 
-    const checkoutSession = await createCheckoutSession({
-      userId: session.userId,
-      userEmail: session.email!,
+    const checkoutSession = await createGuestCheckoutSession({
       priceId: resolved.priceId,
-      trialDays: parsed.trialDays,
+      trialDays,
+      planId: parsed.planId,
     })
 
     return NextResponse.json({ url: checkoutSession.url })
