@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireSessionUser } from '@/lib/api-auth'
 import { prisma } from '@/lib/prisma'
-import { getCapabilities, getDocumentQuotaWindowStart, resolveUserPlan } from '@/lib/plans'
+import { capabilitiesForUser } from '@/lib/plan-access'
+import { getDocumentQuotaWindowStart } from '@/lib/plans'
 import { PRESENTATION_TEMPLATES_META } from '@/lib/presentation-template-themes'
 
 export async function GET(request: NextRequest) {
@@ -42,8 +43,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Utilisateur introuvable' }, { status: 404 })
     }
 
-    const plan = resolveUserPlan(user)
-    const capabilities = getCapabilities(plan)
+    const capabilities = capabilitiesForUser(user, {
+      userId: auth.userId,
+      email: auth.email,
+    })
 
     // Verifie la limite de presentations selon le quota du plan
     const quotaStart = getDocumentQuotaWindowStart(capabilities.documentQuotaPeriod)
@@ -58,7 +61,7 @@ export async function POST(request: NextRequest) {
         capabilities.documentQuotaPeriod === 'month' ? 'mois' : 'jour'
       return NextResponse.json(
         {
-          error: `Limite atteinte : votre plan ${plan} permet ${capabilities.maxDocuments} presentations par ${periodLabel}.`,
+          error: `Limite atteinte : votre plan ${capabilities.plan} permet ${capabilities.maxDocuments} presentations par ${periodLabel}.`,
         },
         { status: 403 },
       )
@@ -73,7 +76,7 @@ export async function POST(request: NextRequest) {
       ULTIMATE: 3,
       TEAM: 3,
     }
-    const userPlanLevel = planOrder[plan] ?? 1
+    const userPlanLevel = planOrder[capabilities.plan] ?? 1
     const templatePlanLevel = planOrder[(templateMeta?.plan_tier?.toUpperCase() ?? 'STARTER')] ?? 1
 
     if (templatePlanLevel > userPlanLevel) {

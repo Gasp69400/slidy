@@ -81,9 +81,12 @@ const bodySchema = z
     }
   })
 
-async function isCvGenerationAllowed(userId: string): Promise<boolean> {
+async function isCvGenerationAllowed(
+  userId: string,
+  email: string,
+): Promise<boolean> {
   try {
-    const caps = await getCapabilitiesForUserId(userId)
+    const caps = await getCapabilitiesForUserId(userId, email)
     return caps.allowedDocumentTypes.includes('CV_COVER')
   } catch (error) {
     if (isPrismaConnectionError(error)) {
@@ -112,7 +115,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!(await isCvGenerationAllowed(userId))) {
+    if (!(await isCvGenerationAllowed(userId, session.email))) {
       return jsonWithSupabaseSessionCookies(
         { error: 'Votre offre ne permet pas de créer un CV. Passez à Pro ou Ultimate.' },
         { status: 403 },

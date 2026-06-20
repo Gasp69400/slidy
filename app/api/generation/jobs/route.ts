@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { requireSessionUser } from '@/lib/api-auth'
-import { getCapabilities, getDocumentQuotaWindowStart, resolveUserPlan } from '@/lib/plans'
+import { capabilitiesForUser } from '@/lib/plan-access'
+import { getDocumentQuotaWindowStart } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 import { resolveGroqChatModel } from '@/lib/server-chat-llm'
 
@@ -117,7 +118,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const caps = getCapabilities(resolveUserPlan(user))
+    const caps = capabilitiesForUser(user, {
+      userId: auth.userId,
+      email: auth.email,
+    })
     if (!caps.allowedDocumentTypes.includes(input.type)) {
       return NextResponse.json(
         {

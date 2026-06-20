@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import type { Template } from '@prisma/client'
 
 import { requireSessionUser } from '@/lib/api-auth'
-import { resolveUserPlan, PLAN_ORDER } from '@/lib/plans'
+import { resolvePlanForUser } from '@/lib/plan-access'
+import { PLAN_ORDER } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
@@ -22,7 +23,10 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const allowedTier = resolveUserPlan(user)
+    const allowedTier = resolvePlanForUser(user, {
+      userId: auth.userId,
+      email: auth.email,
+    })
 
     const allowedRank = PLAN_ORDER[allowedTier]
 

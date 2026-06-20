@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     const dbUnavailable = auth.dbUnavailable ?? false
 
     if (!profile) {
-      profile = fallbackAppUserProfile(auth.email)
+      profile = fallbackAppUserProfile(auth.email, auth.userId)
     }
 
     let stripeSubscription: Awaited<ReturnType<typeof getSubscriptionInfo>> = null

@@ -2,7 +2,7 @@ import type { PlanTier, SubscriptionStatus } from '@prisma/client'
 import { Prisma } from '@prisma/client'
 
 import { prisma } from '@/lib/prisma'
-import { resolveUserPlan } from '@/lib/plans'
+import { resolvePlanForUser } from '@/lib/plan-access'
 import { isPrismaConnectionError } from '@/lib/prisma-errors'
 
 export type AppUserProfile = {
@@ -45,7 +45,7 @@ export async function loadAppUserProfile(
       name: user.name,
       subscriptionStatus: user.subscriptionStatus,
       planTier: user.planTier,
-      activePlan: resolveUserPlan(user),
+      activePlan: resolvePlanForUser(user, { userId, email: user.email }),
     }
   } catch (error) {
     if (isPrismaConnectionError(error)) return null
@@ -69,17 +69,21 @@ export async function loadAppUserProfile(
       name: user.name,
       subscriptionStatus: user.subscriptionStatus,
       planTier: 'STARTER',
-      activePlan: resolveUserPlan(withTier),
+      activePlan: resolvePlanForUser(withTier, { userId, email: user.email }),
     }
   }
 }
 
-export function fallbackAppUserProfile(email: string): AppUserProfile {
+export function fallbackAppUserProfile(
+  email: string,
+  userId = '',
+): AppUserProfile {
+  const activePlan = resolvePlanForUser(null, { userId, email })
   return {
     email,
     name: null,
     subscriptionStatus: 'TRIAL',
     planTier: 'STARTER',
-    activePlan: 'STARTER',
+    activePlan,
   }
 }

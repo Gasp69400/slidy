@@ -7,7 +7,7 @@ import {
   exportDocumentToPdf,
   exportDocumentToPptx,
 } from '@/lib/exporters'
-import { getCapabilities, resolveUserPlan } from '@/lib/plans'
+import { capabilitiesForUser } from '@/lib/plan-access'
 import { prisma } from '@/lib/prisma'
 
 type Params = { params: { id: string } }
@@ -31,7 +31,10 @@ export async function GET(request: NextRequest, { params }: Params) {
       )
     }
 
-    const caps = getCapabilities(resolveUserPlan(user))
+    const caps = capabilitiesForUser(user, {
+      userId: auth.userId,
+      email: auth.email,
+    })
     if (!caps.exportFormats.includes(format)) {
       return NextResponse.json(
         {
