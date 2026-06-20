@@ -13,6 +13,9 @@ export type UserIdentity = {
 
 const OWNER_PLAN: PlanTier = 'ULTIMATE'
 
+/** Compte fondateur (accès Ultimate même en Starter). Complété par SLIDY_OWNER_EMAILS. */
+const BUILTIN_OWNER_EMAILS = ['gaspard.nepple@etu.univ-st-etienne.fr']
+
 function parseEnvList(value: string | undefined): string[] {
   return (value ?? '')
     .split(',')
@@ -24,9 +27,10 @@ function parseEnvList(value: string | undefined): string[] {
 export function isSlidyPlanOwner(identity: UserIdentity): boolean {
   const email = identity.email?.trim().toLowerCase()
   if (email) {
-    const ownerEmails = parseEnvList(process.env.SLIDY_OWNER_EMAILS).map((e) =>
-      e.toLowerCase(),
-    )
+    const ownerEmails = [
+      ...BUILTIN_OWNER_EMAILS,
+      ...parseEnvList(process.env.SLIDY_OWNER_EMAILS),
+    ].map((e) => e.toLowerCase())
     if (ownerEmails.includes(email)) return true
   }
 
