@@ -38,6 +38,7 @@ import {
   hasMinFinanceInput,
   type FinanceCvInput,
 } from '@/lib/cv-finance-input'
+import { compressCvPhotoFile } from '@/lib/cv-photo-client'
 import { useSiteLocale } from '@/lib/site-locale'
 
 type ExpRow = { role: string; company: string; period: string; bullets: string }
@@ -375,12 +376,13 @@ export default function CvStudioPage() {
                   onChange={(e) => {
                     const file = e.target.files?.[0]
                     if (!file) return
-                    const reader = new FileReader()
-                    reader.onload = () => {
-                      const data = String(reader.result ?? '')
-                      if (data) setPhotoUrl(data)
-                    }
-                    reader.readAsDataURL(file)
+                    void compressCvPhotoFile(file)
+                      .then((data) => {
+                        if (data) setPhotoUrl(data)
+                      })
+                      .catch(() => {
+                        setError(t('cv.photo_too_large'))
+                      })
                     e.target.value = ''
                   }}
                 />

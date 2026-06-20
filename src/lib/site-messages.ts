@@ -1054,6 +1054,10 @@ export const SITE_STRINGS = {
   },
   'cv.photo_pick': { fr: 'Choisir une image', en: 'Choose image' },
   'cv.photo_clear': { fr: 'Retirer la photo', en: 'Remove photo' },
+  'cv.photo_too_large': {
+    fr: 'Photo trop lourde. Choisissez une image plus petite.',
+    en: 'Photo is too large. Choose a smaller image.',
+  },
   'cv.sidebar.ident': { fr: 'Identité', en: 'Identity' },
   'cv.sidebar.contact': { fr: 'Coordonnées', en: 'Contact details' },
   'cv.sidebar.interests': {

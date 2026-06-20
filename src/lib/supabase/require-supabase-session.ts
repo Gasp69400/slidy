@@ -1,12 +1,18 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
+import {
+  applySessionCookies,
+  createSupabaseRouteHandlerClient,
+} from '@/lib/supabase/route-handler'
 import { createSupabaseServerClient } from '@/lib/supabase/server-client'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export type SupabaseSessionOk = {
   ok: true
   userId: string
   email: string
-  supabase: ReturnType<typeof createSupabaseServerClient>
+  supabase: SupabaseClient
+  sessionCookies?: NextResponse
 }
 
 export type SupabaseSessionFail = {
@@ -17,11 +23,17 @@ export type SupabaseSessionFail = {
 export type SupabaseSessionResult = SupabaseSessionOk | SupabaseSessionFail
 
 /**
- * Session Supabase uniquement (anon + cookies), sans Prisma ni DATABASE_URL.
+ * Session Supabase (anon + cookies), sans Prisma.
+ * Passez `request` dans les Route Handlers pour lire/rafraîchir les cookies correctement.
  */
-export async function requireSupabaseSession(): Promise<SupabaseSessionResult> {
+export async function requireSupabaseSession(
+  request?: NextRequest,
+): Promise<SupabaseSessionResult> {
   try {
-    const supabase = createSupabaseServerClient()
+    const routeClient = request ? createSupabaseRouteHandlerClient(request) : null
+    const supabase = routeClient?.supabase ?? createSupabaseServerClient()
+    const sessionCookies = routeClient?.cookieResponse()
+
     const {
       data: { user },
       error,
@@ -30,7 +42,10 @@ export async function requireSupabaseSession(): Promise<SupabaseSessionResult> {
     if (error || !user?.id || !user.email) {
       return {
         ok: false,
-        response: NextResponse.json({ error: 'Non authentifié' }, { status: 401 }),
+        response: applySessionCookies(
+          NextResponse.json({ error: 'Non authentifié' }, { status: 401 }),
+          sessionCookies ?? NextResponse.next(),
+        ),
       }
     }
 
@@ -39,6 +54,7 @@ export async function requireSupabaseSession(): Promise<SupabaseSessionResult> {
       userId: user.id,
       email: user.email,
       supabase,
+      sessionCookies,
     }
   } catch (e) {
     console.error('requireSupabaseSession:', e)
@@ -59,4 +75,14 @@ export async function requireSupabaseSession(): Promise<SupabaseSessionResult> {
       ),
     }
   }
+}
+
+export function jsonWithSupabaseSessionCookies(
+  body: unknown,
+  init: ResponseInit | undefined,
+  sessionCookies?: NextResponse,
+): NextResponse {
+  const res = NextResponse.json(body, init)
+  if (!sessionCookies) return res
+  return applySessionCookies(res, sessionCookies)
 }
