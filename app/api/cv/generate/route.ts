@@ -1,8 +1,11 @@
 import { randomUUID } from 'crypto'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
 
+import {
+  cvGenerateValidationMessage,
+  parseCvGenerateBody,
+} from '@/lib/cv-generate-body'
 import {
   insertCvDocument,
   supabaseConfigErrorMessage,
@@ -11,11 +14,7 @@ import { generateCvWithGroq, manualToContextString } from '@/lib/cv-llm'
 import { shrinkManualPhoto } from '@/lib/cv-photo'
 import { isPrismaConnectionError } from '@/lib/prisma-errors'
 import { isGroqApiConfigured } from '@/lib/server-chat-llm'
-import {
-  CV_TEMPLATE_SLUGS,
-  cvDesignOptionsSchema,
-  manualCvInputSchema,
-} from '@/lib/cv-schema'
+import { cvDesignOptionsSchema } from '@/lib/cv-schema'
 import { mergeToCvMetadata } from '@/lib/cv-synthesize'
 import { getCapabilitiesForUserId } from '@/lib/user-capabilities'
 import {
@@ -27,59 +26,6 @@ import { ensureAppUserFromSupabase } from '@/lib/supabase/sync-app-user'
 export const runtime = 'nodejs'
 /** Groq + insertion Supabase peuvent dépasser 10 s sur mobile / réseau lent. */
 export const maxDuration = 60
-
-const bodySchema = z
-  .object({
-    mode: z.enum(['prompt', 'manual']),
-    userPrompt: z.string().optional(),
-    manual: manualCvInputSchema.optional(),
-    skillsText: z.string().optional(),
-    /** Offre d’emploi pour mots-clés ATS (optionnel) */
-    jobDescription: z.string().optional(),
-    templateSlug: z.enum(CV_TEMPLATE_SLUGS).optional(),
-    fontFamily: cvDesignOptionsSchema.shape.fontFamily.optional(),
-    layoutDensity: cvDesignOptionsSchema.shape.layoutDensity.optional(),
-    accentHex: cvDesignOptionsSchema.shape.accentHex.optional(),
-    locale: z.enum(['fr', 'en']).default('fr'),
-    sector: z.enum(['general', 'finance']).optional().default('general'),
-    title: z.string().min(1).optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.mode === 'prompt') {
-      const p = data.userPrompt?.trim() ?? ''
-      if (p.length < 12) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'userPrompt_min',
-          path: ['userPrompt'],
-        })
-      }
-    }
-    if (data.mode === 'manual') {
-      const m = data.manual
-      const skillsOk = Boolean(data.skillsText?.trim())
-      const ok =
-        Boolean(m?.fullName?.trim()) ||
-        Boolean(m?.headline?.trim()) ||
-        Boolean(m?.summary?.trim()) ||
-        Boolean((m?.experience?.length ?? 0) > 0) ||
-        Boolean((m?.education?.length ?? 0) > 0) ||
-        skillsOk ||
-        Boolean(m?.contact?.email?.trim()) ||
-        Boolean(m?.contact?.phone?.trim()) ||
-        Boolean(m?.contact?.location?.trim()) ||
-        Boolean(m?.photoUrl?.trim()) ||
-        Boolean((m?.interests?.length ?? 0) > 0) ||
-        Boolean(data.jobDescription?.trim())
-      if (!ok) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'manual_min',
-          path: ['manual'],
-        })
-      }
-    }
-  })
 
 async function isCvGenerationAllowed(
   userId: string,
@@ -137,10 +83,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const parsed = bodySchema.safeParse(json)
+    const parsed = parseCvGenerateBody(json)
     if (!parsed.success) {
+      const localeHint =
+        typeof json === 'object' &&
+        json !== null &&
+        (json as { locale?: string }).locale === 'en'
+          ? 'en'
+          : 'fr'
       return jsonWithSupabaseSessionCookies(
-        { error: 'Données invalides', details: parsed.error.issues },
+        {
+          error: cvGenerateValidationMessage(parsed.error.issues, localeHint),
+          code: 'VALIDATION_ERROR',
+        },
         { status: 400 },
         sessionCookies,
       )

@@ -137,7 +137,7 @@ export const manualCvInputSchema = z.object({
   summary: z.string().optional(),
   photoUrl: z.string().optional(),
   searchPeriod: z.string().optional(),
-  interests: z.array(z.string()).optional(),
+  interests: z.union([z.string(), z.array(z.string())]).optional(),
   contact: cvContactSchema.optional(),
   experience: z.array(cvExperienceSchema).optional(),
   education: z.array(cvEducationSchema).optional(),

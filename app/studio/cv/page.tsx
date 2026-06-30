@@ -147,6 +147,13 @@ export default function CvStudioPage() {
           ? [{ degree: degree.trim(), school: school.trim(), year: year.trim() || undefined }]
           : undefined
 
+      const interestsList = interestsText.trim()
+        ? interestsText
+            .split(/[\n,;]+/)
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : undefined
+
       const hasManualExtra =
         Boolean(fullName.trim()) ||
         Boolean(headline.trim()) ||
@@ -183,7 +190,7 @@ export default function CvStudioPage() {
                 fullName: fullName || undefined,
                 headline: headline || undefined,
                 summary: summary || undefined,
-                interests: interestsText.trim() || undefined,
+                interests: interestsList,
                 photoUrl: photoUrl.trim() || undefined,
                 contact: {
                   email: email || undefined,
@@ -273,7 +280,8 @@ export default function CvStudioPage() {
       Boolean(photoUrl.trim()) ||
       Boolean(email.trim()) ||
       Boolean(phone.trim()) ||
-      Boolean(location.trim())
+      Boolean(location.trim()) ||
+      Boolean(jobDescription.trim())
     )
   }, [
     degree,
@@ -283,6 +291,7 @@ export default function CvStudioPage() {
     headline,
     inputMode,
     interestsText,
+    jobDescription,
     location,
     phone,
     photoUrl,
