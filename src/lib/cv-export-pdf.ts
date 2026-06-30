@@ -637,17 +637,6 @@ export async function exportCvCoverToPdf(input: {
     }
 
     y -= 10
-    if (y < margin + 120) newPagePlain()
-    else {
-      y -= 4
-      page.drawLine({
-        start: { x: margin, y },
-        end: { x: pageW - margin, y },
-        thickness: 0.5,
-        color: toRgb({ r: 0.88, g: 0.9, b: 0.92 }),
-      })
-      y -= 18
-    }
   } else {
     const theme = getPdfCvTheme(slug)
     const sidebarBgHex = themeToBgHex(theme, 'sidebar')
@@ -1195,21 +1184,29 @@ export async function exportCvCoverToPdf(input: {
         yR = cardBottom - 10
       }
     }
-
-    y = Math.min(yL, yR) - 14
-
-    if (y < margin + 120) newPagePlain()
-    else {
-      y -= 4
-      page.drawLine({
-        start: { x: margin, y },
-        end: { x: pageW - margin, y },
-        thickness: 0.5,
-        color: toRgb({ r: 0.88, g: 0.9, b: 0.92 }),
-      })
-      y -= 18
-    }
   }
+
+  /** Lettre de motivation — toujours sur une page dédiée, séparée du CV. */
+  const startCoverLetterPage = () => {
+    page = pdf.addPage([pageW, pageH])
+    page.drawRectangle({
+      x: 0,
+      y: 0,
+      width: pageW,
+      height: pageH,
+      color: rgb(1, 1, 1),
+    })
+    page.drawRectangle({
+      x: 0,
+      y: pageH - 6,
+      width: pageW,
+      height: 6,
+      color: toRgb(accent),
+    })
+    y = pageH - margin - 10
+  }
+
+  startCoverLetterPage()
 
   const textX = margin
   const wrapW = pageW - 2 * margin
@@ -1222,19 +1219,19 @@ export async function exportCvCoverToPdf(input: {
   ) => {
     const font = bold ? fontBold : fontRegular
     for (const line of wrapWords(text, wrapW, font, size)) {
-      if (y < margin + 24) newPagePlain()
+      if (y < margin + 24) startCoverLetterPage()
       page.drawText(line, { x: textX, y, size, font, color })
       y -= size + lineGap * 0.35
     }
   }
 
-  const drawLines = (lines: string[], size: number) => {
+  const drawLetterLines = (lines: string[], size: number) => {
     for (const line of lines) {
       if (!line.trim()) {
-        y -= lineGap * 0.5
+        y -= lineGap * 0.55
         continue
       }
-      if (y < margin + 24) newPagePlain()
+      if (y < margin + 24) startCoverLetterPage()
       page.drawText(line, {
         x: textX,
         y,
@@ -1242,19 +1239,34 @@ export async function exportCvCoverToPdf(input: {
         font: fontRegular,
         color: rgb(0.15, 0.17, 0.22),
       })
-      y -= size + lineGap * 0.35
+      y -= size + lineGap * 0.4
     }
   }
 
+  const letterTitleSize = 18
+  page.drawText(L.letter, {
+    x: textX,
+    y,
+    size: letterTitleSize,
+    font: fontBold,
+    color: toRgb(parseHexNormalized(readableAccentHex(accentHex, CV_BG.white, 4.5))),
+  })
   page.drawRectangle({
-    x: margin,
-    y: y + 6,
-    width: 40,
+    x: textX,
+    y: y - 10,
+    width: 48,
     height: 3,
     color: toRgb(accent),
   })
-  draw(L.letter, 14, true)
-  y -= 8
+  y -= letterTitleSize + 20
+
+  page.drawLine({
+    start: { x: textX, y },
+    end: { x: pageW - margin, y },
+    thickness: 0.5,
+    color: toRgb({ r: 0.9, g: 0.91, b: 0.93 }),
+  })
+  y -= 22
 
   const leftHeaderLines = [
     kit.profile.fullName.trim() || (loc === 'fr' ? 'Prénom Nom' : 'First Last Name'),
@@ -1284,7 +1296,7 @@ export async function exportCvCoverToPdf(input: {
     })
   }
 
-  y -= lineGap * 3.6
+  y -= lineGap * 4
 
   const letter = formatCoverLetterSections({
     raw: metadata.coverLetter,
@@ -1292,16 +1304,16 @@ export async function exportCvCoverToPdf(input: {
     locale: loc,
   })
 
-  drawLines(wrapParagraphs(letter.greeting, wrapW, fontRegular, 10), 10)
-  y -= lineGap * 0.2
+  drawLetterLines(wrapParagraphs(letter.greeting, wrapW, fontRegular, 10.5), 10.5)
+  y -= lineGap * 0.35
   for (const paragraph of letter.bodyParagraphs) {
-    drawLines(wrapParagraphs(paragraph, wrapW, fontRegular, 10), 10)
-    y -= lineGap * 0.2
+    drawLetterLines(wrapParagraphs(paragraph, wrapW, fontRegular, 10.5), 10.5)
+    y -= lineGap * 0.35
   }
-  y -= lineGap * 0.2
-  drawLines(wrapParagraphs(letter.closing, wrapW, fontRegular, 10), 10)
-  y -= lineGap * 1.15
-  draw(letter.signature, 10, true)
+  y -= lineGap * 0.25
+  drawLetterLines(wrapParagraphs(letter.closing, wrapW, fontRegular, 10.5), 10.5)
+  y -= lineGap * 1.4
+  draw(letter.signature, 10.5, true)
 
   return Buffer.from(await pdf.save())
 }
