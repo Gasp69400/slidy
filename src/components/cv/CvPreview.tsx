@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react'
 
 import type { CvDesignOptions, CvKit, CvTemplateSlug } from '@/lib/cv-schema'
+import { CV_BG, mixHex, readableAccentHex, withAlphaHex } from '@/lib/cv-color-utils'
 import { getCvTemplate } from '@/lib/cv-templates'
 import { useSiteLocale } from '@/lib/site-locale'
 import { cn } from '@/lib/utils'
@@ -19,18 +20,8 @@ const densityMain = {
   spacious: 'p-6 md:p-10 gap-10 text-[15px]',
 } as const
 
-function parseHex(hex: string): { r: number; g: number; b: number } {
-  const h = hex.replace('#', '').slice(0, 6)
-  return {
-    r: parseInt(h.slice(0, 2), 16) || 79,
-    g: parseInt(h.slice(2, 4), 16) || 70,
-    b: parseInt(h.slice(4, 6), 16) || 229,
-  }
-}
-
 function withAlpha(hex: string, alpha: number): string {
-  const { r, g, b } = parseHex(hex)
-  return `rgba(${r},${g},${b},${alpha})`
+  return withAlphaHex(hex, alpha)
 }
 
 function splitName(fullName: string): { first: string; last: string } {
@@ -45,19 +36,20 @@ function SectionHeading({
   accent,
   isDark,
   className,
+  bgHex = CV_BG.white,
 }: {
   children: ReactNode
   accent: string
   isDark: boolean
   className?: string
+  bgHex?: string
 }) {
+  const labelColor = readableAccentHex(accent, bgHex, isDark ? 3 : 4.5)
   return (
     <div className={cn('mb-3', className)}>
       <h2
-        className={cn(
-          'text-[10px] font-bold uppercase tracking-[0.2em]',
-          isDark ? 'text-slate-400' : 'text-slate-500',
-        )}
+        className="text-[10px] font-bold uppercase tracking-[0.2em]"
+        style={{ color: isDark ? '#94a3b8' : labelColor }}
       >
         {children}
       </h2>
@@ -76,23 +68,24 @@ function SkillPills({
   items,
   accent,
   isDark,
+  bgHex,
 }: {
   items: string[]
   accent: string
   isDark: boolean
+  bgHex: string
 }) {
+  const pillBgHex = mixHex(accent, isDark ? 0.28 : 0.14, bgHex)
   return (
     <div className="flex flex-wrap gap-1.5">
       {items.map((item) => (
         <span
           key={item}
-          className={cn(
-            'rounded-full px-2.5 py-0.5 text-[11px] font-medium leading-snug',
-            isDark ? 'text-slate-100' : 'text-slate-800',
-          )}
+          className="rounded-full px-2.5 py-0.5 text-[11px] font-medium leading-snug"
           style={{
-            backgroundColor: withAlpha(accent, isDark ? 0.35 : 0.12),
-            boxShadow: isDark ? 'none' : `inset 0 0 0 1px ${withAlpha(accent, 0.2)}`,
+            color: readableAccentHex(accent, pillBgHex, 4.5),
+            backgroundColor: withAlpha(accent, isDark ? 0.28 : 0.14),
+            boxShadow: isDark ? 'none' : `inset 0 0 0 1px ${withAlpha(accent, 0.25)}`,
           }}
         >
           {item}
@@ -211,7 +204,7 @@ function AtsCvPreview({ kit, design, className }: Props) {
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
               {kit.profile.fullName}
             </h1>
-            <p className="mt-1.5 text-base font-semibold" style={{ color: accent }}>
+            <p className="mt-1.5 text-base font-semibold" style={{ color: readableAccentHex(accent, CV_BG.white, 4.5) }}>
               {kit.profile.headline}
             </p>
             <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
@@ -305,7 +298,7 @@ function AtsCvPreview({ kit, design, className }: Props) {
                     {g.name}
                   </p>
                   <div className="mt-2">
-                    <SkillPills items={g.items} accent={accent} isDark={false} />
+                    <SkillPills items={g.items} accent={accent} isDark={false} bgHex={CV_BG.slate50} />
                   </div>
                 </div>
               ))}
@@ -370,6 +363,26 @@ export function CvPreview({ kit, design, className }: Props) {
   const { first, last } = splitName(kit.profile.fullName)
   const isDark = slug === 'creative'
   const photoRound = slug === 'modern' || slug === 'minimalist' ? 'full' : 'xl'
+  const sidebarBgHex = isDark
+    ? CV_BG.slate950
+    : slug === 'professional' || slug === 'finance'
+      ? CV_BG.slate100
+      : CV_BG.slate50
+  const mainBgHex = isDark ? CV_BG.slate950 : CV_BG.white
+  const headerBgHex =
+    slug === 'professional'
+      ? CV_BG.slate100
+      : slug === 'finance'
+        ? CV_BG.slate50
+        : isDark
+          ? CV_BG.slate900
+          : CV_BG.white
+  const headlineAccent = readableAccentHex(
+    accent,
+    slug === 'minimalist' ? CV_BG.white : headerBgHex,
+    4.5,
+  )
+  const companyAccent = readableAccentHex(accent, mainBgHex, 4.5)
 
   const mainText = isDark ? 'text-slate-100' : 'text-slate-800'
   const mutedText = isDark ? 'text-slate-400' : 'text-slate-500'
@@ -444,7 +457,7 @@ export function CvPreview({ kit, design, className }: Props) {
               )}
               style={
                 !isDark && slug !== 'minimalist'
-                  ? { color: accent }
+                  ? { color: headlineAccent }
                   : undefined
               }
             >
@@ -498,7 +511,7 @@ export function CvPreview({ kit, design, className }: Props) {
                 className="mt-6 rounded-xl px-3 py-2.5"
                 style={{ backgroundColor: withAlpha(accent, isDark ? 0.12 : 0.06) }}
               >
-                <SectionHeading accent={accent} isDark={isDark}>
+                <SectionHeading accent={accent} isDark={isDark} bgHex={sidebarBgHex}>
                   {t('cv.search_period')}
                 </SectionHeading>
                 <p className={cn('text-sm font-medium leading-snug', mainText)}>
@@ -508,13 +521,13 @@ export function CvPreview({ kit, design, className }: Props) {
             ) : null}
 
             <div className="mt-6 space-y-3">
-              <SectionHeading accent={accent} isDark={isDark}>
+              <SectionHeading accent={accent} isDark={isDark} bgHex={sidebarBgHex}>
                 {t('cv.sidebar.contact')}
               </SectionHeading>
               <ul className="space-y-3">
                 {loc ? (
                   <li className="text-sm leading-snug">
-                    <span className={cn('block text-[10px] font-bold uppercase tracking-wider', subtleText)}>
+                    <span className={cn('block text-[10px] font-bold uppercase tracking-wider', isDark ? 'text-slate-400' : 'text-slate-500')}>
                       {locale === 'fr' ? 'Adresse' : 'Address'}
                     </span>
                     <span className={cn('break-words', mainText)}>{loc}</span>
@@ -522,7 +535,7 @@ export function CvPreview({ kit, design, className }: Props) {
                 ) : null}
                 {ph ? (
                   <li className="text-sm leading-snug">
-                    <span className={cn('block text-[10px] font-bold uppercase tracking-wider', subtleText)}>
+                    <span className={cn('block text-[10px] font-bold uppercase tracking-wider', isDark ? 'text-slate-400' : 'text-slate-500')}>
                       {locale === 'fr' ? 'Téléphone' : 'Phone'}
                     </span>
                     <span className={mainText}>{ph}</span>
@@ -530,7 +543,7 @@ export function CvPreview({ kit, design, className }: Props) {
                 ) : null}
                 {em ? (
                   <li className="break-all text-sm leading-snug">
-                    <span className={cn('block text-[10px] font-bold uppercase tracking-wider', subtleText)}>
+                    <span className={cn('block text-[10px] font-bold uppercase tracking-wider', isDark ? 'text-slate-400' : 'text-slate-500')}>
                       Email
                     </span>
                     <span className={mainText}>{em}</span>
@@ -538,7 +551,7 @@ export function CvPreview({ kit, design, className }: Props) {
                 ) : null}
                 {li ? (
                   <li className="break-all text-sm leading-snug">
-                    <span className={cn('block text-[10px] font-bold uppercase tracking-wider', subtleText)}>
+                    <span className={cn('block text-[10px] font-bold uppercase tracking-wider', isDark ? 'text-slate-400' : 'text-slate-500')}>
                       LinkedIn
                     </span>
                     <span className={mainText}>{li}</span>
@@ -549,7 +562,7 @@ export function CvPreview({ kit, design, className }: Props) {
 
             {kit.skills.length > 0 ? (
               <div className="mt-7">
-                <SectionHeading accent={accent} isDark={isDark}>
+                <SectionHeading accent={accent} isDark={isDark} bgHex={sidebarBgHex}>
                   {t('cv.sec.skills')}
                 </SectionHeading>
                 <div className="space-y-4">
@@ -559,7 +572,7 @@ export function CvPreview({ kit, design, className }: Props) {
                         {g.name}
                       </p>
                       <div className="mt-2">
-                        <SkillPills items={g.items} accent={accent} isDark={isDark} />
+                        <SkillPills items={g.items} accent={accent} isDark={isDark} bgHex={sidebarBgHex} />
                       </div>
                     </div>
                   ))}
@@ -569,7 +582,7 @@ export function CvPreview({ kit, design, className }: Props) {
 
             {kit.education.length > 0 ? (
               <div className="mt-7">
-                <SectionHeading accent={accent} isDark={isDark}>
+                <SectionHeading accent={accent} isDark={isDark} bgHex={sidebarBgHex}>
                   {t('cv.sec.education')}
                 </SectionHeading>
                 <ul className="mt-1 space-y-3">
@@ -592,7 +605,7 @@ export function CvPreview({ kit, design, className }: Props) {
 
             {interestsLines ? (
               <div className="mt-7">
-                <SectionHeading accent={accent} isDark={isDark}>
+                <SectionHeading accent={accent} isDark={isDark} bgHex={sidebarBgHex}>
                   {t('cv.sidebar.interests')}
                 </SectionHeading>
                 <p className={cn('text-sm leading-relaxed', mutedText)}>{interestsLines}</p>
@@ -603,18 +616,16 @@ export function CvPreview({ kit, design, className }: Props) {
           <main
             className={cn(
               mainPad,
-              isDark ? 'bg-slate-900/30 md:bg-transparent' : 'bg-white',
+              isDark ? 'bg-slate-900/60 md:bg-slate-900/40' : 'bg-white',
             )}
           >
             <section
               className="rounded-2xl p-4 md:p-5"
               style={{
-                backgroundColor: isDark
-                  ? withAlpha(accent, 0.06)
-                  : withAlpha(accent, 0.04),
+                backgroundColor: withAlpha(accent, isDark ? 0.08 : 0.05),
               }}
             >
-              <SectionHeading accent={accent} isDark={isDark}>
+              <SectionHeading accent={accent} isDark={isDark} bgHex={mainBgHex}>
                 {t('cv.sec.profile')}
               </SectionHeading>
               <p
@@ -629,7 +640,7 @@ export function CvPreview({ kit, design, className }: Props) {
 
             {kit.experience.length > 0 ? (
               <section className="mt-8 md:mt-10">
-                <SectionHeading accent={accent} isDark={isDark} className="mb-5">
+                <SectionHeading accent={accent} isDark={isDark} bgHex={mainBgHex} className="mb-5">
                   {t('cv.sec.experience')}
                 </SectionHeading>
                 <ul className="relative space-y-5 md:space-y-6">
@@ -672,7 +683,7 @@ export function CvPreview({ kit, design, className }: Props) {
                           'mt-1 text-sm font-semibold',
                           isDark ? 'text-slate-300' : 'text-slate-600',
                         )}
-                        style={{ color: !isDark ? accent : undefined }}
+                        style={{ color: !isDark ? companyAccent : undefined }}
                       >
                         {ex.company}
                       </p>

@@ -9,16 +9,18 @@ import {
 } from 'pdf-lib'
 
 import type { CvDesignOptions, CvDocumentMetadata, CvTemplateSlug } from '@/lib/cv-schema'
+import {
+  CV_BG,
+  mixHex,
+  parseHexNormalized,
+  readableAccentHex,
+  rgb255ToHex,
+} from '@/lib/cv-color-utils'
 
 type PdfColor = { r: number; g: number; b: number }
 
 function parseHexColor(hex: string): PdfColor {
-  const h = hex.replace('#', '').slice(0, 6)
-  return {
-    r: parseInt(h.slice(0, 2), 16) / 255,
-    g: parseInt(h.slice(2, 4), 16) / 255,
-    b: parseInt(h.slice(4, 6), 16) / 255,
-  }
+  return parseHexNormalized(hex)
 }
 
 function toRgb(c: PdfColor): RGB {
@@ -65,9 +67,9 @@ function getPdfCvTheme(slug: CvTemplateSlug): PdfCvTheme {
         mainBg: slate950,
         textPrimary: white,
         textSecondary: { r: 0.88, g: 0.91, b: 0.94 },
-        textMuted: { r: 0.58, g: 0.64, b: 0.72 },
-        textSubtle: { r: 0.45, g: 0.5, b: 0.58 },
-        cardBg: { r: 0.07, g: 0.1, b: 0.17 },
+        textMuted: { r: 0.72, g: 0.76, b: 0.82 },
+        textSubtle: { r: 0.62, g: 0.67, b: 0.74 },
+        cardBg: { r: 0.1, g: 0.13, b: 0.2 },
         cardBorder: { r: 0.22, g: 0.26, b: 0.34 },
         leftStripeWidth: 4,
         headlineUsesAccent: false,
@@ -283,6 +285,19 @@ async function tryEmbedProfilePhoto(
   return null
 }
 
+function themeToBgHex(theme: PdfCvTheme, area: 'page' | 'sidebar' | 'main' | 'header' | 'card'): string {
+  const pick = (c: PdfColor) => rgb255ToHex({
+    r: c.r * 255,
+    g: c.g * 255,
+    b: c.b * 255,
+  })
+  if (area === 'page') return pick(theme.pageBg)
+  if (area === 'sidebar') return pick(theme.sidebarBg)
+  if (area === 'main') return pick(theme.mainBg)
+  if (area === 'header') return pick(theme.headerBg)
+  return pick(theme.cardBg)
+}
+
 function paintPageShell(
   page: PDFPage,
   pageW: number,
@@ -323,14 +338,21 @@ function drawSectionHeading(
   accent: PdfColor,
   theme: PdfCvTheme,
   fontBold: PDFFont,
+  accentHex: string,
+  bgHex: string,
 ): number {
   const size = 7
+  const labelColor = readableAccentHex(
+    accentHex,
+    bgHex,
+    theme.isDark ? 3 : 4.5,
+  )
   page.drawText(title.toUpperCase(), {
     x,
     y,
     size,
     font: fontBold,
-    color: toRgb(theme.textSubtle),
+    color: toRgb(parseHexNormalized(labelColor)),
   })
   page.drawRectangle({
     x,
@@ -372,6 +394,8 @@ function drawSkillPills(
   accent: PdfColor,
   theme: PdfCvTheme,
   font: PDFFont,
+  accentHex: string,
+  sidebarBgHex: string,
 ): number {
   const size = 8
   const pillH = 14
@@ -385,14 +409,15 @@ function drawSkillPills(
       x = xStart
       rowY -= pillH + gap
     }
-    const pillBg = mix(accent, theme.isDark ? 0.35 : 0.12, theme.sidebarBg)
+    const pillBgHex = mixHex(accentHex, theme.isDark ? 0.28 : 0.14, sidebarBgHex)
+    const pillTextHex = readableAccentHex(accentHex, pillBgHex, 4.5)
     page.drawRectangle({
       x,
       y: rowY - pillH,
       width: pillW,
       height: pillH,
-      color: toRgb(pillBg),
-      borderColor: toRgb(mix(accent, 0.2, theme.sidebarBg)),
+      color: toRgb(parseHexNormalized(pillBgHex)),
+      borderColor: toRgb(parseHexNormalized(mixHex(accentHex, 0.25, sidebarBgHex))),
       borderWidth: theme.isDark ? 0 : 0.4,
     })
     page.drawText(item, {
@@ -400,7 +425,7 @@ function drawSkillPills(
       y: rowY - pillH + 4,
       size,
       font,
-      color: toRgb(theme.isDark ? theme.textSecondary : theme.textPrimary),
+      color: toRgb(parseHexNormalized(pillTextHex)),
     })
     x += pillW + gap
   }
@@ -415,6 +440,7 @@ export async function exportCvCoverToPdf(input: {
   const { design, metadata } = input
   const kit = metadata.cvKit
   const accent = parseHexColor(design.accentHex)
+  const accentHex = design.accentHex
   const loc = metadata.locale ?? 'fr'
   const L =
     loc === 'fr'
@@ -571,12 +597,12 @@ export async function exportCvCoverToPdf(input: {
       drawAts(kit.profile.searchPeriod.trim(), 9, false, toRgb(theme.textMuted))
     }
 
-    y = drawSectionHeading(page, atsX, y - 6, H.summary, accent, theme, fontBold)
+    y = drawSectionHeading(page, atsX, y - 6, H.summary, accent, theme, fontBold, accentHex, CV_BG.white)
     drawAtsLines(wrapParagraphs(kit.profile.summary, atsW, fontRegular, 10), 10)
 
     if (kit.experience.length) {
       y -= 4
-      y = drawSectionHeading(page, atsX, y, H.experience, accent, theme, fontBold)
+      y = drawSectionHeading(page, atsX, y, H.experience, accent, theme, fontBold, accentHex, CV_BG.white)
       for (const ex of kit.experience) {
         page.drawRectangle({
           x: atsX,
@@ -595,7 +621,7 @@ export async function exportCvCoverToPdf(input: {
 
     if (kit.education.length) {
       y -= 2
-      y = drawSectionHeading(page, atsX, y, H.education, accent, theme, fontBold)
+      y = drawSectionHeading(page, atsX, y, H.education, accent, theme, fontBold, accentHex, CV_BG.white)
       for (const ed of kit.education) {
         drawAts(`${ed.degree}, ${ed.school}${ed.year ? ` (${ed.year})` : ''}`, 9)
       }
@@ -603,10 +629,10 @@ export async function exportCvCoverToPdf(input: {
 
     if (kit.skills.length) {
       y -= 2
-      y = drawSectionHeading(page, atsX, y, H.skills, accent, theme, fontBold)
+      y = drawSectionHeading(page, atsX, y, H.skills, accent, theme, fontBold, accentHex, CV_BG.white)
       for (const g of kit.skills) {
-        drawAts(g.name, 8, true, toRgb(theme.textSubtle))
-        y = drawSkillPills(page, g.items, atsX, y, atsW, accent, theme, fontRegular)
+        drawAts(g.name, 8, true, toRgb(theme.textMuted))
+        y = drawSkillPills(page, g.items, atsX, y, atsW, accent, theme, fontRegular, accentHex, CV_BG.white)
       }
     }
 
@@ -624,6 +650,15 @@ export async function exportCvCoverToPdf(input: {
     }
   } else {
     const theme = getPdfCvTheme(slug)
+    const sidebarBgHex = themeToBgHex(theme, 'sidebar')
+    const mainBgHex = themeToBgHex(theme, 'main')
+    const headerBgHex = themeToBgHex(theme, 'header')
+    const accentOnHeader = readableAccentHex(
+      accentHex,
+      headerBgHex,
+      theme.isDark ? 3 : 4.5,
+    )
+    const accentOnMain = readableAccentHex(accentHex, mainBgHex, 4.5)
     const contentInset = theme.leftStripeWidth > 0 ? theme.leftStripeWidth + 10 : 0
     const sidebarW = 172
     const colGap = 14
@@ -636,7 +671,15 @@ export async function exportCvCoverToPdf(input: {
     paintPageShell(page, pageW, pageH, theme, accent)
 
     const headerTop = pageH - 6 - 12
-    const headerBottom = headerTop - 68
+    const headlineLines = wrapWords(
+      kit.profile.headline,
+      pageW - 2 * margin - contentInset,
+      fontBold,
+      headlineSize,
+    )
+    const headerH = 52 + headlineLines.length * (headlineSize + 6) + (slug === 'minimalist' ? 8 : 0)
+    const headerBottom = headerTop - headerH
+
     page.drawRectangle({
       x: contentInset,
       y: headerBottom,
@@ -657,15 +700,9 @@ export async function exportCvCoverToPdf(input: {
       y: headerTop - 14,
       size: 7,
       font: fontBold,
-      color: toRgb(theme.textSubtle),
+      color: toRgb(parseHexNormalized(readableAccentHex(accentHex, headerBgHex, 3))),
     })
 
-    const headlineColor = theme.headlineUsesAccent
-      ? accent
-      : theme.isDark
-        ? theme.textPrimary
-        : theme.textPrimary
-    const headlineLines = wrapWords(kit.profile.headline, pageW - 2 * margin - contentInset, fontBold, headlineSize)
     let hy = headerTop - 28
     for (const line of headlineLines) {
       const lw = fontBold.widthOfTextAtSize(line, headlineSize)
@@ -674,7 +711,11 @@ export async function exportCvCoverToPdf(input: {
         y: hy,
         size: headlineSize,
         font: fontBold,
-        color: theme.headlineUsesAccent ? toRgb(accent) : toRgb(headlineColor),
+        color: toRgb(
+          parseHexNormalized(
+            theme.headlineUsesAccent ? accentOnHeader : theme.isDark ? '#ffffff' : '#0f172a',
+          ),
+        ),
       })
       hy -= headlineSize + 6
     }
@@ -689,39 +730,44 @@ export async function exportCvCoverToPdf(input: {
       })
     }
 
-    let yL = headerBottom - 16
-    let yR = headerBottom - 16
-    const contentBottom = margin + 20
+    const columnsTop = headerBottom - 14
+    let yL = columnsTop
+    let yR = columnsTop
+    const contentBottom = margin + 16
 
     const paintColumnBackgrounds = (topY: number) => {
+      const colH = Math.max(0, topY - contentBottom)
       page.drawRectangle({
         x: sidebarX - 6,
         y: contentBottom,
         width: sidebarW + 4,
-        height: Math.max(0, topY - contentBottom + 24),
+        height: colH,
         color: toRgb(theme.sidebarBg),
       })
       page.drawRectangle({
         x: mainX - 4,
         y: contentBottom,
         width: mainW + 8,
-        height: Math.max(0, topY - contentBottom + 24),
+        height: colH,
         color: toRgb(theme.mainBg),
       })
       page.drawLine({
         start: { x: sidebarX + sidebarW + colGap / 2, y: contentBottom },
-        end: { x: sidebarX + sidebarW + colGap / 2, y: topY + 12 },
+        end: { x: sidebarX + sidebarW + colGap / 2, y: topY },
         thickness: 0.4,
         color: toRgb(theme.cardBorder),
       })
     }
 
+    paintColumnBackgrounds(columnsTop)
+
     const newPageCv = () => {
       page = pdf.addPage([pageW, pageH])
       paintPageShell(page, pageW, pageH, theme, accent)
-      yL = pageH - margin - 12
-      yR = pageH - margin - 12
-      paintColumnBackgrounds(Math.max(yL, yR))
+      const contTop = pageH - margin - 12
+      yL = contTop
+      yR = contTop
+      paintColumnBackgrounds(contTop)
     }
 
     const ensureSidebarSpace = (needed: number) => {
@@ -807,8 +853,6 @@ export async function exportCvCoverToPdf(input: {
       }
     }
 
-    paintColumnBackgrounds(Math.max(yL, yR))
-
     const photoImg = await tryEmbedProfilePhoto(pdf, kit.profile.photoUrl)
     if (photoImg) {
       let photoH = 68
@@ -841,30 +885,47 @@ export async function exportCvCoverToPdf(input: {
     if (lastName) drawL(lastName, 11, true, theme.textSecondary)
 
     if (kit.profile.searchPeriod?.trim()) {
-      yL -= 8
-      const boxPad = 8
-      const boxLines = wrapWords(kit.profile.searchPeriod.trim(), sidebarTextW - boxPad * 2, fontRegular, 8)
-      const boxH = 28 + boxLines.length * 10
-      ensureSidebarSpace(boxH)
+      yL -= 10
+      const boxPad = 10
+      const boxLines = wrapWords(
+        kit.profile.searchPeriod.trim(),
+        sidebarTextW - boxPad * 2,
+        fontRegular,
+        8.5,
+      )
+      const boxH = boxPad * 2 + 18 + boxLines.length * 11
+      ensureSidebarSpace(boxH + 4)
+      const boxBottom = yL - boxH
       page.drawRectangle({
         x: sidebarX,
-        y: yL - boxH,
+        y: boxBottom,
         width: sidebarTextW,
         height: boxH,
-        color: toRgb(mix(accent, theme.isDark ? 0.12 : 0.06, theme.sidebarBg)),
+        color: toRgb(parseHexNormalized(mixHex(accentHex, theme.isDark ? 0.12 : 0.06, sidebarBgHex))),
       })
-      yL = drawSectionHeading(page, sidebarX + boxPad, yL - boxPad, L.searchPeriod, accent, theme, fontBold)
+      let by = yL - boxPad
+      by = drawSectionHeading(
+        page,
+        sidebarX + boxPad,
+        by,
+        L.searchPeriod,
+        accent,
+        theme,
+        fontBold,
+        accentHex,
+        sidebarBgHex,
+      )
       for (const line of boxLines) {
         page.drawText(line, {
           x: sidebarX + boxPad,
-          y: yL,
-          size: 8,
+          y: by,
+          size: 8.5,
           font: fontRegular,
           color: toRgb(theme.textPrimary),
         })
-        yL -= 10
+        by -= 11
       }
-      yL -= 6
+      yL = boxBottom - 10
     }
 
     const locLine = kit.profile.contact?.location?.trim()
@@ -872,8 +933,8 @@ export async function exportCvCoverToPdf(input: {
     const emLine = kit.profile.contact?.email?.trim()
     const liLine = kit.profile.contact?.linkedin?.trim()
     if (locLine || phLine || emLine || liLine) {
-      yL -= 4
-      yL = drawSectionHeading(page, sidebarX, yL, L.contact, accent, theme, fontBold)
+      yL -= 6
+      yL = drawSectionHeading(page, sidebarX, yL, L.contact, accent, theme, fontBold, accentHex, sidebarBgHex)
       if (locLine) {
         page.drawText((loc === 'fr' ? 'ADRESSE' : 'ADDRESS'), {
           x: sidebarX, y: yL, size: 6.5, font: fontBold, color: toRgb(theme.textSubtle),
@@ -906,28 +967,64 @@ export async function exportCvCoverToPdf(input: {
 
     if (kit.skills.length) {
       yL -= 6
-      yL = drawSectionHeading(page, sidebarX, yL, L.skills, accent, theme, fontBold)
+      yL = drawSectionHeading(page, sidebarX, yL, L.skills, accent, theme, fontBold, accentHex, sidebarBgHex)
       for (const g of kit.skills) {
         drawL(g.name, 7.5, true, theme.textMuted)
         ensureSidebarSpace(measureSkillPillsHeight(g.items, sidebarTextW, fontRegular, 8))
-        yL = drawSkillPills(page, g.items, sidebarX, yL, sidebarTextW, accent, theme, fontRegular)
+        yL = drawSkillPills(
+          page,
+          g.items,
+          sidebarX,
+          yL,
+          sidebarTextW,
+          accent,
+          theme,
+          fontRegular,
+          accentHex,
+          sidebarBgHex,
+        )
       }
     }
 
     if (kit.education.length) {
       yL -= 6
-      yL = drawSectionHeading(page, sidebarX, yL, L.education, accent, theme, fontBold)
+      yL = drawSectionHeading(page, sidebarX, yL, L.education, accent, theme, fontBold, accentHex, sidebarBgHex)
       for (const ed of kit.education) {
+        const degreeLines = wrapWords(ed.degree, sidebarTextW - 8, fontBold, 8.5)
+        const schoolLine = `${ed.school}${ed.year ? ` · ${ed.year}` : ''}`
+        const schoolLines = wrapWords(schoolLine, sidebarTextW - 8, fontRegular, 8)
+        const itemH = degreeLines.length * 11 + schoolLines.length * 10 + 8
+        ensureSidebarSpace(itemH)
+        const itemBottom = yL - itemH
         page.drawRectangle({
           x: sidebarX,
-          y: yL - 28,
+          y: itemBottom,
           width: 3,
-          height: 28,
-          color: toRgb(mix(accent, 0.5, theme.sidebarBg)),
+          height: itemH,
+          color: toRgb(parseHexNormalized(mixHex(accentHex, 0.5, sidebarBgHex))),
         })
-        drawL(ed.degree, 8.5, true, theme.textPrimary)
-        drawL(`${ed.school}${ed.year ? ` · ${ed.year}` : ''}`, 8, false, theme.textMuted)
-        yL -= 4
+        let ey = yL
+        for (const line of degreeLines) {
+          page.drawText(line, {
+            x: sidebarX + 8,
+            y: ey,
+            size: 8.5,
+            font: fontBold,
+            color: toRgb(theme.textPrimary),
+          })
+          ey -= 11
+        }
+        for (const line of schoolLines) {
+          page.drawText(line, {
+            x: sidebarX + 8,
+            y: ey,
+            size: 8,
+            font: fontRegular,
+            color: toRgb(theme.textMuted),
+          })
+          ey -= 10
+        }
+        yL = itemBottom - 6
       }
     }
 
@@ -936,25 +1033,45 @@ export async function exportCvCoverToPdf(input: {
       : kit.profile.interests?.trim()
     if (interestsRaw) {
       yL -= 6
-      yL = drawSectionHeading(page, sidebarX, yL, L.interests, accent, theme, fontBold)
+      yL = drawSectionHeading(page, sidebarX, yL, L.interests, accent, theme, fontBold, accentHex, sidebarBgHex)
       drawLinesL(wrapParagraphs(interestsRaw, sidebarTextW, fontRegular, 8), 8, theme.textMuted)
     }
 
     // Profil — encadré teinté
     {
       const profilePad = 12
-      const profileLines = wrapParagraphs(kit.profile.summary, mainW - profilePad * 2, fontRegular, 9.5)
-      const profileH = 36 + profileLines.filter(Boolean).length * 12
-      ensureMainSpace(profileH)
+      const profileLines = wrapParagraphs(
+        kit.profile.summary,
+        mainW - profilePad * 2,
+        fontRegular,
+        9.5,
+      )
+      const textLineCount = profileLines.filter(Boolean).length
+      const profileH = profilePad * 2 + 18 + textLineCount * 12 + 4
+      ensureMainSpace(profileH + 6)
+      const profileBottom = yR - profileH
+      const profileBgHex = mixHex(accentHex, theme.isDark ? 0.08 : 0.05, mainBgHex)
       page.drawRectangle({
         x: mainX,
-        y: yR - profileH,
+        y: profileBottom,
         width: mainW,
         height: profileH,
-        color: toRgb(mix(accent, theme.isDark ? 0.06 : 0.04, theme.mainBg)),
+        color: toRgb(parseHexNormalized(profileBgHex)),
+        borderColor: toRgb(parseHexNormalized(mixHex(accentHex, 0.15, mainBgHex))),
+        borderWidth: 0.4,
       })
       let py = yR - profilePad
-      py = drawSectionHeading(page, mainX + profilePad, py, L.profile, accent, theme, fontBold)
+      py = drawSectionHeading(
+        page,
+        mainX + profilePad,
+        py,
+        L.profile,
+        accent,
+        theme,
+        fontBold,
+        accentHex,
+        profileBgHex,
+      )
       for (const line of profileLines) {
         if (!line.trim()) {
           py -= 6
@@ -965,36 +1082,46 @@ export async function exportCvCoverToPdf(input: {
           y: py,
           size: 9.5,
           font: fontRegular,
-          color: toRgb(theme.isDark ? theme.textSecondary : theme.textSecondary),
+          color: toRgb(theme.textSecondary),
         })
         py -= 12
       }
-      yR = yR - profileH - 10
+      yR = profileBottom - 12
     }
 
     if (kit.experience.length) {
-      yR -= 4
-      yR = drawSectionHeading(page, mainX, yR, L.experience, accent, theme, fontBold)
-      yR -= 4
+      yR -= 2
+      yR = drawSectionHeading(
+        page,
+        mainX,
+        yR,
+        L.experience,
+        accent,
+        theme,
+        fontBold,
+        accentHex,
+        mainBgHex,
+      )
+      yR -= 6
 
       for (const ex of kit.experience) {
         const cardPad = 12
-        const innerW = mainW - cardPad * 2 - 6
+        const innerW = mainW - cardPad * 2 - 8
         const roleLines = wrapWords(ex.role, innerW, fontBold, 10.5)
         const companyLines = wrapWords(ex.company, innerW, fontBold, 9)
         const bulletLines = ex.bullets.flatMap((b) =>
-          wrapWords(`• ${b}`, innerW - 6, fontRegular, 9),
+          wrapWords(`• ${b}`, innerW - 4, fontRegular, 9),
         )
         const cardH =
           cardPad * 2 +
           roleLines.length * 13 +
           companyLines.length * 11 +
-          (ex.period ? 12 : 0) +
           bulletLines.length * 11 +
-          6
+          8
 
-        ensureMainSpace(cardH + 8)
+        ensureMainSpace(cardH + 10)
         const cardBottom = yR - cardH
+        const cardTop = yR
 
         page.drawRectangle({
           x: mainX,
@@ -1013,10 +1140,30 @@ export async function exportCvCoverToPdf(input: {
           color: toRgb(accent),
         })
 
-        let cy = yR - cardPad
+        if (ex.period) {
+          const periodLabel = ex.period.toUpperCase()
+          const periodW = fontBold.widthOfTextAtSize(periodLabel, 7) + 12
+          const badgeBg = theme.isDark ? '#1e293b' : '#f1f5f9'
+          page.drawRectangle({
+            x: mainX + mainW - cardPad - periodW,
+            y: cardTop - cardPad - 12,
+            width: periodW,
+            height: 12,
+            color: toRgb(parseHexNormalized(badgeBg)),
+          })
+          page.drawText(periodLabel, {
+            x: mainX + mainW - cardPad - periodW + 6,
+            y: cardTop - cardPad - 10,
+            size: 7,
+            font: fontBold,
+            color: toRgb(theme.textMuted),
+          })
+        }
+
+        let cy = cardTop - cardPad
         for (const line of roleLines) {
           page.drawText(line, {
-            x: mainX + cardPad + 4,
+            x: mainX + cardPad + 6,
             y: cy,
             size: 10.5,
             font: fontBold,
@@ -1024,37 +1171,20 @@ export async function exportCvCoverToPdf(input: {
           })
           cy -= 13
         }
-        if (ex.period) {
-          const periodW = fontBold.widthOfTextAtSize(ex.period.toUpperCase(), 7) + 10
-          page.drawRectangle({
-            x: mainX + mainW - cardPad - periodW,
-            y: yR - cardPad - 10,
-            width: periodW,
-            height: 12,
-            color: toRgb(theme.isDark ? { r: 0.12, g: 0.16, b: 0.22 } : { r: 0.96, g: 0.97, b: 0.98 }),
-          })
-          page.drawText(ex.period.toUpperCase(), {
-            x: mainX + mainW - cardPad - periodW + 5,
-            y: yR - cardPad - 8,
-            size: 7,
-            font: fontBold,
-            color: toRgb(theme.textMuted),
-          })
-        }
         for (const line of companyLines) {
           page.drawText(line, {
-            x: mainX + cardPad + 4,
+            x: mainX + cardPad + 6,
             y: cy,
             size: 9,
             font: fontBold,
-            color: theme.isDark ? toRgb(theme.textSecondary) : toRgb(accent),
+            color: toRgb(parseHexNormalized(accentOnMain)),
           })
           cy -= 11
         }
         cy -= 2
         for (const line of bulletLines) {
           page.drawText(line, {
-            x: mainX + cardPad + 8,
+            x: mainX + cardPad + 10,
             y: cy,
             size: 9,
             font: fontRegular,
@@ -1062,7 +1192,7 @@ export async function exportCvCoverToPdf(input: {
           })
           cy -= 11
         }
-        yR = cardBottom - 8
+        yR = cardBottom - 10
       }
     }
 
