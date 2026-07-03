@@ -22,7 +22,7 @@ const bodySchema = z.object({
  * - Modèle : `GROQ_MODEL` dans l’environnement (sinon défaut serveur).
  */
 export async function POST(request: NextRequest) {
-  const session = await requireSupabaseSession()
+  const session = await requireSupabaseSession(request)
   if (!session.ok) return session.response
 
   if (!isGroqApiConfigured()) {
