@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -35,7 +35,7 @@ import {
   authSubmitButtonClass,
 } from '@/lib/auth-form-classes'
 
-export default function LoginPage() {
+function LoginPage() {
   const { t, locale } = useSiteLocale()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -190,5 +190,19 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center text-slate-500">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      }
+    >
+      <LoginPage />
+    </Suspense>
   )
 }

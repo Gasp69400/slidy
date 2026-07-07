@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
-import { ImagePlus, Sparkles, X } from 'lucide-react'
+import { ImagePlus, Loader2, Sparkles, X } from 'lucide-react'
 
 import type { PresentationAudience } from '@/api/client-types'
 import { Button } from '@/components/ui/button'
@@ -186,7 +186,7 @@ function mergeUserPhotosIntoSlides(
   })
 }
 
-export default function CreatePresentationPage() {
+function CreatePresentationPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
@@ -845,5 +845,19 @@ IMPORTANT: Generate EXACTLY ${form.slideCount} slides. Return the full presentat
         ) : null}
       </StudioMobileActionBar>
     </StudioShell>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center text-slate-500">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      }
+    >
+      <CreatePresentationPage />
+    </Suspense>
   )
 }

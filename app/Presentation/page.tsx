@@ -1,9 +1,9 @@
 'use client'
 
-import { useMemo, useState, useEffect, useCallback } from 'react'
+import { Suspense, useMemo, useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
-import { ChevronLeft, ChevronRight, Maximize2, X, Settings } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Maximize2, X, Settings, Loader2 } from 'lucide-react'
 import type { Presentation } from '@/api/client-types'
 import { Button } from '@/components/ui/button'
 import { getSlideCardTheme, type SlideCardTheme } from '@/lib/presentation-template-themes'
@@ -100,7 +100,7 @@ function SlideCardGrid({ slide, index, theme, onClick }: { slide: Slide; index: 
   )
 }
 
-export default function PresentationDetailPage() {
+function PresentationDetailPage() {
   const searchParams = useSearchParams()
   const id = searchParams.get('id')
   const enabled = useMemo(() => Boolean(id), [id])
@@ -427,5 +427,19 @@ export default function PresentationDetailPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[50vh] items-center justify-center text-slate-500">
+          <Loader2 className="h-6 w-6 animate-spin" />
+        </div>
+      }
+    >
+      <PresentationDetailPage />
+    </Suspense>
   )
 }
