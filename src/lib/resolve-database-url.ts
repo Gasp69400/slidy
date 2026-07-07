@@ -4,6 +4,54 @@ function normalizeEnvUrl(raw: string): string {
   return raw.trim().replace(/^["']|["']$/g, '')
 }
 
+export type DatabaseEnvDiagnostics = {
+  supabaseDatabaseUrl: 'unset' | 'empty' | 'set'
+  databaseUrl: 'unset' | 'empty' | 'set'
+  supabaseLength: number
+  databaseLength: number
+  parseable: boolean
+}
+
+export function getDatabaseEnvDiagnostics(): DatabaseEnvDiagnostics {
+  const supabaseRaw = process.env.SUPABASE_DATABASE_URL
+  const databaseRaw = process.env.DATABASE_URL
+
+  const supabaseDatabaseUrl =
+    supabaseRaw === undefined
+      ? 'unset'
+      : normalizeEnvUrl(supabaseRaw) === ''
+        ? 'empty'
+        : 'set'
+
+  const databaseUrl =
+    databaseRaw === undefined
+      ? 'unset'
+      : normalizeEnvUrl(databaseRaw) === ''
+        ? 'empty'
+        : 'set'
+
+  let parseable = false
+  try {
+    const candidate = normalizeEnvUrl(
+      supabaseRaw?.trim() || databaseRaw?.trim() || '',
+    )
+    if (candidate) {
+      new URL(withPgBouncerIfNeeded(candidate))
+      parseable = true
+    }
+  } catch {
+    parseable = false
+  }
+
+  return {
+    supabaseDatabaseUrl,
+    databaseUrl,
+    supabaseLength: normalizeEnvUrl(supabaseRaw ?? '').length,
+    databaseLength: normalizeEnvUrl(databaseRaw ?? '').length,
+    parseable,
+  }
+}
+
 /**
  * Prisma + Supabase transaction pooler (port 6543) nécessite le mode pgbouncer.
  * Sans ce paramètre, les requêtes échouent (prepared statements) alors que SELECT 1 passe.
