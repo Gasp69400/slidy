@@ -33,7 +33,7 @@ function prismaErrorResponse(error: unknown, sessionCookies?: NextResponse) {
     return jsonWithSessionCookies(
       {
         error:
-          'Base de données inaccessible — mot de passe ou URL Supabase incorrects. ' +
+          'Connexion base de données impossible. Vérifiez SUPABASE_DATABASE_URL sur Vercel (pooler 6543, même URL que .env.local). ' +
           DATABASE_URL_SETUP_HINT,
         code: 'DATABASE_UNAVAILABLE',
       },
@@ -58,7 +58,7 @@ function prismaErrorResponse(error: unknown, sessionCookies?: NextResponse) {
       return jsonWithSessionCookies(
         {
           error:
-            'Schéma base de données obsolète (migration manquante). Contactez le support ou relancez les migrations.',
+            'Schéma base de données incomplet. Relancez npm run migrate:supabase ou contactez le support.',
           code: 'SCHEMA_OUTDATED',
         },
         { status: 503 },

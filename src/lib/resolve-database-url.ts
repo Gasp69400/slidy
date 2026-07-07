@@ -1,5 +1,9 @@
 import 'server-only'
 
+function normalizeEnvUrl(raw: string): string {
+  return raw.trim().replace(/^["']|["']$/g, '')
+}
+
 /**
  * Prisma + Supabase transaction pooler (port 6543) nécessite le mode pgbouncer.
  * Sans ce paramètre, les requêtes échouent (prepared statements) alors que SELECT 1 passe.
@@ -27,10 +31,11 @@ function withPgBouncerIfNeeded(url: string): string {
  * Priorité : SUPABASE_DATABASE_URL → DATABASE_URL
  */
 export function resolveDatabaseUrl(): string {
-  const url =
+  const url = normalizeEnvUrl(
     process.env.SUPABASE_DATABASE_URL?.trim() ||
-    process.env.DATABASE_URL?.trim() ||
-    ''
+      process.env.DATABASE_URL?.trim() ||
+      '',
+  )
 
   if (!url) {
     throw new Error(

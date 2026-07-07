@@ -39,13 +39,37 @@ function maskDatabaseUrl(url) {
   }
 }
 
+function isPlaceholderDirectUrl(url) {
+  return /postgres\.x{3,}/i.test(url) || url.includes('[YOUR-PASSWORD]')
+}
+
+/** Session pooler (5432) pour migrate, dérivé du pooler transaction (6543). */
+function sessionPoolerUrlFromAppUrl(url) {
+  try {
+    const parsed = new URL(url)
+    if (parsed.hostname.includes('.pooler.supabase.com') && parsed.port === '6543') {
+      parsed.port = '5432'
+      parsed.search = ''
+      return parsed.toString()
+    }
+  } catch {
+    // ignore
+  }
+  return url
+}
+
 const env = mergeEnv()
-const dbUrl =
-  env.SUPABASE_DIRECT_URL?.trim() ||
-  env.SUPABASE_DATABASE_URL?.trim() ||
+const directCandidate = env.SUPABASE_DIRECT_URL?.trim() || ''
+const appUrl = env.SUPABASE_DATABASE_URL?.trim() || ''
+const dbUrlRaw =
+  (directCandidate && !isPlaceholderDirectUrl(directCandidate)
+    ? directCandidate
+    : '') ||
+  (appUrl ? sessionPoolerUrlFromAppUrl(appUrl) : '') ||
+  env.DATABASE_URL?.trim() ||
   ''
 
-if (!dbUrl) {
+if (!dbUrlRaw) {
   console.error(
     'Variable manquante : SUPABASE_DATABASE_URL (ou SUPABASE_DIRECT_URL) dans .env.local\n\n' +
       'Supabase → Project Settings → Database → Connection string\n' +
@@ -58,7 +82,7 @@ if (!dbUrl) {
 }
 
 console.log('Application des migrations Prisma sur Supabase…')
-console.log(`URL utilisée : ${maskDatabaseUrl(dbUrl)}`)
+console.log(`URL utilisée : ${maskDatabaseUrl(dbUrlRaw)}`)
 
 try {
   execSync('npx prisma migrate deploy', {
@@ -66,7 +90,7 @@ try {
     stdio: 'inherit',
     env: {
       ...process.env,
-      SUPABASE_DATABASE_URL: dbUrl,
+      SUPABASE_DATABASE_URL: dbUrlRaw,
     },
   })
 } catch {
