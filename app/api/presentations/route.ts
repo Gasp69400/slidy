@@ -10,6 +10,7 @@ import { capabilitiesForUser } from '@/lib/plan-access'
 import { isPrismaConnectionError } from '@/lib/prisma-errors'
 import { getDocumentQuotaWindowStart } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
+import { DATABASE_URL_SETUP_HINT } from '@/lib/resolve-database-url'
 import { PRESENTATION_TEMPLATES_META } from '@/lib/presentation-template-themes'
 import { createSupabaseRouteHandlerClient } from '@/lib/supabase/route-handler'
 import { ensureAppUserFromSupabase } from '@/lib/supabase/sync-app-user'
@@ -32,7 +33,8 @@ function prismaErrorResponse(error: unknown, sessionCookies?: NextResponse) {
     return jsonWithSessionCookies(
       {
         error:
-          'Base de données inaccessible. Réessayez dans un instant ou vérifiez la configuration serveur.',
+          'Base de données inaccessible — mot de passe ou URL Supabase incorrects. ' +
+          DATABASE_URL_SETUP_HINT,
         code: 'DATABASE_UNAVAILABLE',
       },
       { status: 503 },
@@ -100,18 +102,6 @@ export async function POST(request: NextRequest) {
     if (!auth.ok) return auth.response
     sessionCookies = auth.sessionCookies
 
-    if (auth.dbUnavailable) {
-      return jsonWithSessionCookies(
-        {
-          error:
-            'Base de données inaccessible. Impossible d’enregistrer la présentation pour le moment.',
-          code: 'DATABASE_UNAVAILABLE',
-        },
-        { status: 503 },
-        sessionCookies,
-      )
-    }
-
     const routeClient = createSupabaseRouteHandlerClient(request)
     const {
       data: { user: supabaseUser },
@@ -120,9 +110,10 @@ export async function POST(request: NextRequest) {
       try {
         await ensureAppUserFromSupabase(supabaseUser)
       } catch (syncErr) {
-        if (!isPrismaConnectionError(syncErr)) {
-          console.warn('POST /api/presentations: sync utilisateur', syncErr)
+        if (isPrismaConnectionError(syncErr)) {
+          return prismaErrorResponse(syncErr, sessionCookies)
         }
+        console.warn('POST /api/presentations: sync utilisateur', syncErr)
       }
     }
 

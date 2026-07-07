@@ -14,6 +14,7 @@
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev",
     "migrate:supabase": "node scripts/migrate-supabase.cjs",
+    "db:check": "node scripts/check-db.cjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"
