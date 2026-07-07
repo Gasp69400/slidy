@@ -1,6 +1,28 @@
 import 'server-only'
 
 /**
+ * Prisma + Supabase transaction pooler (port 6543) nécessite le mode pgbouncer.
+ * Sans ce paramètre, les requêtes échouent (prepared statements) alors que SELECT 1 passe.
+ */
+function withPgBouncerIfNeeded(url: string): string {
+  try {
+    const parsed = new URL(url)
+    const isTransactionPooler =
+      parsed.port === '6543' ||
+      (parsed.hostname.includes('.pooler.supabase.com') && parsed.port === '6543')
+
+    if (isTransactionPooler && !parsed.searchParams.has('pgbouncer')) {
+      parsed.searchParams.set('pgbouncer', 'true')
+      return parsed.toString()
+    }
+  } catch {
+    // URL mal formée : laisser Prisma remonter l'erreur
+  }
+
+  return url
+}
+
+/**
  * URL Postgres pour Prisma (Supabase).
  * Priorité : SUPABASE_DATABASE_URL → DATABASE_URL
  */
@@ -16,8 +38,8 @@ export function resolveDatabaseUrl(): string {
     )
   }
 
-  return url
+  return withPgBouncerIfNeeded(url)
 }
 
 export const DATABASE_URL_SETUP_HINT =
-  'Supabase → Project Settings → Database → Reset database password, puis copiez l’URL « Transaction pooler » (port 6543) dans SUPABASE_DATABASE_URL (.env.local + Vercel). Encodez les caractères spéciaux du mot de passe (! → %21).'
+  'Supabase → Connect → Transaction pooler (port 6543). Copiez l’URI dans SUPABASE_DATABASE_URL (.env.local + Vercel). Le paramètre ?pgbouncer=true est ajouté automatiquement pour Prisma.'

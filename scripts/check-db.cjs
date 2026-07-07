@@ -27,10 +27,29 @@ const env = {
   ...readEnvFile(path.join(root, '.env.local')),
 }
 
-const dbUrl =
+const dbUrlRaw =
   env.SUPABASE_DATABASE_URL?.trim() ||
   env.DATABASE_URL?.trim() ||
   ''
+
+function withPgBouncerIfNeeded(url) {
+  try {
+    const parsed = new URL(url)
+    const isTransactionPooler =
+      parsed.port === '6543' ||
+      (parsed.hostname.includes('.pooler.supabase.com') && parsed.port === '6543')
+
+    if (isTransactionPooler && !parsed.searchParams.has('pgbouncer')) {
+      parsed.searchParams.set('pgbouncer', 'true')
+      return parsed.toString()
+    }
+  } catch {
+    // ignore
+  }
+  return url
+}
+
+const dbUrl = withPgBouncerIfNeeded(dbUrlRaw)
 
 if (!dbUrl) {
   console.error(
@@ -51,11 +70,11 @@ try {
   console.log('✅ Connexion OK — la base répond.')
 } catch {
   console.error(
-    '\n❌ Authentification échouée (P1000).\n\n' +
-      '1. Supabase → Project Settings → Database → Reset database password\n' +
-      '2. Connect → Transaction pooler → copiez l’URI avec le NOUVEAU mot de passe\n' +
-      '3. Mettez à jour SUPABASE_DATABASE_URL dans .env.local (une seule ligne)\n' +
-      '4. Mettez la même valeur sur Vercel → Environment Variables\n' +
+    '\n❌ Connexion base de données échouée.\n\n' +
+      '1. Supabase → Connect → Transaction pooler (6543) → copiez l’URI complète\n' +
+      '2. Mettez à jour SUPABASE_DATABASE_URL dans .env.local (une seule ligne)\n' +
+      '3. Même valeur sur Vercel → Environment Variables → Redeploy\n' +
+      '4. Prisma ajoute ?pgbouncer=true automatiquement pour le pooler\n' +
       '5. Relancez : npm run db:check\n',
   )
   process.exit(1)
