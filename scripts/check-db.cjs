@@ -43,14 +43,11 @@ if (!dbUrl) {
 console.log('Test connexion base de données…')
 
 try {
-  execSync(
-    `npx tsx -e "import { PrismaClient } from '@prisma/client'; const p = new PrismaClient({ datasources: { db: { url: process.env.SUPABASE_DATABASE_URL } } }); p.\\$queryRaw\\`SELECT 1\\`.then(() => { console.log('OK'); process.exit(0); }).catch(e => { console.error(e.message); process.exit(1); });"`,
-    {
-      cwd: root,
-      stdio: 'inherit',
-      env: { ...process.env, SUPABASE_DATABASE_URL: dbUrl },
-    },
-  )
+  execSync('node scripts/check-db-query.cjs', {
+    cwd: root,
+    stdio: 'inherit',
+    env: { ...process.env, SUPABASE_DATABASE_URL: dbUrl },
+  })
   console.log('✅ Connexion OK — la base répond.')
 } catch {
   console.error(
