@@ -42,7 +42,7 @@ export function buildPricingTiers(t: Translate): PricingTierDefinition[] {
     },
     {
       name: t('pricing.tier.pro.name'),
-      price: '17,99',
+      price: '9,90',
       period: t('pricing.tier.pro.period'),
       description: t('pricing.tier.pro.desc'),
       features: [
@@ -59,7 +59,7 @@ export function buildPricingTiers(t: Translate): PricingTierDefinition[] {
     },
     {
       name: t('pricing.tier.ultimate.name'),
-      price: '49,99',
+      price: '15,99',
       period: t('pricing.tier.ultimate.period'),
       description: t('pricing.tier.ultimate.desc'),
       features: [

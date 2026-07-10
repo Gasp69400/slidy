@@ -26,7 +26,7 @@ export const SUBSCRIPTION_PLANS = {
   PRO: {
     id: 'pro',
     name: 'Pro',
-    price: 1900,
+    price: 990,
     priceId: process.env.STRIPE_PRO_PRICE_ID || 'price_pro',
     features: [
       '50 documents par mois',
@@ -38,7 +38,7 @@ export const SUBSCRIPTION_PLANS = {
   ULTIMATE: {
     id: 'ultimate',
     name: 'Ultimate',
-    price: 4900,
+    price: 1599,
     priceId: process.env.STRIPE_ULTIMATE_PRICE_ID || 'price_ultimate',
     features: [
       '200 documents par mois',
