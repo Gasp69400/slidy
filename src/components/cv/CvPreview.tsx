@@ -14,10 +14,22 @@ const densitySidebar = {
   spacious: 'p-6 md:p-8 gap-7 text-[15px]',
 } as const
 
+const densitySidebarExport = {
+  compact: 'p-6 gap-6 text-[14px]',
+  normal: 'p-6 gap-6 text-[14px]',
+  spacious: 'p-8 gap-7 text-[15px]',
+} as const
+
 const densityMain = {
   compact: 'p-4 md:p-6 gap-6 text-[13px]',
   normal: 'p-5 md:p-8 gap-8 text-[14px]',
   spacious: 'p-6 md:p-10 gap-10 text-[15px]',
+} as const
+
+const densityMainExport = {
+  compact: 'p-6 gap-8 text-[14px]',
+  normal: 'p-8 gap-8 text-[14px]',
+  spacious: 'p-10 gap-10 text-[15px]',
 } as const
 
 function withAlpha(hex: string, alpha: number): string {
@@ -101,23 +113,27 @@ function ProfilePhoto({
   isDark,
   placeholder,
   rounded = 'xl',
+  exportLayout = false,
 }: {
   photoUrl?: string
   accent: string
   isDark: boolean
   placeholder: string
   rounded?: 'full' | 'xl'
+  exportLayout?: boolean
 }) {
   const roundClass = rounded === 'full' ? 'rounded-full' : 'rounded-2xl'
+  const sizeClass = exportLayout
+    ? 'mb-5 h-32 w-32'
+    : 'mb-5 h-28 w-28 shrink-0 object-cover shadow-lg md:h-32 md:w-32'
+  const remotePhoto = photoUrl?.startsWith('http://') || photoUrl?.startsWith('https://')
   if (photoUrl) {
     return (
       <img
         src={photoUrl}
         alt=""
-        className={cn(
-          'mb-5 h-28 w-28 shrink-0 object-cover shadow-lg md:h-32 md:w-32',
-          roundClass,
-        )}
+        crossOrigin={remotePhoto ? 'anonymous' : undefined}
+        className={cn('shrink-0 object-cover shadow-lg', sizeClass, roundClass)}
         style={{
           boxShadow: `0 8px 24px -8px ${withAlpha(accent, 0.45)}, 0 0 0 3px ${withAlpha(accent, 0.25)}`,
         }}
@@ -127,7 +143,9 @@ function ProfilePhoto({
   return (
     <div
       className={cn(
-        'mb-5 flex h-28 w-28 shrink-0 items-center justify-center border-2 border-dashed text-center text-[10px] leading-snug md:h-32 md:w-32',
+        exportLayout
+          ? 'mb-5 flex h-32 w-32 shrink-0 items-center justify-center border-2 border-dashed text-center text-[10px] leading-snug'
+          : 'mb-5 flex h-28 w-28 shrink-0 items-center justify-center border-2 border-dashed text-center text-[10px] leading-snug md:h-32 md:w-32',
         roundClass,
         isDark ? 'border-slate-600 text-slate-500' : 'border-slate-300/80 text-slate-400',
       )}
@@ -142,6 +160,8 @@ type Props = {
   kit: CvKit
   design: CvDesignOptions
   className?: string
+  /** Rendu fixe desktop pour export PDF (même mise en page que l’aperçu large). */
+  exportLayout?: boolean
 }
 
 const ATS_HEADINGS = {
@@ -157,7 +177,7 @@ const atsDensity = {
   spacious: 'max-w-3xl mx-auto p-8 gap-6 text-[15px] leading-relaxed',
 } as const
 
-function AtsCvPreview({ kit, design, className }: Props) {
+function AtsCvPreview({ kit, design, className, exportLayout = false }: Props) {
   const accent = design.accentHex
   const fontClass =
     design.fontFamily === 'georgia'
@@ -177,6 +197,7 @@ function AtsCvPreview({ kit, design, className }: Props) {
 
   return (
     <div
+      data-cv-export-clone={exportLayout ? true : undefined}
       className={cn(
         'overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/40 ring-1 ring-slate-100',
         fontClass,
@@ -190,13 +211,27 @@ function AtsCvPreview({ kit, design, className }: Props) {
         }}
         aria-hidden
       />
-      <div className={cn(pad, 'text-slate-900')}>
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+        <div className={cn(pad, 'text-slate-900')}>
+        <div
+          className={cn(
+            'flex gap-5',
+            exportLayout ? 'flex-row items-start' : 'flex-col sm:flex-row sm:items-start',
+          )}
+        >
           {kit.profile.photoUrl ? (
             <img
               src={kit.profile.photoUrl}
               alt=""
-              className="h-28 w-28 shrink-0 rounded-2xl object-cover shadow-md sm:h-32 sm:w-32"
+              crossOrigin={
+                kit.profile.photoUrl.startsWith('http://') ||
+                kit.profile.photoUrl.startsWith('https://')
+                  ? 'anonymous'
+                  : undefined
+              }
+              className={cn(
+                'shrink-0 rounded-2xl object-cover shadow-md',
+                exportLayout ? 'h-32 w-32' : 'h-28 w-28 sm:h-32 sm:w-32',
+              )}
               style={{ boxShadow: `0 0 0 3px ${withAlpha(accent, 0.3)}` }}
             />
           ) : null}
@@ -310,9 +345,11 @@ function AtsCvPreview({ kit, design, className }: Props) {
   )
 }
 
-function sidebarStyles(slug: CvTemplateSlug, isDark: boolean) {
+function sidebarStyles(slug: CvTemplateSlug, isDark: boolean, exportLayout = false) {
   return cn(
-    'flex flex-col border-b md:min-h-[520px] md:border-b-0 md:border-r',
+    exportLayout
+      ? 'flex min-h-[520px] flex-col border-b-0 border-r'
+      : 'flex flex-col border-b md:min-h-[520px] md:border-b-0 md:border-r',
     slug === 'creative' &&
       'border-slate-700/80 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950',
     slug === 'minimalist' &&
@@ -329,9 +366,11 @@ function sidebarStyles(slug: CvTemplateSlug, isDark: boolean) {
   )
 }
 
-function headerStyles(slug: CvTemplateSlug, isDark: boolean) {
+function headerStyles(slug: CvTemplateSlug, isDark: boolean, exportLayout = false) {
   return cn(
-    'relative overflow-hidden border-b px-5 py-7 text-center md:px-10 md:py-8',
+    exportLayout
+      ? 'relative overflow-hidden border-b px-10 py-8 text-center'
+      : 'relative overflow-hidden border-b px-5 py-7 text-center md:px-10 md:py-8',
     isDark ? 'border-slate-700/80' : 'border-slate-200/80',
     slug === 'creative' && 'bg-slate-900/50',
     slug === 'modern' && !isDark && 'bg-white',
@@ -341,11 +380,18 @@ function headerStyles(slug: CvTemplateSlug, isDark: boolean) {
   )
 }
 
-export function CvPreview({ kit, design, className }: Props) {
+export function CvPreview({ kit, design, className, exportLayout = false }: Props) {
   const { t, locale } = useSiteLocale()
 
   if (design.templateSlug === 'ats') {
-    return <AtsCvPreview kit={kit} design={design} className={className} />
+    return (
+      <AtsCvPreview
+        kit={kit}
+        design={design}
+        className={className}
+        exportLayout={exportLayout}
+      />
+    )
   }
 
   const tpl = getCvTemplate(design.templateSlug)
@@ -358,8 +404,12 @@ export function CvPreview({ kit, design, className }: Props) {
         ? 'font-sans tracking-tight'
         : 'font-sans'
 
-  const sidePad = densitySidebar[design.layoutDensity]
-  const mainPad = densityMain[design.layoutDensity]
+  const sidePad = exportLayout
+    ? densitySidebarExport[design.layoutDensity]
+    : densitySidebar[design.layoutDensity]
+  const mainPad = exportLayout
+    ? densityMainExport[design.layoutDensity]
+    : densityMain[design.layoutDensity]
   const { first, last } = splitName(kit.profile.fullName)
   const isDark = slug === 'creative'
   const photoRound = slug === 'modern' || slug === 'minimalist' ? 'full' : 'xl'
@@ -398,6 +448,7 @@ export function CvPreview({ kit, design, className }: Props) {
 
   return (
     <div
+      data-cv-export-clone={exportLayout ? true : undefined}
       className={cn(
         'overflow-hidden rounded-2xl shadow-xl ring-1',
         isDark
@@ -431,7 +482,7 @@ export function CvPreview({ kit, design, className }: Props) {
           />
         )}
 
-        <header className={headerStyles(slug, isDark)}>
+        <header className={headerStyles(slug, isDark, exportLayout)}>
           <div
             className="pointer-events-none absolute inset-0 opacity-100"
             style={{
@@ -452,7 +503,8 @@ export function CvPreview({ kit, design, className }: Props) {
             </p>
             <h1
               className={cn(
-                'mx-auto mt-2 max-w-3xl text-xl font-bold leading-tight tracking-tight sm:text-2xl md:text-[1.75rem]',
+                'mx-auto mt-2 max-w-3xl font-bold leading-tight tracking-tight',
+                exportLayout ? 'text-[1.75rem]' : 'text-xl sm:text-2xl md:text-[1.75rem]',
                 isDark ? 'text-white' : 'text-slate-900',
               )}
               style={
@@ -473,21 +525,35 @@ export function CvPreview({ kit, design, className }: Props) {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(210px,31%)_1fr] md:items-stretch">
-          <aside className={cn(sidebarStyles(slug, isDark), sidePad)}>
-            <div className="flex flex-col items-center md:items-stretch">
+        <div
+          className={cn(
+            'grid items-stretch',
+            exportLayout
+              ? 'grid-cols-[minmax(210px,31%)_1fr]'
+              : 'grid-cols-1 md:grid-cols-[minmax(210px,31%)_1fr]',
+          )}
+        >
+          <aside className={cn(sidebarStyles(slug, isDark, exportLayout), sidePad)}>
+            <div
+              className={cn(
+                'flex flex-col',
+                exportLayout ? 'items-stretch' : 'items-center md:items-stretch',
+              )}
+            >
               <ProfilePhoto
                 photoUrl={kit.profile.photoUrl}
                 accent={accent}
                 isDark={isDark}
                 placeholder={t('cv.photo')}
                 rounded={photoRound}
+                exportLayout={exportLayout}
               />
 
-              <div className="w-full text-center md:text-left">
+              <div className={cn('w-full', exportLayout ? 'text-left' : 'text-center md:text-left')}>
                 <p
                   className={cn(
-                    'text-xl font-bold leading-none tracking-tight md:text-2xl',
+                    'font-bold leading-none tracking-tight',
+                    exportLayout ? 'text-2xl' : 'text-xl md:text-2xl',
                     isDark ? 'text-white' : 'text-slate-900',
                   )}
                 >
@@ -496,7 +562,8 @@ export function CvPreview({ kit, design, className }: Props) {
                 {last ? (
                   <p
                     className={cn(
-                      'mt-1 text-lg font-semibold leading-tight tracking-tight md:text-xl',
+                      'mt-1 font-semibold leading-tight tracking-tight',
+                      exportLayout ? 'text-xl' : 'text-lg md:text-xl',
                       isDark ? 'text-slate-200' : 'text-slate-700',
                     )}
                   >
@@ -616,11 +683,15 @@ export function CvPreview({ kit, design, className }: Props) {
           <main
             className={cn(
               mainPad,
-              isDark ? 'bg-slate-900/60 md:bg-slate-900/40' : 'bg-white',
+              isDark
+                ? exportLayout
+                  ? 'bg-slate-900/40'
+                  : 'bg-slate-900/60 md:bg-slate-900/40'
+                : 'bg-white',
             )}
           >
             <section
-              className="rounded-2xl p-4 md:p-5"
+              className={cn('rounded-2xl', exportLayout ? 'p-5' : 'p-4 md:p-5')}
               style={{
                 backgroundColor: withAlpha(accent, isDark ? 0.08 : 0.05),
               }}
@@ -639,16 +710,17 @@ export function CvPreview({ kit, design, className }: Props) {
             </section>
 
             {kit.experience.length > 0 ? (
-              <section className="mt-8 md:mt-10">
+              <section className={cn(exportLayout ? 'mt-10' : 'mt-8 md:mt-10')}>
                 <SectionHeading accent={accent} isDark={isDark} bgHex={mainBgHex} className="mb-5">
                   {t('cv.sec.experience')}
                 </SectionHeading>
-                <ul className="relative space-y-5 md:space-y-6">
+                <ul className={cn('relative', exportLayout ? 'space-y-6' : 'space-y-5 md:space-y-6')}>
                   {kit.experience.map((ex, i) => (
                     <li
                       key={`${ex.company}-${i}`}
                       className={cn(
-                        'relative rounded-2xl border p-4 pl-5 md:p-5',
+                        'relative rounded-2xl border p-4 pl-5',
+                        exportLayout ? 'md:p-5' : 'md:p-5',
                         isDark
                           ? 'border-slate-700/80 bg-slate-900/40'
                           : 'border-slate-200/80 bg-white shadow-sm shadow-slate-200/50',
@@ -661,7 +733,8 @@ export function CvPreview({ kit, design, className }: Props) {
                       <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                         <h3
                           className={cn(
-                            'text-base font-bold leading-snug md:text-[17px]',
+                            'font-bold leading-snug',
+                            exportLayout ? 'text-[17px]' : 'text-base md:text-[17px]',
                             isDark ? 'text-white' : 'text-slate-900',
                           )}
                         >

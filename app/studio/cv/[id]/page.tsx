@@ -1,11 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Download, Loader2 } from 'lucide-react'
 
+import { CoverLetterExportPreview } from '@/components/cv/CoverLetterExportPreview'
 import { CvPreview } from '@/components/cv/CvPreview'
 import { CvTemplatePicker } from '@/components/cv/CvTemplatePicker'
 import { Button } from '@/components/ui/button'
@@ -32,6 +33,7 @@ import {
   type CvKit,
   type CvLayoutDensity,
 } from '@/lib/cv-schema'
+import { CV_EXPORT_WIDTH_PX, exportCvCoverLetterClientPdf } from '@/lib/cv-export-client-pdf'
 import { readAndClearCvPostGenerateAtsBadge } from '@/lib/cv-post-generate-ats-badge'
 import { useSiteLocale } from '@/lib/site-locale'
 import { cn } from '@/lib/utils'
@@ -55,6 +57,9 @@ export default function CvEditorPage() {
   const [design, setDesign] = useState<CvDesignOptions>(defaultCvDesignOptions())
   const [baseMeta, setBaseMeta] = useState<Partial<CvDocumentMetadata>>({})
   const [saveState, setSaveState] = useState<'idle' | 'saved'>('idle')
+  const [exportingPdf, setExportingPdf] = useState(false)
+  const cvExportRef = useRef<HTMLDivElement>(null)
+  const letterExportRef = useRef<HTMLDivElement>(null)
   const [atsBadgePct, setAtsBadgePct] = useState<number | null>(null)
   const [atsBadgeEntered, setAtsBadgeEntered] = useState(false)
 
@@ -158,6 +163,26 @@ export default function CvEditorPage() {
   })
 
   const exportPdf = async () => {
+    const cvEl = cvExportRef.current?.firstElementChild as HTMLElement | null
+    const letterEl = letterExportRef.current?.firstElementChild as HTMLElement | null
+    const filename = `${(data?.title ?? 'cv').replace(/\s+/g, '-')}.pdf`
+
+    if (cvEl && letterEl) {
+      setExportingPdf(true)
+      try {
+        await exportCvCoverLetterClientPdf({
+          cvElement: cvEl,
+          letterElement: letterEl,
+          filename,
+        })
+        return
+      } catch (error) {
+        console.error('Export PDF client échoué, repli serveur', error)
+      } finally {
+        setExportingPdf(false)
+      }
+    }
+
     const res = await fetch(`/api/cv/${id}/export?format=pdf`, {
       credentials: 'include',
     })
@@ -166,7 +191,7 @@ export default function CvEditorPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${(data?.title ?? 'cv').replace(/\s+/g, '-')}.pdf`
+    a.download = filename
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -584,10 +609,11 @@ export default function CvEditorPage() {
                 variant="outline"
                 className="rounded-xl"
                 type="button"
+                disabled={exportingPdf}
                 onClick={() => void exportPdf()}
               >
                 <Download className="mr-2 h-4 w-4" />
-                {t('cv.export_pdf')}
+                {exportingPdf ? '…' : t('cv.export_pdf')}
               </Button>
             </div>
           </Card>
@@ -595,6 +621,24 @@ export default function CvEditorPage() {
 
         <div className="min-w-0 flex-1">
           <CvPreview kit={kit} design={design} className="min-h-[640px]" />
+        </div>
+      </div>
+
+      <div
+        className="pointer-events-none fixed top-0 -z-10 opacity-0"
+        style={{ left: -12_000, width: CV_EXPORT_WIDTH_PX }}
+        aria-hidden
+      >
+        <div ref={cvExportRef}>
+          <CvPreview kit={kit} design={design} exportLayout />
+        </div>
+        <div ref={letterExportRef} className="mt-0">
+          <CoverLetterExportPreview
+            kit={kit}
+            design={design}
+            coverLetter={coverLetter}
+            locale={locale}
+          />
         </div>
       </div>
 
