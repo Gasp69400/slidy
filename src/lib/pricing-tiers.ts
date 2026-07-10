@@ -59,7 +59,7 @@ export function buildPricingTiers(t: Translate): PricingTierDefinition[] {
     },
     {
       name: t('pricing.tier.ultimate.name'),
-      price: '15,99',
+      price: '15,90',
       period: t('pricing.tier.ultimate.period'),
       description: t('pricing.tier.ultimate.desc'),
       features: [
