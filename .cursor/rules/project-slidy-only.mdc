@@ -1,0 +1,20 @@
+---
+description: Ce workspace est Slidy (slidyapp.com) — pas Niche Founder / Niche Signal
+alwaysApply: true
+---
+
+# Projet Slidy uniquement
+
+Ce dossier est **Slidy** (`slidyapp.com`) — présentations IA, studio CV, Stripe.
+
+**Ne pas confondre avec Niche Founder** (`nichefounder.com`, repo `niche-signal`, dossier `~/saas2`).
+
+| | Slidy | Niche Founder |
+|---|-------|---------------|
+| Dossier | `~/slidyapp` ou `~/Slidy saas` | `~/saas2` |
+| Repo GitHub | `Gasp69400/slidy` | `Gasp69400/niche-signal` |
+| Port dev | 3000 | 3002 |
+| IA | Groq | Gemini |
+| BDD | Prisma + Supabase | Supabase seul |
+
+Toute modification de code doit rester dans ce projet Slidy.
